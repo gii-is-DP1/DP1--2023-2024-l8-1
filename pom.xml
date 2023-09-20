@@ -40,6 +40,10 @@
 			<email>japarejo@gmail.com</email>
 			<url>http://www.isa.us.es</url>
 		</developer>
+		<developer>
+			<name>Benji</name>
+			<email>benji.mrfl@gmail.com</email>
+		</developer>
 	</developers>
 
 	<dependencies>		
