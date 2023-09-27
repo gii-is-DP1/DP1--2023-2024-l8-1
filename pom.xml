@@ -36,6 +36,11 @@
 
 	<developers>
 		<developer>
+			<name>Daniel</name>
+			<email>danalorom1@alum.us.es</email>
+			<url>http://www.isa.us.es</url>
+    </developer>
+    <developer>
 			<name>agudevbon</name>
 			<email>agudevbon@alum.us.es</email>
 		</developer>
