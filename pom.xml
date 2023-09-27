@@ -36,9 +36,16 @@
 
 	<developers>
 		<developer>
-			<name>JAParejo</name>
-			<email>japarejo@gmail.com</email>
-			<url>http://www.isa.us.es</url>
+			<name>agudevbon</name>
+			<email>agudevbon@alum.us.es</email>
+		</developer>
+		<developer>
+			<name>Benji</name>
+			<email>benji.mrfl@gmail.com</email>
+		</developer>
+		<developer>
+			<name>guaridpin</name>
+			<email>guaridpin@alum.us.es</email>
 		</developer>
 	</developers>
 
