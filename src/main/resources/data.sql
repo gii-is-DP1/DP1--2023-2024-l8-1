@@ -76,7 +76,7 @@ INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id,
 INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (9, 'David', 'Schroeder', '2749 Blackhawk Trail','Cádiz', '685559435', 12, 3);
 INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (10, 'Carlos', 'Estaban', '2335 Independence La.', 'Cádiz', '685555487', 13, 1);
 INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (11, 'Agustin', 'Devos', 'Avenida de la Reina Mercedes, 4', 'Sevilla', '689365487', 20, 3);
-INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (12, 'Benjamin', 'Maureira', '2335 Independence La.', 'Sevilla', '685555445', 30, 1);
+INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (12, 'Benjamin', 'Maureira', '2335 Independence La.', 'Sevilla', '685555445', 21, 1);
 
 
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
