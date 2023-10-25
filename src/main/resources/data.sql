@@ -28,6 +28,8 @@ INSERT INTO appusers(id,username,password,authority) VALUES (12,'owner9','$2a$10
 INSERT INTO appusers(id,username,password,authority) VALUES (13,'owner10','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',3);
 INSERT INTO appusers(id,username,password,authority) VALUES (20,'agudevbon','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',3);
 INSERT INTO appusers(id,username,password,authority) VALUES (21,'benmauflo','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',3);
+INSERT INTO appusers(id,username,password,authority) VALUES (22,'danalorom1','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',3);
+INSERT INTO appusers(id,username,password,authority) VALUES (23,'guaridpin','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',3);
 
 -- One vet user, named vet1 with passwor v3t
 /*INSERT INTO users(username,password,enabled) VALUES ('vet1','v3t',TRUE);
@@ -76,8 +78,9 @@ INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id,
 INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (9, 'David', 'Schroeder', '2749 Blackhawk Trail','Cádiz', '685559435', 12, 3);
 INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (10, 'Carlos', 'Estaban', '2335 Independence La.', 'Cádiz', '685555487', 13, 1);
 INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (11, 'Agustin', 'Devos', 'Avenida de la Reina Mercedes, 4', 'Sevilla', '689365487', 20, 3);
-INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (12, 'Benjamin', 'Maureira', '2335 Independence La.', 'Sevilla', '685555445', 30, 1);
-
+INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (12, 'Benjamin', 'Maureira', '2335 Independence La.', 'Sevilla', '685555445', 21, 1);
+INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (13, 'Daniel', 'Alors', 'Alcala', 'Sevilla', '601405580', 22, 1);
+INSERT INTO owners(id, first_name, last_name, address, city, telephone, user_id, clinic) VALUES (14, 'Guadalupe', 'Ridruejo', '2336 Independence La.', 'Cádiz', '685555488', 23, 1);
 
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (1, 'Leo', '2010-09-07', 1, 1);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (2, 'Basil', '2012-08-06', 6, 2);
@@ -93,7 +96,9 @@ INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (11, 'Freddy', '201
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (12, 'Lucky', '2010-06-24', 2, 10);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (13, 'Sly', '2012-06-08', 1, 10);
 INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (14, 'Nala', '2015-09-13', 1, 11);
-INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (15, 'Tomy', '2011-01-01', 1, 11);
+INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (15, 'Tomy', '2011-01-01', 1, 12);
+INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (16, 'Lolo', '2015-01-01', 1, 13);
+INSERT INTO pets(id,name,birth_date,type_id,owner_id) VALUES (17, 'Lucy', '2017-06-08', 1, 14);
 
 
 INSERT INTO visits(id,pet_id,visit_date_time,description,vet_id) VALUES (1, 7, '2013-01-01 13:00', 'rabies shot', 4);
@@ -120,3 +125,8 @@ INSERT INTO consultation_tickets(id,description,creation_date, user_id, consulta
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (6, 'Try to give him some tuna to check if he eats that.', '2023-04-11 15:20', 15, 3);
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (7, 'My lovebird doesn''t sing as my neighbour''s one.', '2023-02-24 12:30', 5, 4);
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (8, 'Lovebirds do not sing.', '2023-02-24 18:30', 16, 4);
+
+INSERT INTO player(id, username, mail, start_player, score) VALUES (1, 'agudevbon', 'agudevbon@alum.us.es', 'true', 0);
+INSERT INTO player(id, username, mail, start_player, score) VALUES (2, 'guaridpin', 'guaridpin@alum.us.es', 0, 0);
+
+INSERT INTO game(id, admin, start_time, end_time, state, player_id) VALUES (1, 'agudevbon', '2023-10-10 11:46', null, 'LOBBY', null);
