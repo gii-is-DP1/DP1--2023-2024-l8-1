@@ -47,6 +47,8 @@ import ConsultationListClinicOwner from "./clinicOwner/consultations/Consultatio
 import ConsultationEditClinicOwner from "./clinicOwner/consultations/ConsultationEditClinicOwner";
 import VetListClinicOwner from "./clinicOwner/vets/VetListClinicOwner";
 import VetEditClinicOwner from "./clinicOwner/vets/VetEditClinicOwner";
+import GameList from './game/gameList';
+import CreateGame from "./game/createGame";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -111,6 +113,9 @@ function App() {
           <Route path="/consultations" exact={true} element={<PrivateRoute><OwnerConsultationList /></PrivateRoute>} />
           <Route path="/consultations/:consultationId" exact={true} element={<PrivateRoute><OwnerConsultationEdit /></PrivateRoute>} />
           <Route path="/consultations/:consultationId/tickets" exact={true} element={<PrivateRoute><OwnerConsultationTickets /></PrivateRoute>} />
+          <Route path="/game/new" element={<CreateGame />} />
+          <Route path="/game/:gameId" element={<CreateGame />} />
+          <Route path="/game" element={<GameList />} />
         </>)
     }
     if (role === "VET") {
