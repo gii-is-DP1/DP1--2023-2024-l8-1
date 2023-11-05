@@ -9,11 +9,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.samples.petclinic.gameboard.GameBoard;
 import org.springframework.samples.petclinic.model.BaseEntity;
@@ -31,6 +33,7 @@ import lombok.Setter;
 public class Game extends BaseEntity {
 
     @OneToOne(optional = false)
+    @OnDelete(action = OnDeleteAction.NO_ACTION)
     private Player host;
 
     @Column(name="start_time")
@@ -52,11 +55,17 @@ public class Game extends BaseEntity {
     private Player winner;
 
     @OneToOne
-    @JoinColumn(name = "gameboard_ id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private GameBoard gameBoard;
 
     @OneToMany
+    @Size(min = 1, max = 9)
+    // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Round> rounds;
 
+    @OneToMany
+    @Size(min = 3, max = 3)
+    // @OnDelete(action = OnDeleteAction.NO_ACTION)
+    private List<Player> players;
 
 }

@@ -8,6 +8,7 @@ import org.springframework.samples.petclinic.model.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +25,8 @@ public class Sector extends BaseEntity{
     private Boolean isTriPrime;
 
     @OneToMany
+    @Size(min = 7, max = 7)
+    // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Hex> hexs;
     
 }

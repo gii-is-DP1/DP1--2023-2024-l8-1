@@ -8,6 +8,7 @@ import org.springframework.samples.petclinic.turn.Turn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,6 +21,8 @@ public class Phase extends BaseEntity{
     private Boolean isOver;
 
     @OneToMany
+    @Size(min = 3, max = 3)
+    // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Turn> turns;
 
 }

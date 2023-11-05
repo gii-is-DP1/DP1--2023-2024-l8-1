@@ -8,6 +8,7 @@ import org.springframework.samples.petclinic.phase.Phase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,6 +23,8 @@ public class Round extends BaseEntity{
     private Boolean isFinal;
 
     @OneToMany
+    @Size(min = 3, max = 3)
+    // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Phase> phases;
     
 }

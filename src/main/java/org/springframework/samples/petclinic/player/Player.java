@@ -5,6 +5,9 @@ import org.springframework.samples.petclinic.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +19,7 @@ import lombok.Setter;
 public class Player extends BaseEntity {
     
     @NotNull
+    @NotBlank
     private String username;
 
     @NotNull
@@ -27,5 +31,13 @@ public class Player extends BaseEntity {
 
     @NotNull
     private Integer score;
+
+    @NotNull
+    private Integer numCards = 3;
+
+    @NotNull
+    @Min(0)
+    @Max(15)
+    private Integer numShips;
 
 }
