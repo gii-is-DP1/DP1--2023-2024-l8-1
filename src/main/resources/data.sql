@@ -126,7 +126,11 @@ INSERT INTO consultation_tickets(id,description,creation_date, user_id, consulta
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (7, 'My lovebird doesn''t sing as my neighbour''s one.', '2023-02-24 12:30', 5, 4);
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (8, 'Lovebirds do not sing.', '2023-02-24 18:30', 16, 4);
 
+/*
+
 INSERT INTO player(id, username, mail, start_player, score) VALUES (1, 'agudevbon', 'agudevbon@alum.us.es', 'true', 0);
 INSERT INTO player(id, username, mail, start_player, score) VALUES (2, 'guaridpin', 'guaridpin@alum.us.es', 0, 0);
 
-INSERT INTO game(id, admin, start_time, end_time, state, player_id) VALUES (1, 'agudevbon', '2023-10-10 11:46', null, 'LOBBY', null);
+INSERT INTO games(id, host, start_time, end_time, state, player_id) VALUES (1, 'agudevbon', '2023-10-10 11:46', null, 'LOBBY', null);
+
+*/
