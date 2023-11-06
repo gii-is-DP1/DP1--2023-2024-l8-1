@@ -1,10 +1,12 @@
 package org.springframework.samples.petclinic.player;
 
-import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.user.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,20 +14,19 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name="player")
-public class Player extends BaseEntity {
-    
-    @NotNull
-    private String username;
+@Table(name="Players")
+public class Player extends User {
 
     @NotNull
-    private String mail;
+    Boolean startPlayer;
 
-    @Column(name="start_player")
-    @NotNull
-    private Boolean startPlayer;
+    @NotEmpty
+    @Min(0)
+    Integer score;
 
-    @NotNull
-    private Integer score;
+    @NotEmpty
+    PlayerRol rol;
+
+
 
 }
