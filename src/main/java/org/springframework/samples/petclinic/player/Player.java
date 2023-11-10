@@ -1,6 +1,8 @@
 package org.springframework.samples.petclinic.player;
 
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.model.Person;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,11 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name="player")
-public class Player extends BaseEntity {
-    
-    @NotNull
-    @NotBlank
-    private String username;
+public class Player extends Person {
 
     @NotNull
     private String mail;
