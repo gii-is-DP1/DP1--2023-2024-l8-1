@@ -1,14 +1,11 @@
 package org.springframework.samples.petclinic.user;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.Date;
 
 import org.springframework.samples.petclinic.model.NamedEntity;
 
@@ -18,28 +15,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "Users", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "lastName", "username", "email"})})
+@Table(name = "appusers")
 public class User extends NamedEntity {
 
-	@NotBlank
-	String lastName;
-
-	@NotBlank
+	@Column(unique = true)
 	String username;
 
-	@NotBlank
 	String password;
-
-	@NotBlank
-	@Email
-	String email;
-
-	@NotNull
-	Date birthDate;
-
-
-
-
 	
 	@NotNull
 	@ManyToOne(optional = false)

@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-public class Gameboard extends BaseEntity{
+public class GameBoard extends BaseEntity{
     
 }
