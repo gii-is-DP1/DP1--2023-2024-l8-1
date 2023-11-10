@@ -1,9 +1,9 @@
-package org.springframework.samples.petclinic.turn;
+package org.springframework.samples.petclinic.invitation;
 
 import org.springframework.samples.petclinic.model.BaseEntity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,10 +11,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "turns")
-public class Turn extends BaseEntity{
-    
+public class Invitation extends BaseEntity{
+
     @NotNull
-    Boolean isOver;
+    Boolean isAccepted;
+    
+    @NotEmpty
+    InvitationType discriminator;
 
 }

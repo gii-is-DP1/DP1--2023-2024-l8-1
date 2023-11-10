@@ -21,14 +21,16 @@ import lombok.Setter;
 public class Player extends Person {
 
     @NotNull
-    private String mail;
+    Boolean startPlayer;
 
-    @Column(name="start_player")
-    @NotNull
-    private Boolean startPlayer;
+    @NotEmpty
+    @Min(0)
+    Integer score;
 
-    @NotNull
-    private Integer score;
+    @NotEmpty
+    PlayerRol rol;
+
+
 
     @NotNull
     private Integer numCards = 3;
