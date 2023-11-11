@@ -126,6 +126,12 @@ INSERT INTO consultation_tickets(id,description,creation_date, user_id, consulta
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (7, 'My lovebird doesn''t sing as my neighbour''s one.', '2023-02-24 12:30', 5, 4);
 INSERT INTO consultation_tickets(id,description,creation_date, user_id, consultation_id) VALUES (8, 'Lovebirds do not sing.', '2023-02-24 18:30', 16, 4);
 
+/*CONTRASEÑA DE PLAYER=0wn3r*/
+INSERT INTO authorities(id,authority) VALUES (5,'PLAYER');
+INSERT INTO appusers(id,username,password,authority) VALUES (24,'player1','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
+INSERT INTO player(id,num_cards,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (1,3,15,0,0,false,24,'Play','Yer');
+
+
 /*
 
 INSERT INTO player(id, username, mail, start_player, score) VALUES (1, 'agudevbon', 'agudevbon@alum.us.es', 'true', 0);

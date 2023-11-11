@@ -99,6 +99,9 @@ function AppNavbar() {
                 </>
             )
         }
+        if (role === "PLAYER") {
+            
+        }
     })
 
     if (!jwt) {
