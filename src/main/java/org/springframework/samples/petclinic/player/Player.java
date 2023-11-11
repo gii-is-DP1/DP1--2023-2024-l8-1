@@ -1,11 +1,21 @@
 package org.springframework.samples.petclinic.player;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import java.util.List;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.samples.petclinic.invitation.Invitation;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.model.Person;
+import org.springframework.samples.petclinic.user.User;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -32,7 +42,14 @@ public class Player extends Person {
     @NotEmpty
     PlayerRol rol;
 
+    @OneToOne
+    User user;
 
+    @OneToMany
+    List<Player> friends;
+
+    @OneToMany(mappedBy = "player")
+    List<Invitation> invitations;
 
     @NotNull
     private Integer numCards = 3;
