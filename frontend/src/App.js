@@ -71,6 +71,7 @@ function App() {
     return jwt_decode(jwt).authorities;
   }
 
+  let playerRoutes = <></>;
   let adminRoutes = <></>;
   let ownerRoutes = <></>;
   let userRoutes = <></>;
@@ -139,6 +140,12 @@ function App() {
           <Route path="/vets" exact={true} element={<PrivateRoute><VetListClinicOwner /></PrivateRoute>} />
           <Route path="/vets/:id" exact={true} element={<PrivateRoute><VetEditClinicOwner /></PrivateRoute>} />
         </>)
+    }
+    if(role === "PLAYER"){
+      playerRoutes = (
+        <>
+        </>
+      )
     }
   })
   if (!jwt) {

@@ -6,6 +6,7 @@ import { registerFormOwnerInputs } from "./form/registerFormOwnerInputs";
 import { registerFormVetInputs } from "./form/registerFormVetInputs";
 import { registerFormClinicOwnerInputs } from "./form/registerFormClinicOwnerInputs";
 import { useEffect, useRef, useState } from "react";
+import { registerFormPlayerInputs } from "./form/registerFormPlayerInputs";
 
 export default function Register() {
   let [type, setType] = useState(null);
@@ -30,7 +31,7 @@ export default function Register() {
     request.clinic = clinics.filter((clinic) => clinic.name === request.clinic)[0];
     request["authority"] = authority;
     let state = "";
-
+  
     fetch("/api/v1/auth/signup", {
       headers: { "Content-Type": "application/json" },
       method: "POST",
@@ -113,6 +114,7 @@ export default function Register() {
             inputs={
               type === "Owner" ? registerFormOwnerInputs 
               : type === "Vet" ? registerFormVetInputs
+              : type === "Player" ? registerFormPlayerInputs
               : registerFormClinicOwnerInputs
             }
             onSubmit={handleSubmit}
@@ -153,6 +155,13 @@ export default function Register() {
               onClick={handleButtonClick}
             >
               Clinic Owner
+            </button>
+            <button
+              className="auth-button"
+              value="Player"
+              onClick={handleButtonClick}
+            >
+              Player
             </button>
           </div>
         </div>

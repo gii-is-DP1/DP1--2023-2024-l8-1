@@ -32,14 +32,11 @@ import lombok.Setter;
 @Table(name="player")
 public class Player extends Person {
 
-    @NotNull
     Boolean startPlayer;
 
-    @NotEmpty
     @Min(0)
     Integer score;
 
-    @NotEmpty
     PlayerRol rol;
 
     @OneToOne
@@ -51,10 +48,8 @@ public class Player extends Person {
     @OneToMany(mappedBy = "player")
     List<Invitation> invitations;
 
-    @NotNull
-    private Integer numCards = 3;
+    private Integer numCards;
 
-    @NotNull
     @Min(0)
     @Max(15)
     private Integer numShips;
