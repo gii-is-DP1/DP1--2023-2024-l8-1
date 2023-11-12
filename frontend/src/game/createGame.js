@@ -12,7 +12,7 @@ export default function CreateGame() {
     const id = getIdFromUrl(2);
     const emptyGame = {
         id: id === "new" ? null : id,
-        amdmin: "",
+        name: "",
         state: "LOBBY",
     };
     const [message, setMessage] = useState(null);
@@ -69,16 +69,16 @@ export default function CreateGame() {
             <div className="auth-form-container">
                 {modal}
                 <Form onSubmit={handleSubmit}>
-                <div className="custom-form-input">
+                    <div className="custom-form-input">
                         <Label for="admin" className="custom-form-input-label">
-                            Game admin
+                            Game name
                         </Label>
                         <Input
                             type="text"
                             required
-                            name="admin"
-                            id="admin"
-                            value={game.admin || ""}
+                            name="name"
+                            id="name"
+                            value={game.name || ""}
                             onChange={handleChange}
                             className="custom-input"
                         />
@@ -110,11 +110,11 @@ export default function CreateGame() {
                             className="auth-button"
                             style={{ textDecoration: "none" }}
                         >
-                        Cancel
-                    </Link>
-                 </div>
-            </Form>
+                            Cancel
+                        </Link>
+                    </div>
+                </Form>
+            </div >
         </div >
-    </div >
-  );
+    );
 } 
