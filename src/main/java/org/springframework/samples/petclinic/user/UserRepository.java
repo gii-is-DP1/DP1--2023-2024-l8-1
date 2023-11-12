@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.samples.petclinic.owner.Owner;
+import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.vet.Vet;
 
 public interface UserRepository extends  CrudRepository<User, String>{
@@ -26,6 +27,9 @@ public interface UserRepository extends  CrudRepository<User, String>{
 
 	@Query("SELECT v FROM Vet v WHERE v.user.id = :userId")
 	Optional<Vet> findVetByUser(int userId);
+
+	@Query("SELECT p FROM Player p WHERE p.user.id = :userId")
+	Optional<Player> findPlayerByUser(int userId);
 
 	Optional<User> findByUsername(String username);
 

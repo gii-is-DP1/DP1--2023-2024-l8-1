@@ -1,17 +1,23 @@
 package org.springframework.samples.petclinic.game;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.samples.petclinic.pet.Pet;
+import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.player.PlayerRol;
+import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.samples.petclinic.util.RestPreconditions;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,56 +37,82 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/game")
 @SecurityRequirement(name = "bearerAuth")
 public class GameRestController {
-    
+
     private final GameService gameService;
+    private final UserService userService;;
 
     @Autowired
-    public GameRestController(GameService gameService){
+    public GameRestController(GameService gameService, UserService userService) {
         this.gameService = gameService;
+        this.userService = userService;
     }
 
     @GetMapping
-	public ResponseEntity<List<Game>> findAll() {
-		return new ResponseEntity<>((List<Game>) gameService.getGames(), HttpStatus.OK);
-	}
+    public ResponseEntity<List<Game>> findAll() {
+        return new ResponseEntity<>((List<Game>) gameService.getGames(), HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Game> findGame(@PathVariable("id") int id){
-        Game gameToGet=gameService.getById(id);
-        if(gameToGet==null)
-            throw new ResourceNotFoundException("Game with id "+id+ "not found!");
-        return new ResponseEntity<Game>(gameToGet, HttpStatus.OK);    
-    }   
+    public ResponseEntity<Game> findGame(@PathVariable("id") int id) {
+        Game gameToGet = gameService.getById(id);
+        if (gameToGet == null)
+            throw new ResourceNotFoundException("Game with id " + id + "not found!");
+        return new ResponseEntity<Game>(gameToGet, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/lobby/{name}", method = RequestMethod.GET)
+    public ResponseEntity<List<Player>> findGamePlayers(@PathVariable String name) {
+        Game gameToGet = gameService.findByName(name);
+        if (gameToGet == null)
+            throw new ResourceNotFoundException("Game with name " + name + "not found!");
+        List<Player> gamePlayers = gameService.findGamePlayers(name);
+        gamePlayers.add(gameToGet.getHost());
+        return new ResponseEntity<List<Player>>(gamePlayers, HttpStatus.OK);
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Game> crateGame(@RequestBody @Valid Game newGame, BindingResult br){
-        Game result=null;
-        if(!br.hasErrors())
-            result=gameService.saveGame(newGame);
-        else 
+    public ResponseEntity<Game> crateGame(@RequestBody @Valid Game newGame, BindingResult br) {
+        Game result = null;
+        if (!br.hasErrors()) {
+            result = gameService.saveGame(newGame);
+            ;
+        } else
             throw new BadRequestException(br.getAllErrors());
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Game> updateGame(@RequestBody @Valid Game newGame, BindingResult br,@PathVariable("id") int id) {
-        Game gameToUpdate=this.findGame(id).getBody();
-		if(br.hasErrors())
-			throw new BadRequestException(br.getAllErrors());		
-		else if(newGame.getId()==null || !newGame.getId().equals(id))
-			throw new BadRequestException("Achievement id is not consistent with resource URL:"+id);
-		else{
-			BeanUtils.copyProperties(newGame, gameToUpdate, "id");
-			gameService.saveGame(gameToUpdate);
-		}			
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<Game> updateGame(@RequestBody @Valid Game newGame, BindingResult br,
+            @PathVariable("id") int id) {
+        Game gameToUpdate = this.findGame(id).getBody();
+        if (br.hasErrors())
+            throw new BadRequestException(br.getAllErrors());
+        else if (newGame.getId() == null || !newGame.getId().equals(id))
+            throw new BadRequestException("Achievement id is not consistent with resource URL:" + id);
+        else {
+            BeanUtils.copyProperties(newGame, gameToUpdate, "id");
+            gameService.saveGame(gameToUpdate);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping("/lobby/{name}/{id}")
+    public ResponseEntity<Game> kickPlayer(@PathVariable("name") String name,
+            @PathVariable("id") int id) {
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        if (aux.getRol() != PlayerRol.HOST){
+            throw new AccessDeniedException("No puedes echar a un jugador si no eres el host de la partida");
+        }else{
+        findGame(gameService.findByName(name).getId());
+        gameService.kickPlayer(name, id);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGame(@PathVariable("id") int id){
+    public ResponseEntity<Void> deleteGame(@PathVariable("id") int id) {
         findGame(id);
         gameService.deleteGameById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

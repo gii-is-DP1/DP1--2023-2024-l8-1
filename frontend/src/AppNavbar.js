@@ -19,6 +19,7 @@ function AppNavbar() {
         }
     }, [jwt])
 
+    let playerLinks = <></>;
     let adminLinks = <></>;
     let ownerLinks = <></>;
     let userLinks = <></>;
@@ -100,7 +101,13 @@ function AppNavbar() {
             )
         }
         if (role === "PLAYER") {
-            
+            playerLinks = (
+                <>
+                    <NavItem>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/game">Games</NavLink>
+                    </NavItem>
+                </>
+            )
         }
     })
 
@@ -159,6 +166,7 @@ function AppNavbar() {
                         {userLinks}
                         {adminLinks}
                         {ownerLinks}
+                        {playerLinks}
                     </Nav>
                     <Nav className="ms-auto mb-2 mb-lg-0" navbar>
                         {publicLinks}

@@ -49,6 +49,7 @@ import VetListClinicOwner from "./clinicOwner/vets/VetListClinicOwner";
 import VetEditClinicOwner from "./clinicOwner/vets/VetEditClinicOwner";
 import GameList from './game/gameList';
 import CreateGame from "./game/createGame";
+import GameLobby from "./game/gameLobby";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -141,16 +142,20 @@ function App() {
           <Route path="/vets/:id" exact={true} element={<PrivateRoute><VetEditClinicOwner /></PrivateRoute>} />
         </>)
     }
-    if(role === "PLAYER"){
+    if (role === "PLAYER") {
       playerRoutes = (
         <>
+          <Route path="/game/new" element={<CreateGame />} />
+          <Route path="/game/:gameId" element={<CreateGame />} />
+          <Route path="/game/" element={<GameList />} />
+          <Route path="/game/lobby/:gameId" element={<GameLobby />} />
         </>
       )
     }
   })
   if (!jwt) {
     publicRoutes = (
-      <>        
+      <>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
       </>
@@ -158,7 +163,7 @@ function App() {
   } else {
     userRoutes = (
       <>
-        {/* <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> */}        
+        {/* <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> */}
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
       </>
@@ -178,6 +183,7 @@ function App() {
           {adminRoutes}
           {ownerRoutes}
           {vetRoutes}
+          {playerRoutes}
         </Routes>
       </ErrorBoundary>
     </div>
