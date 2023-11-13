@@ -26,7 +26,8 @@ public class Invitation extends BaseEntity{
     @NotNull
     Boolean isAccepted;
     
-   @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
+    @NotNull
     InvitationType discriminator;
 
     @ManyToOne

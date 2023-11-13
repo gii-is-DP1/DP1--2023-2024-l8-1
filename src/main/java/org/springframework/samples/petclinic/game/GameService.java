@@ -6,10 +6,12 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
@@ -46,7 +48,7 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<Player> findGamePlayers(String name){
+    public List<Player> findGamePlayers(String name) throws AccessDeniedException{
         return repo.findGamePlayers(findByName(name).getId());
     }
 
