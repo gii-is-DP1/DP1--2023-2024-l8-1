@@ -140,6 +140,10 @@ INSERT INTO games(id, host_id, name, start_time, state) VALUES (1, 1, 'prueba', 
 
 INSERT INTO games_players(game_id, players_id) VALUES (1,2), (1,3);
 
+/*INSERT INTO invitation(id, is_accepted, discriminator, player_id, game_id) VALUES (1, false, 'FRIENDSHIP', 2, null);
+
+INSERT INTO invitation_players(invitation_id, player_id) VALUES (1,1);
+
 /*
 
 INSERT INTO player(id, username, mail, start_player, score) VALUES (1, 'agudevbon', 'agudevbon@alum.us.es', 'true', 0);
