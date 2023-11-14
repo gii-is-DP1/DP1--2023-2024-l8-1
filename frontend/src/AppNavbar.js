@@ -25,6 +25,7 @@ function AppNavbar() {
     let userLinks = <></>;
     let userLogout = <></>;
     let publicLinks = <></>;
+    let playerLinks = <></>;
 
     roles.forEach((role) => {
         if (role === "ADMIN") {
@@ -105,6 +106,9 @@ function AppNavbar() {
                 <>
                     <NavItem>
                         <NavLink style={{ color: "white" }} tag={Link} to="/game">Games</NavLink>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/invitations">Invitations</NavLink>
                     </NavItem>
                 </>
             )

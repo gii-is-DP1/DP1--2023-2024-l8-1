@@ -45,9 +45,6 @@ public class Player extends Person {
     @OneToMany
     List<Player> friends;
 
-    @OneToMany(mappedBy = "player")
-    List<Invitation> invitations;
-
     private Integer numCards;
 
     @Min(0)

@@ -49,6 +49,8 @@ import VetListClinicOwner from "./clinicOwner/vets/VetListClinicOwner";
 import VetEditClinicOwner from "./clinicOwner/vets/VetEditClinicOwner";
 import GameList from './game/gameList';
 import CreateGame from "./game/createGame";
+import Createinvitation from "./invitation/createInvitation";
+import InvitationList from "./invitation/invitationList";
 import GameLobby from "./game/gameLobby";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
@@ -149,6 +151,8 @@ function App() {
           <Route path="/game/:gameId" element={<CreateGame />} />
           <Route path="/game/" element={<GameList />} />
           <Route path="/game/lobby/:gameId" element={<GameLobby />} />
+          <Route path="/invitations/new" element={<Createinvitation />} />
+          <Route path="/invitations" element={<InvitationList />} />
         </>
       )
     }
@@ -182,6 +186,7 @@ function App() {
           {userRoutes}
           {adminRoutes}
           {ownerRoutes}
+          {playerRoutes}
           {vetRoutes}
           {playerRoutes}
         </Routes>

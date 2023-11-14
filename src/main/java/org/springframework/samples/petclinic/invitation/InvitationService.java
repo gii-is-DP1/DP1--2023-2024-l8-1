@@ -23,9 +23,16 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Invitation> findAllInvitationByPlayer(int playerId){
-        return ir.findInvitationsForPlayer(playerId);
+    public List<Invitation> findAllInvitationForPlayerTarget(int playerId){
+        return ir.findInvitationsForPlayerTarget(playerId);
     }
+
+    @Transactional(readOnly = true)
+    public List<Invitation> findAllInvitationForPlayerSource(int playerId){
+        return ir.findInvitationsForPlayerSource(playerId);
+    }
+
+
 
     @Transactional(readOnly = true)
     public InvitationType findInvitationType(int id){
