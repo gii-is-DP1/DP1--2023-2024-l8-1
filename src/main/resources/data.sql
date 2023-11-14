@@ -129,8 +129,16 @@ INSERT INTO consultation_tickets(id,description,creation_date, user_id, consulta
 /*CONTRASEÑA DE PLAYER=0wn3r*/
 INSERT INTO authorities(id,authority) VALUES (5,'PLAYER');
 INSERT INTO appusers(id,username,password,authority) VALUES (24,'player1','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
-INSERT INTO player(id,num_cards,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (1,3,15,0,0,false,24,'Play','Yer');
+INSERT INTO appusers(id,username,password,authority) VALUES (25,'player2','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (26,'player3','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
+INSERT INTO player(id,num_cards,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (1,3,15,2,0,false,24,'Play','Yer');
+INSERT INTO player(id,num_cards,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (2,3,15,0,0,false,25,'Play','Yer');
+INSERT INTO player(id,num_cards,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (3,3,15,0,0,false,26,'Play','Yer');
 
+
+INSERT INTO games(id, host_id, name, start_time, state) VALUES (1, 1, 'prueba', '2023-11-11 21:16', 'LOBBY');
+
+INSERT INTO games_players(game_id, players_id) VALUES (1,2), (1,3);
 
 /*
 

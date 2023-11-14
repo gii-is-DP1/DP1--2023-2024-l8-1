@@ -19,6 +19,7 @@ function AppNavbar() {
         }
     }, [jwt])
 
+    let playerLinks = <></>;
     let adminLinks = <></>;
     let ownerLinks = <></>;
     let userLinks = <></>;
@@ -111,7 +112,6 @@ function AppNavbar() {
                     </NavItem>
                 </>
             )
-            
         }
     })
 

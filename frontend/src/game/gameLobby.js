@@ -2,7 +2,7 @@ import {
     Table, Button
 } from "reactstrap";
 
-import getIdFromUrl from "../util/getIdFromUrl";
+import getIdFromUrl from "./../util/getIdFromUrl";
 import tokenService from "../services/token.service";
 import useFetchState from "../util/useFetchState";
 import { Link } from "react-router-dom";
