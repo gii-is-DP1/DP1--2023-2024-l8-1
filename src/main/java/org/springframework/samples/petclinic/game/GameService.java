@@ -36,6 +36,13 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
+    public List<Game> getPublicas(){
+        List<Game> result = repo.findPublicas();
+        return result;
+    }
+
+
+    @Transactional(readOnly = true)
     public Game getById(int id){
         Optional<Game> result = repo.findById(id);
         return result.isPresent()?result.get():null;
@@ -53,10 +60,15 @@ public class GameService {
     }
 
     @Transactional
-    public Game saveGame(@Valid Game newGame) {
+    public Game createGame(@Valid Game newGame) {
         Player host = userService.findPlayerByUser(userService.findCurrentUser().getId());
         host.setRol(PlayerRol.HOST);
         newGame.setHost(host);
+        return repo.save(newGame);
+    }
+
+    @Transactional
+    public Game saveGame(@Valid Game newGame) {
         return repo.save(newGame);
     }
 
@@ -67,6 +79,27 @@ public class GameService {
 		return saveGame(toUpdate);
 	}
     
+    @Transactional
+    public Game startGame(String name) {
+        Game toUpdate = findByName(name);
+        toUpdate.setState(GameState.START_PLAYER_CHOICE);
+        return updateGame(toUpdate, toUpdate.getId());
+
+    }
+
+    @Transactional
+    public Game joinPlayer(String name) {
+        Game toUpdate = findByName(name);
+        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        List<Player> aux = toUpdate.getPlayers();
+        aux.add(userService.findPlayerByUser(userService.findCurrentUser().getId()));
+        toUpdate.setPlayers(aux);
+        me.setRol(PlayerRol.GUEST);
+        playerService.updatePlayer(me, me.getId());
+        return updateGame(toUpdate, toUpdate.getId());
+
+    }
+
     @Transactional
     public Game kickPlayer(String name, int id) {
         Game toUpdate = findByName(name);
