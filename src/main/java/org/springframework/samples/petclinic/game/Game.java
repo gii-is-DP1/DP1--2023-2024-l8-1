@@ -15,6 +15,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.OnDelete;
@@ -44,6 +45,9 @@ public class Game extends BaseEntity {
     @Size(min = 5, max = 15)
     private String name;
 
+    @NotNull
+    private Boolean publica;
+
     @Column(name="start_time")
     @DateTimeFormat(pattern = "yyyy/MM/dd HH/mm")
     @NotNull
@@ -55,7 +59,7 @@ public class Game extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    GameState state;
+    GameState state = GameState.LOBBY;
 
     @OneToOne
     //@OnDelete(action = OnDeleteAction.CASCADE)
@@ -67,13 +71,13 @@ public class Game extends BaseEntity {
     private GameBoard gameBoard;
 
     @OneToMany
-    @Size(min = 1, max = 9)
+    @Size(min = 0, max = 9)
     // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Round> rounds;
 
     @ManyToMany
     @Size(min = 0, max = 3)
     // @OnDelete(action = OnDeleteAction.NO_ACTION)
-    private List<Player> players;
+    private List<Player> players = new ArrayList<>();
 
 }

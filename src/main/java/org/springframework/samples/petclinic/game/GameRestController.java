@@ -52,6 +52,12 @@ public class GameRestController {
         return new ResponseEntity<>((List<Game>) gameService.getGames(), HttpStatus.OK);
     }
 
+    @GetMapping("/publicas")
+    public ResponseEntity<List<Game>> publicGames() {
+        return new ResponseEntity<>((List<Game>) gameService.getPublicas(), HttpStatus.OK);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<Game> findGame(@PathVariable("id") int id) {
         Game gameToGet = gameService.getById(id);
@@ -60,7 +66,7 @@ public class GameRestController {
         return new ResponseEntity<Game>(gameToGet, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/lobby/{name}", method = RequestMethod.GET)
+    @GetMapping("/lobby/{name}")
     public ResponseEntity<List<Player>> findGamePlayers(@PathVariable String name) {
         Game gameToGet = gameService.findByName(name);
         if (gameToGet == null)
@@ -75,7 +81,7 @@ public class GameRestController {
     public ResponseEntity<Game> crateGame(@RequestBody @Valid Game newGame, BindingResult br) {
         Game result = null;
         if (!br.hasErrors()) {
-            result = gameService.saveGame(newGame);
+            result = gameService.createGame(newGame);
             ;
         } else
             throw new BadRequestException(br.getAllErrors());
@@ -95,6 +101,25 @@ public class GameRestController {
             BeanUtils.copyProperties(newGame, gameToUpdate, "id");
             gameService.saveGame(gameToUpdate);
         }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/start/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Game> startGame(@PathVariable("name") String name) {
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        if (aux.getRol() != PlayerRol.HOST){
+            throw new AccessDeniedException("No puedes echar a un jugador si no eres el host de la partida");
+        }else{    
+            gameService.startGame(name);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/join/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Game> joinGame(@PathVariable("name") String name) {
+        gameService.joinPlayer(name);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
