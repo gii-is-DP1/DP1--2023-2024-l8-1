@@ -40,6 +40,17 @@ public class PlayerRestController {
         return new ResponseEntity<>((List<Player>) ps.findAll(),HttpStatus.OK);
     }
 
+    @GetMapping("/friends")
+    public ResponseEntity<List<Player>> findFriends(){
+        return new ResponseEntity<>((List<Player>) ps.getFriends(),HttpStatus.OK);
+    }
+
+    @GetMapping("/details")
+    public ResponseEntity<Player> getDetails(){
+        int id = (us.findPlayerByUser(us.findCurrentUser().getId())).getId();
+        return findById(id);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Player> findById(@PathVariable("id") int id){
         return new ResponseEntity<>(ps.findPlayerById(id),HttpStatus.OK);
@@ -61,6 +72,13 @@ public class PlayerRestController {
     public ResponseEntity<Player> updatePlayer(@PathVariable("id") int id,@RequestBody @Valid Player p){
         RestPreconditions.checkNotNull(ps.findPlayerById(id),"Player","ID",id);
         return new ResponseEntity<>(ps.updatePlayer(p, id),HttpStatus.OK);
+    }
+
+    @PutMapping("/add/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Player> addFriend(@PathVariable("id") int id){
+        ps.addFriend(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping("/{id}")

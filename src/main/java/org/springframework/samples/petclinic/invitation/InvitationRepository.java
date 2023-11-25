@@ -16,7 +16,10 @@ public interface InvitationRepository extends CrudRepository<Invitation,Integer>
     @Query("SELECT i.game FROM Invitation i WHERE i.game.id=?1")
     public Game findGame(int id);
 
-    @Query("SELECT i FROM Invitation i WHERE i.player.id=:playerId")
-    public List<Invitation> findInvitationsForPlayer(@Param("playerId") int playerId);
+    @Query("SELECT i FROM Invitation i WHERE i.playerTarget.id=:playerId")
+    public List<Invitation> findInvitationsForPlayerTarget(@Param("playerId") int playerId);
+
+    @Query("SELECT i FROM Invitation i WHERE i.playerSource.id=:playerId")
+    public List<Invitation> findInvitationsForPlayerSource(@Param("playerId") int playerId);
     
 }

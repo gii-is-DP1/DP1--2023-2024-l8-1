@@ -14,6 +14,7 @@ export default function CreateGame() {
         id: id === "new" ? null : id,
         name: "",
         state: "LOBBY",
+        publica: false,
     };
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
@@ -55,12 +56,20 @@ export default function CreateGame() {
             })
             .catch((message) => alert(message));
     }
+
+    function handleChange(event) {
+        const { name, type, checked} = event.target;
+        const newValue = type ==='checkbox' ? checked : event.target.value;
+        setGame({...game, [name] : newValue});
+        console.log("Game state:", game);
+    }
+    /*
     function handleChange(event) {
         const target = event.target;
         const value = target.value;
         const name = target.name;
         setGame({ ...game, [name]: value });
-    }
+    }*/
     return (
         <div className="auth-page-container">
             <h2 className="text-center">
@@ -70,7 +79,7 @@ export default function CreateGame() {
                 {modal}
                 <Form onSubmit={handleSubmit}>
                     <div className="custom-form-input">
-                        <Label for="admin" className="custom-form-input-label">
+                        <Label for="name" className="custom-form-input-label">
                             Game name
                         </Label>
                         <Input
@@ -84,23 +93,18 @@ export default function CreateGame() {
                         />
                     </div>
                     <div className="custom-form-input">
-                        <Label for="state" className="custom-form-input-label">
-                            Estado del Juego
+                        <Label for="publica" className="custom-form-input-label">
+                            Partida pública
                         </Label>
                         <Input
-                            type="select"
-                            required
-                            name="state"
-                            id="state"
-                            value={game.state || ""}
+                            type="checkbox"
+                            
+                            name="publica"
+                            id="publica"
                             onChange={handleChange}
                             className="custom-input"
-                        >
-                            <option value="LOBBY">LOBBY</option>
-                            <option value="START_PLAYER_CHOICE">START_PLAYER_CHOICE</option>
-                            <option value="SET_UP">SET_UP</option>
-                            <option value="IN_PROGRESS">IN_PROGRESS</option>
-                            <option value="OVER">OVER</option>
+                            key="publicaCheckbox"
+                            checked={game.publica}>
                         </Input>
                     </div>
                     <div className="custom-button-row">
