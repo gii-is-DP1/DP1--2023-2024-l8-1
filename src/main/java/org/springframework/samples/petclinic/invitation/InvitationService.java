@@ -32,7 +32,12 @@ public class InvitationService {
         return ir.findInvitationsForPlayerSource(playerId);
     }
 
-
+    @Transactional
+    public Invitation acceptInvitation(int id){
+        Invitation inv = findInvitationById(id);
+        inv.setIsAccepted(true);
+        return saveInvitation(inv);
+    }
 
     @Transactional(readOnly = true)
     public InvitationType findInvitationType(int id){

@@ -1,25 +1,34 @@
 package org.springframework.samples.petclinic.player;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
+import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PlayerService {
     private PlayerRepository pr;
+    private UserService us;
 
     @Autowired
-    public PlayerService(PlayerRepository pr){
+    public PlayerService(PlayerRepository pr, UserService us){
         this.pr=pr;
+        this.us=us;
     }
 
     @Transactional(readOnly = true)
     public Iterable<Player> findAll(){
         return pr.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Player> getFriends(){
+        return pr.findFriends((us.findPlayerByUser(us.findCurrentUser().getId())).getId());
     }
 
     @Transactional(readOnly = true)
@@ -52,6 +61,22 @@ public class PlayerService {
     public Player savePlayer(Player p){
         pr.save(p);
         return p;
+    }
+
+    @Transactional
+    public Player addFriend(int id){
+        Player me = us.findPlayerByUser(us.findCurrentUser().getId());
+        Player source = findPlayerById(id);
+
+        List<Player> sourceFriends = source.getFriends();
+        sourceFriends.add(me);
+        source.setFriends(sourceFriends);
+        savePlayer(source);
+
+        List<Player> myFriends = me.getFriends();
+        myFriends.add(source);
+        me.setFriends(myFriends);
+        return savePlayer(me);
     }
     
     @Transactional

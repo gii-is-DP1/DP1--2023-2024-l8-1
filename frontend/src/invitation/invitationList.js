@@ -8,6 +8,8 @@ import { Link } from "react-router-dom";
 import deleteFromList from "../util/deleteFromList";
 import { useState } from "react";
 import getErrorModal from "../util/getErrorModal";
+import { useNavigate } from 'react-router-dom';
+
 
 const jwt = tokenService.getLocalAccessToken();
 
@@ -27,10 +29,45 @@ export default function InvitationList() {
         jwt
     );
 
+    const navigate = useNavigate();
 
+    function aceptarInvitacion(a) {
 
+        fetch(
+            `/api/v1/invitations/accept/${a.id}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(a)
+        });
+        
+        if (a.discriminator === "GAME"){
+            fetch("/api/v1/game/join/" + a.game.name, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${jwt}`,
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                }
+            });
+            navigate('../game/lobby/' + a.game.name);
 
-
+        }else {
+            fetch("/api/v1/players/add/" + a.playerSource.id, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${jwt}`,
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                }
+            });
+            navigate('../invitations');
+        }
+        
+    }
 
     const invitationList =
         invitationsReceived.map((a) => {
@@ -39,8 +76,9 @@ export default function InvitationList() {
                     <td className="text-center">{a.discriminator}</td>
                     <td className="text-center">{a.playerSource.user.username}</td>
                     <td className="text-center">
-                        <Button outline color="success" 
-                            >
+                        <Button outline color="success"
+                            onClick={() => aceptarInvitacion(a)
+                            }>
                             Aceptar
                         </Button>
                     </td>
@@ -68,7 +106,7 @@ export default function InvitationList() {
                 <tr key={a.id}>
                     <td className="text-center">{a.discriminator}</td>
                     <td className="text-center">{a.playerTarget.user.username}</td>
-                    <td className="text-center">{a.isAccepted===false ? "Pendiente" : "Aceptada"}</td>
+                    <td className="text-center">{a.isAccepted === false ? "Pendiente" : "Aceptada"}</td>
 
                     <td className="text-center">
                         <Button outline color="danger"

@@ -5,10 +5,11 @@ import {
 import getIdFromUrl from "./../util/getIdFromUrl";
 import tokenService from "../services/token.service";
 import useFetchState from "../util/useFetchState";
-import { Link } from "react-router-dom";
 import deleteFromList from "../util/deleteFromList";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import getErrorModal from "../util/getErrorModal";
+import { useNavigate } from 'react-router-dom';
 
 const jwt = tokenService.getLocalAccessToken();
 export default function GameLobby() {
@@ -21,6 +22,23 @@ export default function GameLobby() {
         `/api/v1/game/lobby/${name}`,
         jwt
     );
+
+    const navigate = useNavigate();
+
+    function startGame(name){
+        fetch(
+            "/api/v1/game/start/" + name, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        });
+
+        navigate('../game/lobby/' + name);
+    }
+
     const modal = getErrorModal(setVisible, visible, message);
     const playersList =
         players.map((a) => {
@@ -62,10 +80,14 @@ export default function GameLobby() {
                         </thead>
                         <tbody>{playersList}</tbody>
                     </Table>
-                    <Button outline color="success" >
+                    <Button outline color="success"
+                        onClick={() => startGame(name)} >
+                        Start Game
+                    </Button>
+                    <Button outline color="success">
                         <Link
-                            to={'/game/new'} className="btn sm"
-                            style={{ textDecoration: "none" }}>Start Game</Link>
+                        to={'/invitations/new/'} className="btn sm"
+                        style={{ textDecoration: "none" }}>Invite a friend</Link>
                     </Button>
                 </div>
             </div>
