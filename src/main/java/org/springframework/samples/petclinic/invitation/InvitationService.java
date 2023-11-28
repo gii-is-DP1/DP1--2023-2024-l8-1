@@ -22,6 +22,7 @@ public class InvitationService {
         return ir.findById(id).orElseThrow(()-> new ResourceNotFoundException("Invitation", "ID", id));
     }
 
+    // Obtener todas las invitaciones enviadas por el jugador con id = palyerId
     @Transactional(readOnly = true)
     public List<Invitation> findAllInvitationForPlayerTarget(int playerId){
         return ir.findInvitationsForPlayerTarget(playerId);
