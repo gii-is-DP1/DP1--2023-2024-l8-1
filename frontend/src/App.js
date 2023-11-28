@@ -49,6 +49,10 @@ import VetListClinicOwner from "./clinicOwner/vets/VetListClinicOwner";
 import VetEditClinicOwner from "./clinicOwner/vets/VetEditClinicOwner";
 import GameList from './game/gameList';
 import CreateGame from "./game/createGame";
+import CreateInvitation from "./invitation/createInvitation";
+import InvitationList from "./invitation/invitationList";
+import GameLobby from "./game/gameLobby";
+import PlayerDetails from "./player/playerDetails";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -141,16 +145,23 @@ function App() {
           <Route path="/vets/:id" exact={true} element={<PrivateRoute><VetEditClinicOwner /></PrivateRoute>} />
         </>)
     }
-    if(role === "PLAYER"){
+    if (role === "PLAYER") {
       playerRoutes = (
         <>
+          <Route path="/player" element={<PlayerDetails />} />
+          <Route path="/game/new" element={<CreateGame />} />
+          <Route path="/game/:gameId" element={<CreateGame />} />
+          <Route path="/game/" element={<GameList />} />
+          <Route path="/game/lobby/:gameId" element={<GameLobby />} />
+          <Route path="/invitations/new" element={<CreateInvitation />} />
+          <Route path="/invitations" element={<InvitationList />} />
         </>
       )
     }
   })
   if (!jwt) {
     publicRoutes = (
-      <>        
+      <>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
       </>
@@ -158,7 +169,7 @@ function App() {
   } else {
     userRoutes = (
       <>
-        {/* <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> */}        
+        {/* <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} /> */}
         <Route path="/logout" element={<Logout />} />
         <Route path="/login" element={<Login />} />
       </>
@@ -177,7 +188,9 @@ function App() {
           {userRoutes}
           {adminRoutes}
           {ownerRoutes}
+          {playerRoutes}
           {vetRoutes}
+          {playerRoutes}
         </Routes>
       </ErrorBoundary>
     </div>

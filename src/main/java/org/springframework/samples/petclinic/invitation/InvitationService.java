@@ -23,8 +23,20 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
-    public List<Invitation> findAllInvitationByPlayer(int playerId){
-        return ir.findInvitationsForPlayer(playerId);
+    public List<Invitation> findAllInvitationForPlayerTarget(int playerId){
+        return ir.findInvitationsForPlayerTarget(playerId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Invitation> findAllInvitationForPlayerSource(int playerId){
+        return ir.findInvitationsForPlayerSource(playerId);
+    }
+
+    @Transactional
+    public Invitation acceptInvitation(int id){
+        Invitation inv = findInvitationById(id);
+        inv.setIsAccepted(true);
+        return saveInvitation(inv);
     }
 
     @Transactional(readOnly = true)

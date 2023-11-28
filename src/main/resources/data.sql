@@ -129,14 +129,18 @@ INSERT INTO consultation_tickets(id,description,creation_date, user_id, consulta
 /*CONTRASEÑA DE PLAYER=0wn3r*/
 INSERT INTO authorities(id,authority) VALUES (5,'PLAYER');
 INSERT INTO appusers(id,username,password,authority) VALUES (24,'player1','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
-INSERT INTO player(id,num_cards,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (1,3,15,0,0,false,24,'Play','Yer');
+INSERT INTO appusers(id,username,password,authority) VALUES (25,'player2','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
+INSERT INTO appusers(id,username,password,authority) VALUES (26,'player3','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
+INSERT INTO player(id,num_cards,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (1,3,15,2,0,false,24,'Play','Yer');
+INSERT INTO player(id,num_cards,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (2,3,15,1,0,false,25,'Play','Yer');
+INSERT INTO player(id,num_cards,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (3,3,15,0,0,false,26,'Play','Yer');
 
 
-/*
+INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (1, 1, 'prueba', true, '2023-11-11 21:16', 'LOBBY');
+INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (2, 2, 'prueba2', true, '2023-11-11 21:16', 'LOBBY');
+INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (3, 3, 'prueba3', true, '2023-11-11 21:16', 'OVER');
+INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (4, 1, 'prueba4', false, '2023-11-11 21:16', 'LOBBY');
 
-INSERT INTO player(id, username, mail, start_player, score) VALUES (1, 'agudevbon', 'agudevbon@alum.us.es', 'true', 0);
-INSERT INTO player(id, username, mail, start_player, score) VALUES (2, 'guaridpin', 'guaridpin@alum.us.es', 0, 0);
+INSERT INTO games_players(game_id, players_id) VALUES (1,2), (1,3);
 
-INSERT INTO games(id, host, start_time, end_time, state, player_id) VALUES (1, 'agudevbon', '2023-10-10 11:46', null, 'LOBBY', null);
-
-*/
+INSERT INTO player_friends(friends_id, player_id) VALUES (2,1);

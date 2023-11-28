@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.samples.petclinic.owner.Owner;
+import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetService;
 import org.springframework.security.core.Authentication;
@@ -79,6 +80,12 @@ public class UserService {
 	@Transactional(readOnly = true)
 	public Owner findOwnerByUser(int id) {
 		return userRepository.findOwnerByUser(id).orElseThrow(() -> new ResourceNotFoundException("Owner", "ID", id));
+	}
+
+	@Transactional(readOnly = true)
+	public Player findPlayerByUser(int userId) {
+		return userRepository.findPlayerByUser(userId)
+				.orElseThrow(() -> new ResourceNotFoundException("Player", "id", userId));
 	}
 
 	@Transactional(readOnly = true)
