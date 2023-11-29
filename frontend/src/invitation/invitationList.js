@@ -55,7 +55,9 @@ export default function InvitationList() {
             });
             navigate('../game/lobby/' + a.game.name);
 
-        }else {
+        } 
+        
+        if (a.discriminator === "FRIENDSHIP") {
             fetch("/api/v1/players/add/" + a.playerSource.id, {
                 method: "PUT",
                 headers: {

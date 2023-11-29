@@ -92,7 +92,7 @@ public class GameService {
         Game toUpdate = findByName(name);
         Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
         List<Player> aux = toUpdate.getPlayers();
-        aux.add(userService.findPlayerByUser(userService.findCurrentUser().getId()));
+        aux.add(userService.findPlayerByUser(userService.findCurrentUser().getId())); // cambiarlo por me no?
         toUpdate.setPlayers(aux);
         me.setRol(PlayerRol.GUEST);
         playerService.updatePlayer(me, me.getId());

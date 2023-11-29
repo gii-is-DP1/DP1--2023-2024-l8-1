@@ -154,9 +154,8 @@ INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_targe
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (2, null, false, 4, 6, 'FRIENDSHIP');
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (3, null, false, 4, 1, 'FRIENDSHIP');
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (4, null, false, 4, 2, 'FRIENDSHIP');
-
+INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (7, null, false, 6, 1, 'FRIENDSHIP');
 /*Invitaciones para jugar una partida*/
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (5, 5, false, 5, 4, 'GAME');
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (6, 5, false, 5, 6, 'GAME');
 
-INSERT INTO players_friends(friends_id, player_id) VALUES (2,1);
