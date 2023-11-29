@@ -9,6 +9,8 @@ import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.model.Person;
 import org.springframework.samples.petclinic.user.User;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,6 +43,7 @@ public class Player extends Person {
     User user;
 
     @ManyToMany
+    @JsonIgnore
     @JoinTable(
         name = "players_friends",
         joinColumns = @JoinColumn(name = "player_id"),
