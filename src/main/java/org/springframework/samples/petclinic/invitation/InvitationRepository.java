@@ -9,6 +9,8 @@ import org.springframework.samples.petclinic.game.Game;
 
 public interface InvitationRepository extends CrudRepository<Invitation,Integer>{
 
+    public List<Invitation> findAll(); 
+
     @Query("SELECT i.discriminator FROM Invitation i WHERE i.id=?1")
     public InvitationType typeInvitation(int id);
 

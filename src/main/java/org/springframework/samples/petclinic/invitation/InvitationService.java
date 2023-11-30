@@ -3,9 +3,11 @@ package org.springframework.samples.petclinic.invitation;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 public class InvitationService {
@@ -18,11 +20,16 @@ public class InvitationService {
     }
 
     @Transactional(readOnly = true)
+    public List<Invitation> findAllInvitations() {
+        return ir.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public Invitation findInvitationById(int id){
         return ir.findById(id).orElseThrow(()-> new ResourceNotFoundException("Invitation", "ID", id));
     }
 
-    // Obtener todas las invitaciones enviadas por el jugador con id = palyerId
+    // Obtener todas las invitaciones enviadas al jugador con id = palyerId
     @Transactional(readOnly = true)
     public List<Invitation> findAllInvitationForPlayerTarget(int playerId){
         return ir.findInvitationsForPlayerTarget(playerId);
@@ -46,7 +53,7 @@ public class InvitationService {
     }
 
     @Transactional
-    public Invitation saveInvitation(Invitation invitation){
+    public Invitation saveInvitation(Invitation invitation) throws DataAccessException{
         ir.save(invitation);
         return invitation;
     }
