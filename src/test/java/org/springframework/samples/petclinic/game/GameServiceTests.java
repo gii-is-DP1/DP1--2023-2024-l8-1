@@ -200,9 +200,9 @@ public class GameServiceTests {
         List<Player> players = game.getPlayers();
         Integer playersSize = players.size();
 
-        gameService.joinPlayer("prueba");
+        gameService.joinPlayer("prueba2");
 
-        Game updatedGame = gameService.findByName("prueba");
+        Game updatedGame = gameService.findByName("prueba2");
         assertEquals(playersSize + 1, updatedGame.getPlayers().size());
 
     }
@@ -218,13 +218,13 @@ public class GameServiceTests {
     @Test
     void shouldRemovePlayerFromGame() {
 
-        Game game = gameService.findByName("prueba");
+        Game game = gameService.findByName("prueba2");
         List<Player> players = game.getPlayers();
         Integer playersSize = players.size();
 
-        gameService.kickPlayer("prueba", players.get(0).getId());
+        gameService.kickPlayer("prueba2", players.get(0).getId());
 
-        Game updatedGame = gameService.findByName("prueba");
+        Game updatedGame = gameService.findByName("prueba2");
         assertEquals(playersSize - 1, updatedGame.getPlayers().size());
 
     }
