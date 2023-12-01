@@ -22,7 +22,7 @@ public class PlayerService {
     }
 
     @Transactional(readOnly = true)
-    public Iterable<Player> findAll() {
+    public List<Player> findAll() {
         return pr.findAll();
     }
 

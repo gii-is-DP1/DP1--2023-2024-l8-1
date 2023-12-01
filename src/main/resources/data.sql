@@ -159,3 +159,4 @@ INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_targe
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (5, 5, false, 5, 4, 'GAME');
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (6, 5, false, 5, 6, 'GAME');
 
+INSERT INTO players_friends(friend_id, player_id) VALUES (1,2), (2,1), (1,3), (3,1), (1,6), (6,1);
