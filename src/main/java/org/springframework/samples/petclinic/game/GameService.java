@@ -1,12 +1,10 @@
 package org.springframework.samples.petclinic.game;
 
 import java.util.Optional;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.player.PlayerRol;
@@ -92,7 +90,7 @@ public class GameService {
         Game toUpdate = findByName(name);
         Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
         List<Player> aux = toUpdate.getPlayers();
-        aux.add(userService.findPlayerByUser(userService.findCurrentUser().getId()));
+        aux.add(userService.findPlayerByUser(userService.findCurrentUser().getId())); // cambiarlo por me no?
         toUpdate.setPlayers(aux);
         me.setRol(PlayerRol.GUEST);
         playerService.updatePlayer(me, me.getId());

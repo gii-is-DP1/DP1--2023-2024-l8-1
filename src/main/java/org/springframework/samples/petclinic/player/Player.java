@@ -9,27 +9,27 @@ import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.model.Person;
 import org.springframework.samples.petclinic.user.User;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
 @Getter
 @Setter
-@Table(name="player")
+@Table(name="players")
 public class Player extends Person {
 
     Boolean startPlayer;
@@ -42,7 +42,14 @@ public class Player extends Person {
     @OneToOne
     User user;
 
-    @OneToMany
+    @ManyToMany
+    @JsonIgnore
+    @JoinTable(
+        name = "players_friends",
+        joinColumns = @JoinColumn(name = "player_id"),
+        inverseJoinColumns = @JoinColumn(name = "friend_id"),
+        uniqueConstraints = @UniqueConstraint(columnNames = { "player_id", "friend_id" })
+    )
     List<Player> friends;
 
     private Integer numCards;

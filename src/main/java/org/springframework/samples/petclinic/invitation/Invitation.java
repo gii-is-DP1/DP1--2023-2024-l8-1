@@ -1,7 +1,7 @@
 package org.springframework.samples.petclinic.invitation;
 
-import java.util.List;
-
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.player.Player;
@@ -9,11 +9,8 @@ import org.springframework.samples.petclinic.player.Player;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Table(name = "invitations")
 public class Invitation extends BaseEntity{
 
     @NotNull
@@ -31,12 +29,15 @@ public class Invitation extends BaseEntity{
     InvitationType discriminator;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     Player playerTarget;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     Player playerSource;
 
-    @OneToOne
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     Game game;
 
 }

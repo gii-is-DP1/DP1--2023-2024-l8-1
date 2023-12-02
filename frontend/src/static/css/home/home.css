@@ -5,11 +5,12 @@
     right: 0;
     bottom: 0;
     z-index: -1;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../../images/home_background.jpg');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url('../../images/PocketImperium.jpg');
     background-size: cover;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: auto;
 }
 
 .hero-div{
@@ -21,6 +22,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    height: 100vh;
 }
 
 .hero-div h1{
@@ -33,4 +35,10 @@
 
 .hero-div h3{
     text-align: center;
+}
+
+.logo {
+    width: 100%; /* 100% del ancho del contenedor*/
+    max-width: 500px; /* Ajusta el valor según sea necesario para evitar que la imagen sea demasiado grande*/
+    height: auto; /* Mantiene la proporción original de la imagen*/
 }
