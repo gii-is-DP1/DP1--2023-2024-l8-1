@@ -16,6 +16,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Builder.Default;
 
 @Setter
 @Getter
@@ -24,18 +25,19 @@ import lombok.Setter;
 public class Sector extends BaseEntity{
 
     @NotNull
-    private Boolean choosen;
+    private Boolean choosen = false;
     
+    /*
     @NotEmpty
     @Min(0)
-    @Max(8)
-    private Integer position;
+    @Max(7)
+    private Integer position;*/
 
     @NotNull
-    private Boolean isTriPrime;
+    private Boolean isTriPrime = false;
 
     @OneToMany
-    @Size(min = 7, max = 7)
+    @Size(max = 7)
     // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Hex> hexs;    
 }

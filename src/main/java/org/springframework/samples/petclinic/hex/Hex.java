@@ -23,6 +23,6 @@ public class Hex extends BaseEntity{
     Integer value;
 
     @NotNull
-    Boolean occuped;
+    Boolean occuped = false;
     
 }
