@@ -47,12 +47,13 @@ import ConsultationListClinicOwner from "./clinicOwner/consultations/Consultatio
 import ConsultationEditClinicOwner from "./clinicOwner/consultations/ConsultationEditClinicOwner";
 import VetListClinicOwner from "./clinicOwner/vets/VetListClinicOwner";
 import VetEditClinicOwner from "./clinicOwner/vets/VetEditClinicOwner";
-import GameList from './game/gameList';
-import CreateGame from "./game/createGame";
+import GameList from './game/preGame/gameList';
+import CreateGame from "./game/preGame/createGame";
 import CreateInvitation from "./invitation/createInvitation";
 import InvitationList from "./invitation/invitationList";
-import GameLobby from "./game/gameLobby";
+import GameLobby from "./game/preGame/gameLobby";
 import PlayerDetails from "./player/playerDetails";
+import Game from "./game/startedGame/game";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -155,6 +156,7 @@ function App() {
           <Route path="/game/lobby/:gameId" element={<GameLobby />} />
           <Route path="/invitations/new" element={<CreateInvitation />} />
           <Route path="/invitations" element={<InvitationList />} />
+          <Route path="/juego" element={<Game />} />
         </>
       )
     }

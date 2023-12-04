@@ -2,13 +2,13 @@ import {
     Table, Button
 } from "reactstrap";
 
-import getIdFromUrl from "./../util/getIdFromUrl";
-import tokenService from "../services/token.service";
-import useFetchState from "../util/useFetchState";
-import deleteFromList from "../util/deleteFromList";
+import getIdFromUrl from "../../util/getIdFromUrl";
+import tokenService from "../../services/token.service";
+import useFetchState from "../../util/useFetchState";
+import deleteFromList from "../../util/deleteFromList";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import getErrorModal from "../util/getErrorModal";
+import getErrorModal from "../../util/getErrorModal";
 import { useNavigate } from 'react-router-dom';
 
 const jwt = tokenService.getLocalAccessToken();
