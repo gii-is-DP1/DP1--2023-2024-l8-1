@@ -10,30 +10,17 @@ import { useState } from "react";
 import getErrorModal from "../util/getErrorModal";
 
 const jwt = tokenService.getLocalAccessToken();
-export default function GameList() {
+
+export default function PlayerDetails() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [alerts, setAlerts] = useState([]);
-    const [player, setPlayer] = useFetchState(
-        [],
-        `/api/v1/player/details`,
-        jwt
-    );
+    const player = tokenService.getUser();
     const [friends, setFriends] = useFetchState(
         [],
-        `/api/v1/player/friends`,
+        `/api/v1/players/friends`,
         jwt
     );
-
-    const playerDetails = 
-        player.map((a) => {
-            return (
-            <tr key={a.id}>
-                    <td className="text-center">{a.user.username}</td>
-                    <td className="text-center">...</td>
-            </tr>
-            );
-        });
 
     const friendsList =
         friends.map((a) => {
@@ -71,10 +58,9 @@ export default function GameList() {
                         <thead>
                             <tr>
                                 <th className="text-center">Nombre</th>
-                                <th className="text-center">Estadísticas</th>
                             </tr>
                         </thead>
-                        <tbody>{playerDetails}</tbody>
+                        <tbody>{player.username}</tbody>
                     </Table>
 
                 </div>

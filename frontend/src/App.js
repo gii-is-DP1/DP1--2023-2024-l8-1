@@ -47,11 +47,11 @@ import ConsultationListClinicOwner from "./clinicOwner/consultations/Consultatio
 import ConsultationEditClinicOwner from "./clinicOwner/consultations/ConsultationEditClinicOwner";
 import VetListClinicOwner from "./clinicOwner/vets/VetListClinicOwner";
 import VetEditClinicOwner from "./clinicOwner/vets/VetEditClinicOwner";
-import GameList from './game/gameList';
-import CreateGame from "./game/createGame";
+import GameList from './game/preGame/gameList';
+import CreateGame from "./game/preGame/createGame";
 import CreateInvitation from "./invitation/createInvitation";
 import InvitationList from "./invitation/invitationList";
-import GameLobby from "./game/gameLobby";
+import GameLobby from "./game/preGame/gameLobby";
 import PlayerDetails from "./player/playerDetails";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
@@ -148,6 +148,7 @@ function App() {
     if (role === "PLAYER") {
       playerRoutes = (
         <>
+          <Route path="/" element={<GameList />} />
           <Route path="/player" element={<PlayerDetails />} />
           <Route path="/game/new" element={<CreateGame />} />
           <Route path="/game/:gameId" element={<CreateGame />} />
@@ -182,8 +183,6 @@ function App() {
         <AppNavbar />
         <Routes>
           <Route path="/" exact={true} element={<Home />} />
-          <Route path="/plans" element={<PlanList />} />
-          <Route path="/docs" element={<SwaggerDocs />} />
           {publicRoutes}
           {userRoutes}
           {adminRoutes}
