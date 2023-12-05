@@ -21,7 +21,6 @@ function AppNavbar() {
 
     let playerLinks = <></>;
     let adminLinks = <></>;
-    let ownerLinks = <></>;
     let userLinks = <></>;
     let userLogout = <></>;
     let publicLinks = <></>;
