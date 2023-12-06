@@ -153,7 +153,7 @@ function App() {
           <Route path="/game/lobby/:gameName" element={<GameLobby />} />
           <Route path="/invitations/new" element={<CreateInvitation />} />
           <Route path="/invitations" element={<InvitationList />} />
-          <Route path="game/play/:gameName" element={<PlayGame />} />
+          <Route path="/game/play/:gameName" element={<PlayGame />} />
         </>
       )
     }

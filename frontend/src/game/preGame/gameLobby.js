@@ -25,7 +25,7 @@ export default function GameLobby() {
 
     const navigate = useNavigate();
 
-    function startGame(name){
+    function startGame(name) {
         fetch(
             "/api/v1/game/start/" + name, {
             method: "PUT",
@@ -36,7 +36,7 @@ export default function GameLobby() {
             },
         });
 
-        navigate('../game/startedGame/play/' + name);
+        navigate('../game/play/' + name);
     }
 
     const modal = getErrorModal(setVisible, visible, message);
@@ -80,14 +80,16 @@ export default function GameLobby() {
                         </thead>
                         <tbody>{playersList}</tbody>
                     </Table>
-                    <Button outline color="success"
-                        onClick={() => startGame(name)} >
-                        Start Game
+                    <Button outline color="success">
+                        <Link
+                            to={"/game/lobby/prueba"} className="btn sm"
+                            style={{ textDecoration: "none" }}>start</Link>
+
                     </Button>
                     <Button outline color="success">
                         <Link
-                        to={'/invitations/new/'} className="btn sm"
-                        style={{ textDecoration: "none" }}>Invite a friend</Link>
+                            to={'/invitations/new/'} className="btn sm"
+                            style={{ textDecoration: "none" }}>Invite a friend</Link>
                     </Button>
                 </div>
             </div>

@@ -8,38 +8,68 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SectorService {
-    
+
     private SectorRepository sectorRepository;
     private HexService hexService;
     private Random random = new Random();
 
     @Autowired
-    public SectorService(SectorRepository ssectorRepositoryr, HexService hexService){
-        this.sectorRepository=sectorRepository;
-        this.hexService=hexService;
+    public SectorService(SectorRepository sectorRepository, HexService hexService) {
+        this.sectorRepository = sectorRepository;
+        this.hexService = hexService;
     }
-    
 
-    public Sector genTriPrime(){
+    @Transactional
+    public Sector genTriPrime() {
         Sector newSector = new Sector();
         List<Hex> aux = new ArrayList<>();
         newSector.setIsTriPrime(true);
+        newSector.setPosition(6);
         aux.add(hexService.genTriHex());
         newSector.setHexs(aux);
         return sectorRepository.save(newSector);
-    } 
+    }
 
+    @Transactional
     public Sector genRandom() {
         Sector newSector = new Sector();
         List<Hex> aux = new ArrayList<>();
-        for(int i = 0; i < 7; i++){
-            aux.add(hexService.genRandomHex());
+        Boolean standard = false;
+
+        while (!standard) {
+            Integer onePointers = 0;
+            Integer twoPointers = 0;
+            for (int i = 0; i < 7; i++) {
+                Hex hex = hexService.genRandomHex();
+                if (hex.getPuntos() == 1)
+                    onePointers++;
+                if (hex.getPuntos() == 2)
+                    twoPointers++;
+                aux.add(hex);
+            }
+            if (onePointers == 2 && twoPointers == 1) {
+                hexService.saveList(aux);
+                standard = true;
+            } else {
+                aux.clear();
+            }
         }
+
         newSector.setHexs(aux);
         return sectorRepository.save(newSector);
+    }
+
+    @Transactional
+    public List<Hex> randomHexs() {
+        List<Hex> aux = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            aux.add(hexService.genRandomHex());
+        }
+        return aux;
     }
 
 }

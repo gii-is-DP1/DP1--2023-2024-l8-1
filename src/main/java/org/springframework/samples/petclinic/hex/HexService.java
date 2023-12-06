@@ -1,9 +1,11 @@
 package org.springframework.samples.petclinic.hex;
 
+import java.util.List;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class HexService {
@@ -16,16 +18,31 @@ public class HexService {
         this.hr=hr;
     }
 
+    @Transactional
     public Hex genTriHex(){
         Hex newHex = new Hex();
-        newHex.setValue(3);
+        newHex.setPuntos(3);
+        newHex.setPosition(42);
         return hr.save(newHex);
     }
 
+    @Transactional
     public Hex genRandomHex(){
         Hex newHex = new Hex();
-        newHex.setValue(random.nextInt(3));
-        return hr.save(newHex);
+        newHex.setPuntos(random.nextInt(3));
+        return newHex;
+    }
+
+    @Transactional
+    public void saveList(List<Hex> lista){
+        for (Hex h : lista) { 
+            hr.save(h);
+        }
+    }
+
+    @Transactional
+    public Hex save(Hex hex){
+        return hr.save(hex);
     }
 
 }

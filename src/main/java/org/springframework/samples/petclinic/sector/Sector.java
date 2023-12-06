@@ -27,11 +27,10 @@ public class Sector extends BaseEntity{
     @NotNull
     private Boolean choosen = false;
     
-    /*
-    @NotEmpty
+    
     @Min(0)
     @Max(7)
-    private Integer position;*/
+    private Integer position;
 
     @NotNull
     private Boolean isTriPrime = false;
