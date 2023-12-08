@@ -58,11 +58,15 @@ export default function CreateGame() {
     }
 
     function handleChange(event) {
-        const { name, type, checked} = event.target;
-        const newValue = type ==='checkbox' ? checked : event.target.value;
-        setGame({...game, [name] : newValue});
-        console.log("Game state:", game);
+        const { name, type, checked } = event.target;
+        const newValue = type === 'checkbox' ? checked : event.target.value;
+    
+        setGame(prevGame => {
+            const updatedGame = { ...prevGame, [name]: newValue };
+            return updatedGame;
+        });
     }
+    
     /*
     function handleChange(event) {
         const target = event.target;
@@ -98,13 +102,10 @@ export default function CreateGame() {
                         </Label>
                         <Input
                             type="checkbox"
-                            
                             name="publica"
                             id="publica"
-                            onChange={handleChange}
-                            className="custom-input"
-                            key="publicaCheckbox"
-                            checked={game.publica}>
+                            checked={game.publica}
+                            onChange={handleChange}>
                         </Input>
                     </div>
                     <div className="custom-button-row">
