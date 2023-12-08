@@ -33,7 +33,7 @@ export default function PlayerDetails() {
                         <Button outline color="danger"
                             onClick={() =>
                                 deleteFromList(
-                                    `/api/v1/game/${a.id}`,
+                                    `/api/v1/players/delete/${a.id}`,
                                     a.id,
                                     [friends, setFriends],
                                     [alerts, setAlerts],

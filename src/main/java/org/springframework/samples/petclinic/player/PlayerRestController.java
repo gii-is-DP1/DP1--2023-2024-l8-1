@@ -81,6 +81,13 @@ public class PlayerRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<MessageResponse> deleteFriend(@PathVariable("id") int id){
+        ps.deleteFriend(id);
+        return new ResponseEntity<>(new MessageResponse("Friend deleted"),HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<MessageResponse> deletePlayer(@PathVariable("id") int id){

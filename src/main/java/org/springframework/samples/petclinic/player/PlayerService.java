@@ -86,6 +86,21 @@ public class PlayerService {
     }
 
     @Transactional
+    public void deleteFriend(int id) {
+
+        Player me = us.findPlayerByUser(us.findCurrentUser().getId());
+        Player source = findPlayerById(id);
+
+        List<Player> myFriends = me.getFriends();
+        myFriends.remove(source);
+        me.setFriends(myFriends);
+        
+        List<Player> sourceFriends = source.getFriends();
+        sourceFriends.remove(me);
+        source.setFriends(sourceFriends);
+    }
+
+    @Transactional
     public Player updatePlayer(Player p, int id) {
         Player toUpdate = findPlayerById(id);
         BeanUtils.copyProperties(p, toUpdate, "id", "user");
