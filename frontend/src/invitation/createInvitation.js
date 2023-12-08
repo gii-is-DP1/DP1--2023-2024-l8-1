@@ -160,7 +160,7 @@ export default function Createinvitation() {
                     <div className="custom-button-row">
                         <button className="auth-button">Save</button>
                         <Link
-                            to={`/invitation`}
+                            to={`/invitations`}
                             className="auth-button"
                             style={{ textDecoration: "none" }}
                         >

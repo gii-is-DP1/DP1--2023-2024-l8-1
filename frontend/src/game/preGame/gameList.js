@@ -2,12 +2,12 @@ import {
     Table, Button
 } from "reactstrap";
 
-import tokenService from "../services/token.service";
-import useFetchState from "../util/useFetchState";
+import tokenService from "../../services/token.service";
+import useFetchState from "../../util/useFetchState";
 import { Link } from "react-router-dom";
-import deleteFromList from "../util/deleteFromList";
+import deleteFromList from "../../util/deleteFromList";
 import { useState } from "react";
-import getErrorModal from "../util/getErrorModal";
+import getErrorModal from "../../util/getErrorModal";
 
 const imgnotfound = "https://cf.geekdo-images.com/K34Z34C_Vltb6iZz4DDH3g__opengraph/img/flVso2n16F7OKvS_RkiVfeEckTU=/0x0:1463x768/fit-in/1200x630/filters:strip_icc()/pic2644229.jpg";
 const jwt = tokenService.getLocalAccessToken();
