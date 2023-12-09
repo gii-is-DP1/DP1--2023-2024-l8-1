@@ -35,8 +35,9 @@ export default function GameLobby() {
                 "Content-Type": "application/json",
             },
         });
-
+      
         navigate('../game/play/' + name);
+
     }
 
     const modal = getErrorModal(setVisible, visible, message);
@@ -80,6 +81,7 @@ export default function GameLobby() {
                         </thead>
                         <tbody>{playersList}</tbody>
                     </Table>
+
                     <Button outline color="success">
                         <Link
                             to={"/game/lobby/prueba"} className="btn sm"
@@ -90,6 +92,7 @@ export default function GameLobby() {
                         <Link
                             to={'/invitations/new/'} className="btn sm"
                             style={{ textDecoration: "none" }}>Invite a friend</Link>
+
                     </Button>
                 </div>
             </div>

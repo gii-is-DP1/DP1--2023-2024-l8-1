@@ -6,7 +6,7 @@ import tokenService from "../services/token.service";
 import useFetchState from "../util/useFetchState";
 import { Link } from "react-router-dom";
 import deleteFromList from "../util/deleteFromList";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import getErrorModal from "../util/getErrorModal";
 import { useNavigate } from 'react-router-dom';
 
@@ -17,22 +17,32 @@ export default function InvitationList() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [alerts, setAlerts] = useState([]);
+    const [forceUpdate, setForceUpdate] = useState(false);
+
     const [invitationsReceived, setInvitationsReceived] = useFetchState(
         [],
         `/api/v1/invitations/received`,
-        jwt
+        jwt,
+        forceUpdate
     );
 
     const [invitationsSent, setInvitationsSent] = useFetchState(
         [],
         `/api/v1/invitations/sent`,
-        jwt
+        jwt,
+        forceUpdate
     );
+
+
+    useEffect(() => {
+        // Limpia el estado forceUpdate después de la actualización
+        setForceUpdate(false);
+    }, [invitationsReceived, invitationsSent]);
+
 
     const navigate = useNavigate();
 
     function aceptarInvitacion(a) {
-
         fetch(
             `/api/v1/invitations/accept/${a.id}`, {
             method: "PUT",
@@ -43,8 +53,9 @@ export default function InvitationList() {
             },
             body: JSON.stringify(a)
         });
-        
-        if (a.discriminator === "GAME"){
+
+        if (a.discriminator === "GAME") {
+
             fetch("/api/v1/game/join/" + a.game.name, {
                 method: "PUT",
                 headers: {
@@ -53,10 +64,21 @@ export default function InvitationList() {
                     "Content-Type": "application/json",
                 }
             });
+            fetch(
+                `/api/v1/invitations/${a.id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${jwt}`,
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(a)
+            });
+            alert("Invitación aceptada corrrectamente");
             navigate('../game/lobby/' + a.game.name);
 
-        } 
-        
+        }
+
         if (a.discriminator === "FRIENDSHIP") {
             fetch("/api/v1/players/add/" + a.playerSource.id, {
                 method: "PUT",
@@ -66,9 +88,20 @@ export default function InvitationList() {
                     "Content-Type": "application/json",
                 }
             });
-            navigate('../invitations');
+            fetch(
+                `/api/v1/invitations/${a.id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${jwt}`,
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(a)
+            })
+            .then(() => setForceUpdate(prevState => !prevState))
+            .then(() => alert("Invitación aceptada correctamente"))
+            .catch(error => alert(error))
         }
-        
     }
 
     const invitationList =

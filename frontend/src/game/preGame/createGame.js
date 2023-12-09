@@ -58,6 +58,7 @@ export default function CreateGame() {
     }
 
     function handleChange(event) {
+
         const { name, type, checked} = event.target;
         const newValue = type ==='checkbox' ? checked : event.target.value;
         setGame({...game, [name] : newValue});
