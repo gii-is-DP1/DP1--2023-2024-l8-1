@@ -2,9 +2,9 @@ import { useState } from "react";
 import tokenService from "../../services/token.service";
 import { Link } from "react-router-dom";
 import { Form, Input, Label } from "reactstrap";
-import getErrorModal from "./../../util/getErrorModal";
-import getIdFromUrl from "./../../util/getIdFromUrl";
-import useFetchState from "./../../util/useFetchState";
+import getErrorModal from "../../util/getErrorModal";
+import getIdFromUrl from "../../util/getIdFromUrl";
+import useFetchState from "../../util/useFetchState";
 
 const jwt = tokenService.getLocalAccessToken();
 
@@ -58,15 +58,12 @@ export default function CreateGame() {
     }
 
     function handleChange(event) {
-        const { name, type, checked } = event.target;
-        const newValue = type === 'checkbox' ? checked : event.target.value;
-    
-        setGame(prevGame => {
-            const updatedGame = { ...prevGame, [name]: newValue };
-            return updatedGame;
-        });
+
+        const { name, type, checked} = event.target;
+        const newValue = type ==='checkbox' ? checked : event.target.value;
+        setGame({...game, [name] : newValue});
+        console.log("Game state:", game);
     }
-    
     /*
     function handleChange(event) {
         const target = event.target;
@@ -102,10 +99,13 @@ export default function CreateGame() {
                         </Label>
                         <Input
                             type="checkbox"
+                            
                             name="publica"
                             id="publica"
-                            checked={game.publica}
-                            onChange={handleChange}>
+                            onChange={handleChange}
+                            className="custom-input"
+                            key="publicaCheckbox"
+                            checked={game.publica}>
                         </Input>
                     </div>
                     <div className="custom-button-row">

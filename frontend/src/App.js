@@ -33,6 +33,7 @@ import CreateGame from "./game/preGame/createGame";
 import CreateInvitation from "./invitation/createInvitation";
 import InvitationList from "./invitation/invitationList";
 import GameLobby from "./game/preGame/gameLobby";
+import PlayGame from "./game/startedGame/playGame"
 import PlayerDetails from "./player/playerDetails";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
@@ -86,17 +87,19 @@ function App() {
           <Route path="/consultations/:consultationId/tickets" exact={true} element={<PrivateRoute><TicketListAdmin /></PrivateRoute>} />
         </>)
     }
+
     if (role === "PLAYER") {
       playerRoutes = (
         <>
           <Route path="/" element={<GameList />} />
           <Route path="/player" element={<PlayerDetails />} />
           <Route path="/game/new" element={<CreateGame />} />
-          <Route path="/game/:gameId" element={<CreateGame />} />
+          <Route path="/game/:gameName" element={<CreateGame />} />
           <Route path="/game/" element={<GameList />} />
-          <Route path="/game/lobby/:gameId" element={<GameLobby />} />
+          <Route path="/game/lobby/:gameName" element={<GameLobby />} />
           <Route path="/invitations/new" element={<CreateInvitation />} />
           <Route path="/invitations" element={<InvitationList />} />
+          <Route path="/game/play/:gameName" element={<PlayGame />} />
         </>
       )
     }
