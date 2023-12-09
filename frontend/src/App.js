@@ -53,6 +53,7 @@ import CreateInvitation from "./invitation/createInvitation";
 import InvitationList from "./invitation/invitationList";
 import GameLobby from "./game/gameLobby";
 import PlayerDetails from "./player/playerDetails";
+import Cards from "./game/card";
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -155,6 +156,7 @@ function App() {
           <Route path="/game/lobby/:gameId" element={<GameLobby />} />
           <Route path="/invitations/new" element={<CreateInvitation />} />
           <Route path="/invitations" element={<InvitationList />} />
+          <Route path="/card" element={<Cards />} />
         </>
       )
     }

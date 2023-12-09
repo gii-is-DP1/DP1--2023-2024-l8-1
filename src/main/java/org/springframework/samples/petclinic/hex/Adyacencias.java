@@ -3,7 +3,7 @@ package org.springframework.samples.petclinic.hex;
 import java.util.List;
 
 public class Adyacencias {
-
+/*
     public void listAdyacencias(List<Hex> lHexs){
         for(Hex h: lHexs){
             List<Hex> aux = new ArrayList<>();
@@ -388,5 +388,5 @@ public class Adyacencias {
             h.save();
     }
     }
-    
+*/
 }
