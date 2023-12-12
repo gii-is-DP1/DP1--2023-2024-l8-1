@@ -44,6 +44,7 @@ public class Game extends BaseEntity {
     @NotNull
     @NotBlank
     @Size(min = 5, max = 15)
+    @Column(unique = true)
     private String name;
 
     @NotNull
