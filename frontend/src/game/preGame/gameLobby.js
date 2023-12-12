@@ -84,7 +84,8 @@ export default function GameLobby() {
 
                     <Button outline color="success">
                         <Link
-                            to={"/game/lobby/prueba"} className="btn sm"
+                            to={`/game/play/${name}`} className="btn sm"
+                            onClick={() => startGame(name)}
                             style={{ textDecoration: "none" }}>start</Link>
 
                     </Button>
