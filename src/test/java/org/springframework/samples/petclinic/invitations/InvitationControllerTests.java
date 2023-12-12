@@ -92,33 +92,11 @@ public class InvitationControllerTests {
         playerAuth.setId(1);
         playerAuth.setAuthority("PLAYER");
 
-        /*
-         * player1User = new User();
-         * player1User.setId(TEST_PLAYER_1_USER_ID);
-         * player1User.setUsername("player1Test");
-         * player1User.setPassword("player1Test");
-         * player1User.setAuthority(playerAuth);
-         */
-
         player2User = new User();
         player2User.setId(TEST_PLAYER_2_USER_ID);
         player2User.setUsername("player2Test");
         player2User.setPassword("player2Test");
         player2User.setAuthority(playerAuth);
-
-        /*
-         * player1 = new Player();
-         * player1.setId(TEST_PLAYER1_ID);
-         * player1.setFirstName("Jugador Uno");
-         * player1.setLastName("Jugador Uno");
-         * player1.setNumCards(3);
-         * player1.setNumShips(15);
-         * player1.setScore(0);
-         * player1.setRol(PlayerRol.HOST);
-         * player1.setStartPlayer(false);
-         * player1.setFriends(null);
-         * player1.setUser(player1User);
-         */
 
         player2 = new Player();
         player2.setId(TEST_PLAYER2_ID);
@@ -131,16 +109,6 @@ public class InvitationControllerTests {
         player2.setStartPlayer(false);
         player2.setFriends(null);
         player2.setUser(player2User);
-
-        /*
-         * invitation = new Invitation();
-         * invitation.setId(TEST_INVITATION_ID);
-         * invitation.setGame(null);
-         * invitation.setDiscriminator(InvitationType.FRIENDSHIP);
-         * invitation.setIsAccepted(false);
-         * invitation.setPlayerSource(player1);
-         * invitation.setPlayerTarget(player2);
-         */
 
         // Comportamiento esperado del userService
         when(this.userService.findCurrentUser()).thenReturn(getUserFromDetails(
@@ -297,54 +265,5 @@ public class InvitationControllerTests {
         // Comprobamos que no se ha intentado grabar la invitación en la BD
         verify(invitationService, never()).saveInvitation(any(Invitation.class));
     }
-/*
- *     // H4+E1: Aceptar solicitud de amistad de manubrioh03
-    @Test
-    @WithMockUser(username = "player1", authorities = "PLAYER")
-    public void acceptFriendshipRequestShouldAddUserToFriendsList() throws Exception {
-        // Simular la solicitud de amistad entrante
-        Invitation friendshipRequest = createFriendshipRequest("manubrioh03");
-
-        // Configurar el comportamiento esperado del servicio de invitación
-        when(invitationService.findInvitationById(friendshipRequest.getId())).thenReturn(friendshipRequest);
-        when(playerService.findPlayerByUser(logged.getId())).thenReturn(createPlayer("jugador1"));
-        when(playerService.findPlayerByUserName("manubrioh03")).thenReturn(createPlayer("manubrioh03"));
-
-        // Realizar una solicitud HTTP simulada para aceptar la solicitud de amistad
-        mockMvc.perform(post(ACCEPT_INVITATION_URL, friendshipRequest.getId())
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        // Verificar que la solicitud de amistad ha sido aceptada y el usuario se ha
-        // agregado a la lista de amigos
-        verify(invitationService, times(1)).acceptFriendshipInvitation(friendshipRequest.getId());
-        verify(playerService, times(1)).addFriend(any(Player.class), any(Player.class));
-    }
-
-    // H4-E1: Rechazar solicitud de amistad de manubrioh03
-    @Test
-    @WithMockUser(username = "jugador1", authorities = "PLAYER")
-    public void rejectFriendshipRequestShouldNotAddUserToFriendsList() throws Exception {
-        // Simular la solicitud de amistad entrante
-        Invitation friendshipRequest = createFriendshipRequest("manubrioh03");
-
-        // Configurar el comportamiento esperado del servicio de invitación
-        when(invitationService.findInvitationById(friendshipRequest.getId())).thenReturn(friendshipRequest);
-        when(playerService.findPlayerByUser(logged.getId())).thenReturn(createPlayer("jugador1"));
-        when(playerService.findPlayerByUserName("manubrioh03")).thenReturn(createPlayer("manubrioh03"));
-
-        // Realizar una solicitud HTTP simulada para rechazar la solicitud de amistad
-        mockMvc.perform(post(REJECT_INVITATION_URL, friendshipRequest.getId())
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        // Verificar que la solicitud de amistad ha sido rechazada y el usuario no se ha
-        // agregado a la lista de amigos
-        verify(invitationService, times(1)).rejectFriendshipInvitation(friendshipRequest.getId());
-        verify(playerService, never()).addFriend(any(Player.class), any(Player.class));
-    }
- */
 
 }

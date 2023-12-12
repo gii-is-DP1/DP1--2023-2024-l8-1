@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -251,6 +252,24 @@ public class GameControllerTests {
                 .andExpect(status().isBadRequest());
         // Comprobamos que no se ha grabado el juego en la BD:
         verify(gameService, never()).saveGame(any(Game.class));
+    }
+
+    @Test
+    @WithMockUser(username = "player1", authorities = "PLAYER")
+    public void shouldUpdateGame() throws JsonProcessingException, Exception {
+
+        game1.setName("UpdatedName");
+        reset(gameService);
+        when(gameService.updateGame(any(Game.class), game1.getId())).thenReturn(game1);
+
+        mvc.perform(put(BASE_URL + "/" + game1.getId().toString())
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(game1)))
+                .andExpect(status().isOk());
+        // Comprobamos que se ha intentado grabar el juego en la bd:
+        verify(gameService, times(1)).saveGame(any(Game.class));
+
     }
 
 }
