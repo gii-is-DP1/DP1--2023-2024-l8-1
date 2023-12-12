@@ -47,3 +47,27 @@ body {
 .tri-prime-container {
   margin: 0 20px; /* Ajusta el margen según tus necesidades */
 }
+
+/* Cartas */
+.cardStyles {
+  margin: '60%';
+  border: '1px solid #ccc';
+  border-radius: '4px';
+  padding: '10px';
+}
+
+.buttonStyles {
+  padding: '8px 16px';
+  margin: '4px';
+  font-size: '14px';
+  cursor: 'pointer';
+}
+
+.cardsContainerStyle {
+  display: 'flex';
+  flex-direction: 'row';
+  justify-content: 'space-around';
+  align-items: 'center';
+  flex-wrap: 'wrap';
+  margin-top: '20px';
+}

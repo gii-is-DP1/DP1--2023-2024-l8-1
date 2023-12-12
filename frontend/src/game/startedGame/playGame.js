@@ -3,6 +3,9 @@ import useFetchState from "../../util/useFetchState";
 import tokenService from "../../services/token.service";
 import { useState } from "react";
 import "./tablero.css"
+import expand from "../../static/images/Expand.jpg"
+import explore from "../../static/images/Explore.jpg"
+import exterminate from "../../static/images/Exterminate.jpg"
 
 const jwt = tokenService.getLocalAccessToken();
 
@@ -101,6 +104,40 @@ export default function PlayGame() {
 
     }
 
+    const MediaCard = ({ title, imageUrl, onUse }) => {
+        const mediaStyles = {
+            height: '10px',
+            backgroundImage: `url("${imageUrl}")`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          };
+        return (
+            <div className="cardStyles">
+              <div style={mediaStyles} title={title} />
+              <div>
+                <h2 style={{ marginBottom: '8px' }}>{title}</h2>
+              </div>
+              <div>
+                <button className="buttonStyles" onClick={onUse}>
+                  Usar
+                </button>
+              </div>
+            </div>
+          )
+        }
+
+        const handleExpand = () => {
+            console.log('Usar expansión');
+        }
+          
+        const handleExplore = () => {
+            console.log('Usar explorar');
+        }
+          
+        const handleExterminate = () => {
+            console.log('Usar exterminar');
+        }
+
     return (
         <div className="game">
             <div className="center-container">
@@ -130,6 +167,12 @@ export default function PlayGame() {
                     <Sector position={6} hexes={hexList.slice(14, 21)} handleClick={handleClick} />
                 </div>
             </div>
+            <div className="cardsContainerStyle">
+                <MediaCard title={"Expand"} imageUrl={expand} onUse={handleExpand}/>
+                <MediaCard title={"Explore"} imageUrl={explore} onUse={handleExplore}/>
+                <MediaCard title={"Exterminate"} imageUrl={exterminate} onUse={handleExterminate}/>
+            </div>
         </div>
+        
     );
 }
