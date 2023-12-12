@@ -1,6 +1,5 @@
 package org.springframework.samples.petclinic.game;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -10,14 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
-import org.springframework.samples.petclinic.pet.Pet;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
-import org.springframework.samples.petclinic.util.RestPreconditions;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,11 +22,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
@@ -124,8 +117,7 @@ public class GameRestController {
     }
 
     @DeleteMapping("/lobby/{name}/{id}")
-    public ResponseEntity<Game> kickPlayer(@PathVariable("name") String name,
-            @PathVariable("id") int id) {
+    public ResponseEntity<Game> kickPlayer(@PathVariable("name") String name, @PathVariable("id") int id) {
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
         if (aux.getRol() != PlayerRol.HOST){
             throw new AccessDeniedException("No puedes echar a un jugador si no eres el host de la partida");

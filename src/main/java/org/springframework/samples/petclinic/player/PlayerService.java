@@ -16,80 +16,101 @@ public class PlayerService {
     private UserService us;
 
     @Autowired
-    public PlayerService(PlayerRepository pr, UserService us){
-        this.pr=pr;
-        this.us=us;
+    public PlayerService(PlayerRepository pr, UserService us) {
+        this.pr = pr;
+        this.us = us;
     }
 
     @Transactional(readOnly = true)
-    public Iterable<Player> findAll(){
+    public List<Player> findAll() {
         return pr.findAll();
     }
 
     @Transactional(readOnly = true)
-    public List<Player> getFriends(){
+    public List<Player> getFriends() {
         return pr.findFriends((us.findPlayerByUser(us.findCurrentUser().getId())).getId());
     }
 
     @Transactional(readOnly = true)
-    public Player findPlayerById(int id){
-        return pr.findById(id).orElseThrow(()-> new ResourceNotFoundException("Player", "ID", id));
+    public Player findPlayerById(int id) {
+        return pr.findById(id).orElseThrow(() -> new ResourceNotFoundException("Player", "ID", id));
     }
 
     @Transactional(readOnly = true)
-    public Player findPlayerByUser(int userId){
-        Optional<Player> p=pr.findPlayerByUser(userId);
-        return p.isEmpty()?null:p.get();
+    public Player findPlayerByUser(int userId) {
+        Optional<Player> p = pr.findPlayerByUser(userId);
+        return p.isEmpty() ? null : p.get();
     }
 
     @Transactional(readOnly = true)
-    public PlayerRol findPlayerRol(int playerId){
+    public PlayerRol findPlayerRol(int playerId) {
         return pr.findPlayerRol(playerId);
     }
 
     @Transactional(readOnly = true)
-    public Boolean findStartPlayer(int playerId){
+    public Boolean findStartPlayer(int playerId) {
         return pr.findStartPlayer(playerId);
     }
 
     @Transactional(readOnly = true)
-    public Integer findScore(int playerId){
+    public Integer findScore(int playerId) {
         return pr.findScore(playerId);
     }
 
     @Transactional
-    public Player savePlayer(Player p){
+    public Player savePlayer(Player p) {
         pr.save(p);
         return p;
     }
 
     @Transactional
-    public Player addFriend(int id){
+    public void addFriend(int id) {
+
         Player me = us.findPlayerByUser(us.findCurrentUser().getId());
         Player source = findPlayerById(id);
 
-        List<Player> sourceFriends = source.getFriends();
-        sourceFriends.add(me);
-        source.setFriends(sourceFriends);
-        savePlayer(source);
+        if (!me.getFriends().contains(source) && !source.getFriends().contains(me)) {
+            List<Player> myFriends = me.getFriends();
+            myFriends.add(source);
+            me.setFriends(myFriends);
+
+            List<Player> sourceFriends = source.getFriends();
+            sourceFriends.add(me);
+            source.setFriends(sourceFriends);
+            savePlayer(source);
+        } else {
+            String errorMessage = "Error al agregar un nuevo amigo. Ya son amigos.";
+            System.out.println(errorMessage);
+        }
+
+    }
+
+    @Transactional
+    public void deleteFriend(int id) {
+
+        Player me = us.findPlayerByUser(us.findCurrentUser().getId());
+        Player source = findPlayerById(id);
 
         List<Player> myFriends = me.getFriends();
-        myFriends.add(source);
+        myFriends.remove(source);
         me.setFriends(myFriends);
-        return savePlayer(me);
+        
+        List<Player> sourceFriends = source.getFriends();
+        sourceFriends.remove(me);
+        source.setFriends(sourceFriends);
     }
-    
+
     @Transactional
-    public Player updatePlayer(Player p,int id){
-        Player toUpdate=findPlayerById(id);
-        BeanUtils.copyProperties(p,toUpdate,"id","user");
+    public Player updatePlayer(Player p, int id) {
+        Player toUpdate = findPlayerById(id);
+        BeanUtils.copyProperties(p, toUpdate, "id", "user");
         return savePlayer(toUpdate);
     }
 
     @Transactional
-    public void deletePlayer(int id){
-        Player toDelete=findPlayerById(id);
+    public void deletePlayer(int id) {
+        Player toDelete = findPlayerById(id);
         pr.delete(toDelete);
     }
-    
+
 }

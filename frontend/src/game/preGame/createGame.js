@@ -1,10 +1,10 @@
 import { useState } from "react";
-import tokenService from "../services/token.service";
+import tokenService from "../../services/token.service";
 import { Link } from "react-router-dom";
 import { Form, Input, Label } from "reactstrap";
-import getErrorModal from "./../util/getErrorModal";
-import getIdFromUrl from "./../util/getIdFromUrl";
-import useFetchState from "./../util/useFetchState";
+import getErrorModal from "../../util/getErrorModal";
+import getIdFromUrl from "../../util/getIdFromUrl";
+import useFetchState from "../../util/useFetchState";
 
 const jwt = tokenService.getLocalAccessToken();
 
@@ -58,18 +58,15 @@ export default function CreateGame() {
     }
 
     function handleChange(event) {
-        const { name, type, checked} = event.target;
-        const newValue = type ==='checkbox' ? checked : event.target.value;
-        setGame({...game, [name] : newValue});
-        console.log("Game state:", game);
+        const { name, type, checked } = event.target;
+        const newValue = type === 'checkbox' ? checked : event.target.value;
+
+        setGame(prevGame => {
+            const updatedGame = { ...prevGame, [name]: newValue };
+            return updatedGame;
+        });
     }
-    /*
-    function handleChange(event) {
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-        setGame({ ...game, [name]: value });
-    }*/
+
     return (
         <div className="auth-page-container">
             <h2 className="text-center">
@@ -98,19 +95,17 @@ export default function CreateGame() {
                         </Label>
                         <Input
                             type="checkbox"
-                            
+
                             name="publica"
                             id="publica"
-                            onChange={handleChange}
-                            className="custom-input"
-                            key="publicaCheckbox"
-                            checked={game.publica}>
+                            checked={game.publica}
+                            onChange={handleChange}>
                         </Input>
                     </div>
                     <div className="custom-button-row">
                         <button className="auth-button">Save</button>
                         <Link
-                            to={`/game`}
+                            to={"/game"}
                             className="auth-button"
                             style={{ textDecoration: "none" }}
                         >

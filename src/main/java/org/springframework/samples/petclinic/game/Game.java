@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
@@ -43,6 +44,7 @@ public class Game extends BaseEntity {
     @NotNull
     @NotBlank
     @Size(min = 5, max = 15)
+    @Column(unique = true)
     private String name;
 
     @NotNull
@@ -75,7 +77,7 @@ public class Game extends BaseEntity {
     // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Round> rounds;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @Size(min = 0, max = 3)
     // @OnDelete(action = OnDeleteAction.NO_ACTION)
     private List<Player> players = new ArrayList<>();
