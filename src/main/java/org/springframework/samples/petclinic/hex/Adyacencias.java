@@ -1,392 +1,73 @@
 package org.springframework.samples.petclinic.hex;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Adyacencias {
-/*
-    public void listAdyacencias(List<Hex> lHexs){
-        for(Hex h: lHexs){
+    private static final Map<Integer, List<Integer>> adyacentesPorPosicion = new HashMap<>();
+
+    static {
+        adyacentesPorPosicion.put(0, Arrays.asList(1, 2, 3));
+        adyacentesPorPosicion.put(1, Arrays.asList(0, 2, 4));
+        adyacentesPorPosicion.put(2, Arrays.asList(0, 1, 3, 4, 5, 6));
+        adyacentesPorPosicion.put(3, Arrays.asList(0, 2, 6, 8, 11, 42));
+        adyacentesPorPosicion.put(4, Arrays.asList(1, 2, 5, 14, 15));
+        adyacentesPorPosicion.put(5, Arrays.asList(2, 4, 6, 14, 17, 42));
+        adyacentesPorPosicion.put(6, Arrays.asList(2, 3, 5, 11, 17, 42));
+        adyacentesPorPosicion.put(7, Arrays.asList(8, 9, 10));
+        adyacentesPorPosicion.put(8, Arrays.asList(3, 7, 9, 11));
+        adyacentesPorPosicion.put(9, Arrays.asList(7, 8, 10, 11, 12, 13));
+        adyacentesPorPosicion.put(10, Arrays.asList(7, 9, 13));
+        adyacentesPorPosicion.put(11, Arrays.asList(3, 6, 8, 9, 12, 42));
+        adyacentesPorPosicion.put(12, Arrays.asList(9, 11, 13, 22, 42));
+        adyacentesPorPosicion.put(13, Arrays.asList(9, 10, 12, 21, 22));
+        adyacentesPorPosicion.put(14, Arrays.asList(4, 5, 15, 16, 17));
+        adyacentesPorPosicion.put(15, Arrays.asList(14, 16, 18));
+        adyacentesPorPosicion.put(16, Arrays.asList(14, 15, 17, 18, 19));
+        adyacentesPorPosicion.put(17, Arrays.asList(5, 14, 16, 20, 42));
+        adyacentesPorPosicion.put(18, Arrays.asList(15, 16, 19));
+        adyacentesPorPosicion.put(19, Arrays.asList(16, 18, 20, 29));
+        adyacentesPorPosicion.put(20, Arrays.asList(16, 17, 19, 28, 29, 42));
+        adyacentesPorPosicion.put(21, Arrays.asList(13, 22, 23, 24));
+        adyacentesPorPosicion.put(22, Arrays.asList(12, 13, 21, 23, 25, 42));
+        adyacentesPorPosicion.put(23, Arrays.asList(21, 22, 24, 25, 26, 27));
+        adyacentesPorPosicion.put(24, Arrays.asList(21, 23, 27));
+        adyacentesPorPosicion.put(25, Arrays.asList(22, 23, 26, 35, 42));
+        adyacentesPorPosicion.put(26, Arrays.asList(23, 25, 27, 28, 35, 38));
+        adyacentesPorPosicion.put(27, Arrays.asList(23, 24, 26));
+        adyacentesPorPosicion.put(28, Arrays.asList(20, 29, 30, 31, 42));
+        adyacentesPorPosicion.put(29, Arrays.asList(19, 20, 28, 30, 32));
+        adyacentesPorPosicion.put(30, Arrays.asList(28, 29, 31, 32, 33, 34));
+        adyacentesPorPosicion.put(31, Arrays.asList(28, 30, 34, 36, 39, 42));
+        adyacentesPorPosicion.put(32, Arrays.asList(29, 30, 33));
+        adyacentesPorPosicion.put(33, Arrays.asList(30, 32, 34));
+        adyacentesPorPosicion.put(34, Arrays.asList(30, 31, 33, 39));
+        adyacentesPorPosicion.put(35, Arrays.asList(25, 26, 36, 37, 38, 42));
+        adyacentesPorPosicion.put(36, Arrays.asList(31, 35, 37, 39, 42));
+        adyacentesPorPosicion.put(37, Arrays.asList(35, 36, 38, 39, 40, 41));
+        adyacentesPorPosicion.put(38, Arrays.asList(26, 35, 37, 41));
+        adyacentesPorPosicion.put(39, Arrays.asList(31, 34, 36, 37, 40));
+        adyacentesPorPosicion.put(40, Arrays.asList(37, 39, 41));
+        adyacentesPorPosicion.put(41, Arrays.asList(37, 38, 40));
+        adyacentesPorPosicion.put(42, Arrays.asList(5, 6, 11, 12, 17, 20, 22, 25, 28, 31, 35, 36));
+    }
+
+    public void listAdyacencias(List<Hex> lHexs) {
+        for (Hex h : lHexs) {
+            int posicion = h.getPosition();
+            List<Integer> adyacentes = adyacentesPorPosicion.get(posicion);
             List<Hex> aux = new ArrayList<>();
-            if(h.getPosition()==0){
-                for(int i=1; i<4; i++){
-                Hex j=lHexs.get(i);
-                aux.add(j);
-                    }
+            
+            if (adyacentes != null) {
+                for (int i : adyacentes) {
+                    aux.add(lHexs.get(i));
+                }
             }
-
-            if(h.getPosition()==1){
-                Hex j=lHexs.get(0);
-                Hex k=lHexs.get(2);
-                Hex l=lHexs.get(4);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==2){
-                Hex j=lHexs.get(0);
-                Hex k=lHexs.get(1);
-                Hex l=lHexs.get(3);
-                Hex m=lHexs.get(4);
-                Hex n=lHexs.get(5);
-                Hex o=lHexs.get(6);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==3){
-                Hex j=lHexs.get(0);
-                Hex k=lHexs.get(2);
-                Hex l=lHexs.get(6);
-                Hex m=lHexs.get(8);
-                Hex n=lHexs.get(11);
-                Hex o=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==4){
-                Hex j=lHexs.get(1);
-                Hex k=lHexs.get(2);
-                Hex l=lHexs.get(5);
-                Hex m=lHexs.get(14);
-                Hex n=lHexs.get(15);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==5){
-                Hex j=lHexs.get(2);
-                Hex k=lHexs.get(4);
-                Hex l=lHexs.get(6);
-                Hex m=lHexs.get(14);
-                Hex n=lHexs.get(17);
-                Hex o=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==6){
-                Hex j=lHexs.get(2);
-                Hex k=lHexs.get(3);
-                Hex l=lHexs.get(5);
-                Hex m=lHexs.get(11);
-                Hex n=lHexs.get(17);
-                Hex o=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==7){
-                Hex j=lHexs.get(8);
-                Hex k=lHexs.get(9);
-                Hex l=lHexs.get(10);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==8){
-                Hex j=lHexs.get(3);
-                Hex k=lHexs.get(7);
-                Hex l=lHexs.get(9);
-                Hex m=lHexs.get(11);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);
-            }
-
-            if(h.getPosition()==9){
-                Hex j=lHexs.get(7);
-                Hex k=lHexs.get(8);
-                Hex l=lHexs.get(10);
-                Hex m=lHexs.get(11);
-                Hex n=lHexs.get(12);
-                Hex o=lHexs.get(13);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==10){
-                Hex j=lHexs.get(7);
-                Hex k=lHexs.get(9);
-                Hex l=lHexs.get(13);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==11){
-                Hex j=lHexs.get(3);
-                Hex k=lHexs.get(6);
-                Hex l=lHexs.get(8);
-                Hex m=lHexs.get(9);
-                Hex n=lHexs.get(12);
-                Hex o=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==12){
-                Hex j=lHexs.get(9);
-                Hex k=lHexs.get(11);
-                Hex l=lHexs.get(13);
-                Hex m=lHexs.get(22);
-                Hex n=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==13){
-                Hex j=lHexs.get(9);
-                Hex k=lHexs.get(10);
-                Hex l=lHexs.get(12);
-                Hex m=lHexs.get(21);
-                Hex n=lHexs.get(22);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==14){
-                Hex j=lHexs.get(4);
-                Hex k=lHexs.get(5);
-                Hex l=lHexs.get(15);
-                Hex m=lHexs.get(16);
-                Hex n=lHexs.get(17);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==15){
-                Hex j=lHexs.get(14);
-                Hex k=lHexs.get(16);
-                Hex l=lHexs.get(18);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==16){
-                Hex j=lHexs.get(14);
-                Hex k=lHexs.get(15);
-                Hex l=lHexs.get(17);
-                Hex m=lHexs.get(18);
-                Hex n=lHexs.get(19);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==17){
-                Hex j=lHexs.get(5);
-                Hex k=lHexs.get(14);
-                Hex l=lHexs.get(16);
-                Hex m=lHexs.get(20);
-                Hex n=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==18){
-                Hex j=lHexs.get(15);
-                Hex k=lHexs.get(16);
-                Hex l=lHexs.get(19);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==19){
-                Hex j=lHexs.get(16);
-                Hex k=lHexs.get(18);
-                Hex l=lHexs.get(20);
-                Hex m=lHexs.get(29);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);
-            }
-
-            if(h.getPosition()==20){
-                Hex j=lHexs.get(16);
-                Hex k=lHexs.get(17);
-                Hex l=lHexs.get(19);
-                Hex m=lHexs.get(28);
-                Hex n=lHexs.get(29);
-                Hex o=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==21){
-                Hex j=lHexs.get(13);
-                Hex k=lHexs.get(22);
-                Hex l=lHexs.get(23);
-                Hex m=lHexs.get(24);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);
-            }
-
-            if(h.getPosition()==22){
-                Hex j=lHexs.get(12);
-                Hex k=lHexs.get(13);
-                Hex l=lHexs.get(21);
-                Hex m=lHexs.get(23);
-                Hex n=lHexs.get(25);
-                Hex o=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==23){
-                Hex j=lHexs.get(21);
-                Hex k=lHexs.get(22);
-                Hex l=lHexs.get(24);
-                Hex m=lHexs.get(25);
-                Hex n=lHexs.get(26);
-                Hex o=lHexs.get(27);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==24){
-                Hex j=lHexs.get(21);
-                Hex k=lHexs.get(23);
-                Hex l=lHexs.get(27);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==25){
-                Hex j=lHexs.get(22);
-                Hex k=lHexs.get(23);
-                Hex l=lHexs.get(26);
-                Hex m=lHexs.get(35);
-                Hex n=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==26){
-                Hex j=lHexs.get(23);
-                Hex k=lHexs.get(25);
-                Hex l=lHexs.get(27);
-                Hex m=lHexs.get(28);
-                Hex n=lHexs.get(35);
-                Hex o=lHexs.get(38);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==27){
-                Hex j=lHexs.get(23);
-                Hex k=lHexs.get(24);
-                Hex l=lHexs.get(26);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==28){
-                Hex j=lHexs.get(20);
-                Hex k=lHexs.get(29);
-                Hex l=lHexs.get(30);
-                Hex m=lHexs.get(31);
-                Hex n=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==29){
-                Hex j=lHexs.get(19);
-                Hex k=lHexs.get(20);
-                Hex l=lHexs.get(28);
-                Hex m=lHexs.get(30);
-                Hex n=lHexs.get(32);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==30){
-                Hex j=lHexs.get(28);
-                Hex k=lHexs.get(29);
-                Hex l=lHexs.get(31);
-                Hex m=lHexs.get(32);
-                Hex n=lHexs.get(33);
-                Hex o=lHexs.get(34);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==31){
-                Hex j=lHexs.get(28);
-                Hex k=lHexs.get(30);
-                Hex l=lHexs.get(34);
-                Hex m=lHexs.get(36);
-                Hex n=lHexs.get(39);
-                Hex o=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==32){
-                Hex j=lHexs.get(29);
-                Hex k=lHexs.get(30);
-                Hex l=lHexs.get(33);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==33){
-                Hex j=lHexs.get(30);
-                Hex k=lHexs.get(32);
-                Hex l=lHexs.get(34);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==34){
-                Hex j=lHexs.get(30);
-                Hex k=lHexs.get(31);
-                Hex l=lHexs.get(33);
-                Hex m=lHexs.get(39);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);
-            }
-
-            if(h.getPosition()==35){
-                Hex j=lHexs.get(25);
-                Hex k=lHexs.get(26);
-                Hex l=lHexs.get(36);
-                Hex m=lHexs.get(37);
-                Hex n=lHexs.get(38);
-                Hex o=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==36){
-                Hex j=lHexs.get(31);
-                Hex k=lHexs.get(35);
-                Hex l=lHexs.get(37);
-                Hex m=lHexs.get(39);
-                Hex n=lHexs.get(42);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==37){
-                Hex j=lHexs.get(35);
-                Hex k=lHexs.get(36);
-                Hex l=lHexs.get(38);
-                Hex m=lHexs.get(39);
-                Hex n=lHexs.get(40);
-                Hex o=lHexs.get(41);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);
-            }
-
-            if(h.getPosition()==38){
-                Hex j=lHexs.get(26);
-                Hex k=lHexs.get(35);
-                Hex l=lHexs.get(37);
-                Hex m=lHexs.get(41);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);
-            }
-
-            if(h.getPosition()==39){
-                Hex j=lHexs.get(31);
-                Hex k=lHexs.get(34);
-                Hex l=lHexs.get(36);
-                Hex m=lHexs.get(37);
-                Hex n=lHexs.get(40);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);
-            }
-
-            if(h.getPosition()==40){
-                Hex j=lHexs.get(37);
-                Hex k=lHexs.get(39);
-                Hex l=lHexs.get(41);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==41){
-                Hex j=lHexs.get(37);
-                Hex k=lHexs.get(38);
-                Hex l=lHexs.get(40);
-                aux.add(j);aux.add(k);aux.add(l);
-            }
-
-            if(h.getPosition()==42){
-                Hex j=lHexs.get(5);
-                Hex k=lHexs.get(6);
-                Hex l=lHexs.get(11);
-                Hex m=lHexs.get(12);
-                Hex n=lHexs.get(17);
-                Hex o=lHexs.get(20);
-                Hex p=lHexs.get(22);
-                Hex q=lHexs.get(25);
-                Hex r=lHexs.get(28);
-                Hex s=lHexs.get(31);
-                Hex t=lHexs.get(35);
-                Hex u=lHexs.get(36);
-                aux.add(j);aux.add(k);aux.add(l);aux.add(m);aux.add(n);aux.add(o);aux.add(p);aux.add(q);aux.add(r);aux.add(s);aux.add(t);aux.add(u);
-            }
+            
             h.save();
+        }
     }
-    }
-*/
 }
