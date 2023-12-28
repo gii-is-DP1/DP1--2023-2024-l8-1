@@ -48,6 +48,15 @@ public class GameBoardService {
             }
             aux.add(sector);
         }
+
+        for(int i=0; i<aux.size() ;i++) {
+            List<Hex> hexs = aux.get(i).getHexs();
+            for(int j=0; j<hexs.size(); j++) {
+                Hex hex = hexs.get(j);
+                List<Hex> vecinos = hexService.listAdyacencias(hex, game);
+                hex.setAdyacentes(vecinos);
+            }
+        }
         
         aux.add(sectorService.genTriPrime());
 
