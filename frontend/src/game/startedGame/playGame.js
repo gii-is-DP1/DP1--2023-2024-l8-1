@@ -11,21 +11,21 @@ const jwt = tokenService.getLocalAccessToken();
 
 
 function Sector({ position, hexes, handleClick }) {
-    let puntos = hexes.map((x) => x[1])
+    let puntos = hexes.map((x) => x[3])
     return (
-        <div className="sector-container">
-            <div className="row-up">
-                <Hex value={puntos[0]} onhexeClick={() => handleClick(position, 9 * position + 0)} />
-                <Hex value={puntos[1]} onhexeClick={() => handleClick(position, 9 * position + 1)} />
+        <>
+            <div className="board-row">
+                <Hex value={puntos[0]} onhexeClick={() => handleClick(position, 7 * position + 0)} />
+                <Hex value={puntos[1]} onhexeClick={() => handleClick(position, 7 * position + 1)} />
             </div>
-            <div>
-                <Hex value={puntos[2]} onhexeClick={() => handleClick(position, 9 * position + 3)} />
-                <Hex value={puntos[3]} onhexeClick={() => handleClick(position, 9 * position + 4)} />
-                <Hex value={puntos[4]} onhexeClick={() => handleClick(position, 9 * position + 5)} />
+            <div className="board-row">
+                <Hex value={puntos[2]} onhexeClick={() => handleClick(position, 7 * position + 3)} />
+                <Hex value={puntos[3]} onhexeClick={() => handleClick(position, 7 * position + 4)} />
+                <Hex value={puntos[4]} onhexeClick={() => handleClick(position, 7 * position + 5)} />
             </div>
-            <div className="row-down">
-                <Hex value={puntos[5]} onhexeClick={() => handleClick(position, 9 * position + 6)} />
-                <Hex value={puntos[6]} onhexeClick={() => handleClick(position, 9 * position + 7)} />
+            <div className="board-row">
+                <Hex value={puntos[5]} onhexeClick={() => handleClick(position, 7 * position + 6)} />
+                <Hex value={puntos[6]} onhexeClick={() => handleClick(position, 7 * position + 7)} />
             </div>
         </div>
     )
@@ -34,7 +34,7 @@ function Sector({ position, hexes, handleClick }) {
 function TriPrime({ position, hex, handleClick }) {
     return (
         <div className="sector-container">
-            <Hex value={hex} onhexeClick={() => handleClick(position, 9 * position + 6)} />
+            <Hex value={hex} onhexeClick={() => handleClick(position, 7 * position + 6)} />
         </div>
     );
 }
@@ -72,8 +72,8 @@ export default function PlayGame() {
         }
         let occuped = false;
 
-        for (let j = 0; j < 9; j++) {
-            if (hexList[position * 9 + j] !== null) return occuped = true;
+        for (let j = 0; j < 7; j++) {
+            if (hexList[position * 7 + j] !== null) return occuped = true;
         }
 
         if (turn === 0) {
@@ -143,10 +143,10 @@ export default function PlayGame() {
         <div className="game">
             <div className="center-container">
                 <div className="left-sector">
-                    <Sector position={0} hexes={hexList.slice(14, 21)} handleClick={handleClick} />
+                    <Sector position={0} hexes={hexList.slice(0, 7)} handleClick={handleClick} />
                 </div>
                 <div className="right-sector">
-                    <Sector position={1} hexes={hexList.slice(14, 21)} handleClick={handleClick} />
+                    <Sector position={1} hexes={hexList.slice(7, 14)} handleClick={handleClick} />
                 </div>
             </div>
             <div className="center-container">
@@ -162,10 +162,10 @@ export default function PlayGame() {
             </div>
             <div className="center-container">
                 <div className="left-sector">
-                    <Sector position={5} hexes={hexList.slice(14, 21)} handleClick={handleClick} />
+                    <Sector position={5} hexes={hexList.slice(28, 35)} handleClick={handleClick} />
                 </div>
                 <div className="right-sector">
-                    <Sector position={6} hexes={hexList.slice(14, 21)} handleClick={handleClick} />
+                    <Sector position={6} hexes={hexList.slice(35, 42)} handleClick={handleClick} />
                 </div>
             </div>
             <div className="cardsContainerStyle">

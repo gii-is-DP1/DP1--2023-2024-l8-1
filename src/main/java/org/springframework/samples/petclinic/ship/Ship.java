@@ -1,8 +1,11 @@
 package org.springframework.samples.petclinic.ship;
 
+import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.player.Player;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
@@ -15,6 +18,12 @@ import lombok.Setter;
 public class Ship extends BaseEntity{
 
     @NotEmpty
-    ShipState state;
+    private ShipState state;
+
+    @ManyToOne(optional = true)
+    private Hex hex;
+
+    @ManyToOne
+    private Player player;
     
 }

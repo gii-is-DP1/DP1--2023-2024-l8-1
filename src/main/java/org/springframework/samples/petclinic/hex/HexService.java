@@ -1,5 +1,6 @@
 package org.springframework.samples.petclinic.hex;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -41,8 +42,19 @@ public class HexService {
     }
 
     @Transactional
-    public Hex save(Hex hex){
+    public Hex save(Hex hex) {
         return hr.save(hex);
+    }
+
+    public List<Hex> listAdyacencias(Hex hex, String name) {
+        Integer posicion = hex.getPosition();
+        List<Integer> posiciones = Adyacencias.adyacentesPorPosicion.get(posicion);
+        List<Hex> vecinos = new ArrayList<>();
+        for(int i=0; i<posiciones.size() ;i++) {
+            Hex vecino = hr.findHexByPosition(posiciones.get(i), name);
+            vecinos.add(vecino);
+        }
+        return vecinos;
     }
 
 }
