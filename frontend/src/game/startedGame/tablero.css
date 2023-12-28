@@ -11,18 +11,34 @@ body {
   font-size: 24px;
   font-weight: bold;
   line-height: 34px;
-  height: 50px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
   width: 50px;
+  height: 60px;
+  position: relative;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
-.board-row:after {
-  clear: both;
-  content: '';
-  display: table;
+.sector-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.row-up {
+  display: block;
+  justify-content: space-between;
+  margin-top: 20px;
+  margin-bottom: -12px;
+}
+
+.row-down {
+  display: block;
+  justify-content: space-between;
+  margin-top: -12px;
+  margin-bottom: 20px;
 }
 
 
@@ -32,6 +48,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  margin-top: 100px;
 }
 
 .center-container {

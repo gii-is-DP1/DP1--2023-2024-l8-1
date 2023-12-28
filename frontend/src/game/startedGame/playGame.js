@@ -13,21 +13,21 @@ const jwt = tokenService.getLocalAccessToken();
 function Sector({ position, hexes, handleClick }) {
     let puntos = hexes.map((x) => x[1])
     return (
-        <>
-            <div className="board-row">
+        <div className="sector-container">
+            <div className="row-up">
                 <Hex value={puntos[0]} onhexeClick={() => handleClick(position, 9 * position + 0)} />
                 <Hex value={puntos[1]} onhexeClick={() => handleClick(position, 9 * position + 1)} />
             </div>
-            <div className="board-row">
+            <div>
                 <Hex value={puntos[2]} onhexeClick={() => handleClick(position, 9 * position + 3)} />
                 <Hex value={puntos[3]} onhexeClick={() => handleClick(position, 9 * position + 4)} />
                 <Hex value={puntos[4]} onhexeClick={() => handleClick(position, 9 * position + 5)} />
             </div>
-            <div className="board-row">
+            <div className="row-down">
                 <Hex value={puntos[5]} onhexeClick={() => handleClick(position, 9 * position + 6)} />
                 <Hex value={puntos[6]} onhexeClick={() => handleClick(position, 9 * position + 7)} />
             </div>
-        </>
+        </div>
     )
 }
 
@@ -111,7 +111,7 @@ export default function PlayGame() {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
         };
-        
+
         return (
             <div className={`cardStyles ${positionClass}`}>
                 <div style={mediaStyles} title={title} />
