@@ -13,17 +13,17 @@ const jwt = tokenService.getLocalAccessToken();
 function Sector({ position, hexes, handleClick }) {
     let puntos = hexes.map((x) => x[3])
     return (
-        <>
-            <div className="board-row">
+        <div className="sector-container">
+            <div className="row-up">
                 <Hex value={puntos[0]} onhexeClick={() => handleClick(position, 7 * position + 0)} />
                 <Hex value={puntos[1]} onhexeClick={() => handleClick(position, 7 * position + 1)} />
             </div>
-            <div className="board-row">
+            <div>
                 <Hex value={puntos[2]} onhexeClick={() => handleClick(position, 7 * position + 3)} />
                 <Hex value={puntos[3]} onhexeClick={() => handleClick(position, 7 * position + 4)} />
                 <Hex value={puntos[4]} onhexeClick={() => handleClick(position, 7 * position + 5)} />
             </div>
-            <div className="board-row">
+            <div className="row-down">
                 <Hex value={puntos[5]} onhexeClick={() => handleClick(position, 7 * position + 6)} />
                 <Hex value={puntos[6]} onhexeClick={() => handleClick(position, 7 * position + 7)} />
             </div>
