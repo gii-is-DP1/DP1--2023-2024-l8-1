@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.exceptions.GameBoardGenerationException;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
@@ -37,7 +38,8 @@ public class GameBoardService {
         GameBoard newBoard = new GameBoard();
         List<Sector> aux = new ArrayList<>();
 
-        for(int i = 0; i < 6; i++){
+        try {
+            for(int i = 0; i < 6; i++){
             Sector sector = sectorService.genRandom();
             sector.setPosition(i);
             List<Hex> cerdas = sector.getHexs(); 
@@ -65,6 +67,10 @@ public class GameBoardService {
 
         (gameService.findByName(game)).setGameBoard(newBoard);
         gameService.saveGame(gameService.findByName(game));
+        
+        } catch (Exception e) {
+            throw new GameBoardGenerationException("Unexpected error generating game board for game: " + game, e);
+        }
         
         return newBoard;
     }

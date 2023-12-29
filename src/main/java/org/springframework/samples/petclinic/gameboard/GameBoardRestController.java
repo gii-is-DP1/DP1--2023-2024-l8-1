@@ -3,10 +3,8 @@ package org.springframework.samples.petclinic.gameboard;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
-import org.springframework.samples.petclinic.sector.SectorService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
