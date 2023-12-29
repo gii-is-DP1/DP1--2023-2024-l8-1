@@ -55,5 +55,4 @@ public class GameBoardRestController {
         GameBoard gb = gameBoardService.getGameBoardByGame(name);
         return new ResponseEntity<List<Hex>>(gameBoardService.getGameBoardHexs(gb), HttpStatus.OK);        
     }
-    
 }

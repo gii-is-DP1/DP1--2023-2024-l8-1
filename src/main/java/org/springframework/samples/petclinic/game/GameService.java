@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.player.PlayerRol;
@@ -78,11 +79,14 @@ public class GameService {
 	}
     
     @Transactional
-    public Game startGame(String name) {
-        Game toUpdate = findByName(name);
-        toUpdate.setState(GameState.START_PLAYER_CHOICE);
-        return updateGame(toUpdate, toUpdate.getId());
-
+    public Game startGame(String name) throws BadRequestException{
+        Game game = findByName(name);
+        if (game.getPlayers().size() != 2){
+            throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
+        }else{
+            game.setState(GameState.START_PLAYER_CHOICE);
+        }
+        return saveGame(game);
     }
 
     @Transactional
@@ -90,7 +94,7 @@ public class GameService {
         Game toUpdate = findByName(name);
         Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
         List<Player> aux = toUpdate.getPlayers();
-        aux.add(userService.findPlayerByUser(userService.findCurrentUser().getId())); // cambiarlo por me no?
+        aux.add(me);
         toUpdate.setPlayers(aux);
         me.setRol(PlayerRol.GUEST);
         playerService.updatePlayer(me, me.getId());
