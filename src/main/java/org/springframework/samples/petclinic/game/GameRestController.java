@@ -101,8 +101,9 @@ public class GameRestController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Game> startGame(@PathVariable("name") String name) {
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        if (aux.getRol() != PlayerRol.HOST){
-            throw new AccessDeniedException("No puedes echar a un jugador si no eres el host de la partida");
+        Game game = gameService.findByName(name);
+        if (aux != game.getHost()){
+            throw new AccessDeniedException("No puedes empezar la partida si no eres el host de la partida");
         }else{    
             gameService.startGame(name);
         }
