@@ -20,8 +20,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
+@Hidden
 @RestController
 @Tag(name = "Specialties", description = "API for the  management of Specialties")
 @RequestMapping("/api/v1/vets/specialties")
