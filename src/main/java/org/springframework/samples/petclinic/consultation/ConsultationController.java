@@ -31,8 +31,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
+@Hidden
 @RestController
 @RequestMapping("/api/v1/consultations")
 @SecurityRequirement(name = "bearerAuth")
