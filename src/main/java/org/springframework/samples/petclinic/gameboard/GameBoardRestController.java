@@ -20,10 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/gameBoard")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Game Boards", description = "The GameBoard managemet API")
 public class GameBoardRestController {
 
     private GameBoardService gameBoardService;
@@ -55,5 +57,4 @@ public class GameBoardRestController {
         GameBoard gb = gameBoardService.getGameBoardByGame(name);
         return new ResponseEntity<List<Hex>>(gameBoardService.getGameBoardHexs(gb), HttpStatus.OK);        
     }
-    
 }

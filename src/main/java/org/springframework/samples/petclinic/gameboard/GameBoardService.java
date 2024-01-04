@@ -62,7 +62,8 @@ public class GameBoardService {
         GameBoard newBoard = new GameBoard();
         List<Sector> aux = new ArrayList<>();
 
-        for(int i = 0; i < 6; i++){
+        try {
+            for(int i = 0; i < 6; i++){
             Sector sector = sectorService.genRandom();
             sector.setPosition(i);
             List<Hex> cerdas = sector.getHexs(); 
@@ -90,6 +91,10 @@ public class GameBoardService {
 
         (gameService.findByName(game)).setGameBoard(newBoard);
         gameService.saveGame(gameService.findByName(game));
+        
+        } catch (Exception e) {
+            throw new GameBoardGenerationException("Unexpected error generating game board for game: " + game, e);
+        }
         
         return newBoard;
     }

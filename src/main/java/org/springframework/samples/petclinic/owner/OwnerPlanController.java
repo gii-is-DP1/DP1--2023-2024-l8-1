@@ -24,9 +24,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-
+@Hidden
 @RestController
 @RequestMapping("/api/v1/plan")
 @Tag(name = "Plans", description = "API for the  management of  Princing Plans of the applications")
