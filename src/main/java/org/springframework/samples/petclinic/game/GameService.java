@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mapping.AccessOptions.SetOptions.Propagation;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
@@ -82,14 +83,31 @@ public class GameService {
     }
 
     @Transactional
-    public Game startGame(String name) throws BadRequestException{
+    public Game startGame(String name) throws BadRequestException {
         Game game = findByName(name);
-        if (game.getPlayers().size() != 2){
+        if (game.getPlayers().size() != 2) {
             throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
-        }else{
+        } else {
             game.setState(GameState.START_PLAYER_CHOICE);
         }
-        return saveGame(game);
+        return updateGame(game, game.getId());
+    }
+
+    // Generacion naves de prueba
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    public void generateShipInGame(String name) {
+        try {
+            Game game = findByName(name);
+            Player player1 = game.getPlayers().get(0);
+            Player player2 = game.getPlayers().get(1);
+            Player host = game.getHost();
+            shipService.genShipsForOnePlayer(player1.getId());
+            shipService.genShipsForOnePlayer(player2.getId());
+            shipService.genShipsForOnePlayer(host.getId());
+        } catch (Exception e) {
+            System.out.println("Error during ship generation in the game");
+            throw new RuntimeException("Error during ship generation in the game: " + name, e);
+        }
     }
 
     @Transactional

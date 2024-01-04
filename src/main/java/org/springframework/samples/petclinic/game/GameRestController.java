@@ -112,6 +112,14 @@ public class GameRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    
+    @PutMapping("/generate-ships/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> generateShipsInGame(@PathVariable("name") String name) {
+        gameService.generateShipInGame(name);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
     @PutMapping("/join/{name}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Game> joinGame(@PathVariable("name") String name) {
