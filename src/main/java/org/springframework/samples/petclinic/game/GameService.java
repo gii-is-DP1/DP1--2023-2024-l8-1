@@ -83,23 +83,13 @@ public class GameService {
 
     @Transactional
     public Game startGame(String name) throws BadRequestException{
-        Game toUpdate = findByName(name);
-        toUpdate.setState(GameState.START_PLAYER_CHOICE);
-
-        Player host = toUpdate.getHost();
-        shipService.genShipsForOnePlayer(host.getId());
-
-        List<Player> gamePlayers = toUpdate.getPlayers();
-        if (gamePlayers != null) {
-            shipService.genShipsForOnePlayer(gamePlayers.get(0).getId());
-            shipService.genShipsForOnePlayer(gamePlayers.get(1).getId());
-        } else {
-            throw new BadRequestException("El juego no tiene jugadores asignados");// Asegurarnos de que solo se inicializa una partida cuando hay 3 jugadores
-          // (host + 2 players)
+        Game game = findByName(name);
+        if (game.getPlayers().size() != 2){
+            throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
+        }else{
+            game.setState(GameState.START_PLAYER_CHOICE);
         }
-        
-        return updateGame(toUpdate, toUpdate.getId());
-
+        return saveGame(game);
     }
 
     @Transactional
@@ -107,7 +97,7 @@ public class GameService {
         Game toUpdate = findByName(name);
         Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
         List<Player> aux = toUpdate.getPlayers();
-        aux.add(userService.findPlayerByUser(userService.findCurrentUser().getId())); // cambiarlo por me no?
+        aux.add(me);
         toUpdate.setPlayers(aux);
         me.setRol(PlayerRol.GUEST);
         playerService.updatePlayer(me, me.getId());

@@ -3,8 +3,9 @@ package org.springframework.samples.petclinic.gameboard;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.exceptions.GameBoardGenerationException;
+import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
@@ -31,6 +32,29 @@ public class GameBoardService {
         this.sectorService=sectorService;
         this.gameService = gameService;
         this.hexService = hexService;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Hex> getGameBoardHexs(GameBoard gameBoard){
+        List<Hex> aux = new ArrayList<>();
+        for (Sector s : gameBoard.getSectors()){
+            for (Hex h : s.getHexs()){
+                aux.add(h);
+            }
+        }
+        return aux;
+    }
+
+    @Transactional(readOnly = true)
+    public GameBoard getById(int id){
+        Optional<GameBoard> result = gameBoardRepository.findById(id);
+        return result.isPresent()?result.get():null;
+    }
+
+    @Transactional(readOnly = true)
+    public GameBoard getGameBoardByGame(String name){
+        Game game = gameService.findByName(name);
+        return game.getGameBoard() == null ? null : getById(game.getGameBoard().getId());
     }
 
     @Transactional
@@ -73,17 +97,6 @@ public class GameBoardService {
         }
         
         return newBoard;
-    }
-
-    @Transactional(readOnly = true)
-    public List<Hex> getGameBoardHexs(GameBoard gameBoard){
-        List<Hex> aux = new ArrayList<>();
-        for (Sector s : gameBoard.getSectors()){
-            for (Hex h : s.getHexs()){
-                aux.add(h);
-            }
-        }
-        return aux;
     }
     
 }
