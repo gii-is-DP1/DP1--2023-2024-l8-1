@@ -3,6 +3,7 @@ package org.springframework.samples.petclinic.hex;
 import java.util.List;
 
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.ship.Ship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -49,5 +50,8 @@ public class Hex extends BaseEntity{
         uniqueConstraints = @UniqueConstraint(columnNames = { "hex_id", "adyacente_id" })
     )
     List<Hex> adyacentes;
+
+    @OneToMany(mappedBy = "hex")
+    List<Ship> ships;
     
 }
