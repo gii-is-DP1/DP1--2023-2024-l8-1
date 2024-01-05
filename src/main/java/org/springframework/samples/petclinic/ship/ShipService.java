@@ -58,4 +58,9 @@ public class ShipService {
         shipRepository.save(toUpdate);
         return toUpdate;
     }
+
+    @Transactional(readOnly = true)
+    public Integer numOfShipsInGameForPlayer(Integer playerId) {
+        return shipRepository.numShipsInGameForPlayer(playerId);
+    }
 }

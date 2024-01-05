@@ -9,5 +9,8 @@ public interface ShipRepository extends CrudRepository<Ship, Integer> {
 
     @Query("SELECT s FROM Ship s WHERE s.player.id = :playerId AND s.state = 'IN_SUPPLY' ORDER BY s.id ASC")
     List<Ship> findTopXShipsInSupplyState(Integer playerId);
+
+    @Query("SELECT COUNT(s) FROM Ship s WHERE s.player.id = :playerId AND s.state = 'ON_GAME'")
+    Integer numShipsInGameForPlayer(Integer playerId);
     
 }
