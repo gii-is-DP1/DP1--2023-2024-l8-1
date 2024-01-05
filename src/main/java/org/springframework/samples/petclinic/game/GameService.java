@@ -9,7 +9,9 @@ import org.springframework.data.mapping.AccessOptions.SetOptions.Propagation;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.ship.Ship;
 import org.springframework.samples.petclinic.ship.ShipService;
+import org.springframework.samples.petclinic.ship.ShipState;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.security.access.AccessDeniedException;
@@ -88,12 +90,12 @@ public class GameService {
         if (game.getPlayers().size() != 2) {
             throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
         } else {
+            generateShipInGame(name);
             game.setState(GameState.START_PLAYER_CHOICE);
         }
         return updateGame(game, game.getId());
     }
 
-    // Generacion naves de prueba
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     public void generateShipInGame(String name) {
         try {

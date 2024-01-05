@@ -36,7 +36,7 @@ public class ShipService {
             Ship newShip = new Ship();
             newShip.setPlayer(player);
             newShip.setState(ShipState.IN_SUPPLY);
-            save(newShip);
+            shipRepository.save(newShip);
         }
     }
 

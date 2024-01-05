@@ -84,7 +84,6 @@ public class GameRestController {
         Game result = null;
         if (!br.hasErrors()) {
             result = gameService.createGame(newGame);
-            ;
         } else
             throw new BadRequestException(br.getAllErrors());
         return new ResponseEntity<>(result, HttpStatus.CREATED);
@@ -119,8 +118,8 @@ public class GameRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    
-    @PutMapping("/generate-ships/{name}")
+
+    @PostMapping("/generateships/{name}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Void> generateShipsInGame(@PathVariable("name") String name) {
         gameService.generateShipInGame(name);
