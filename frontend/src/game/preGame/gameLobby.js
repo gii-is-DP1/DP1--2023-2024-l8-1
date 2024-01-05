@@ -50,18 +50,6 @@ export default function GameLobby() {
 
     }
 
-    function generateShips() {
-        fetch(
-            "/api/v1/game/generateships/" + name, {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${jwt}`,
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        });
-    }
-
     const modal = getErrorModal(setVisible, visible, message);
     const playersList =
         players.map((a) => {
@@ -112,10 +100,6 @@ export default function GameLobby() {
                             to={'/invitations/new/'} className="btn sm"
                             style={{ textDecoration: "none" }}>Invite a friend</Link>
 
-                    </Button>
-
-                    <Button outline color="success" onClick={() => generateShips()}>
-                        Generate Ships
                     </Button>
                 </div>
             </div>

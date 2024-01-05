@@ -90,12 +90,12 @@ public class GameService {
         if (game.getPlayers().size() != 2) {
             throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
         } else {
+            generateShipInGame(name);
             game.setState(GameState.START_PLAYER_CHOICE);
         }
         return updateGame(game, game.getId());
     }
 
-    // Generacion naves de prueba
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
     public void generateShipInGame(String name) {
         try {
@@ -106,22 +106,6 @@ public class GameService {
             shipService.genShipsForOnePlayer(player1.getId());
             shipService.genShipsForOnePlayer(player2.getId());
             shipService.genShipsForOnePlayer(host.getId());
-        } catch (Exception e) {
-            System.out.println("Error during ship generation in the game");
-            throw new RuntimeException("Error during ship generation in the game: " + name, e);
-        }
-    }
-
-    @Transactional
-    public void generateOneShipForPlayerInGame(String name) {
-        try {
-            Game game = findByName(name);
-            Ship newShip = new Ship();
-            Player host = game.getHost();
-            newShip.setPlayer(host);
-            newShip.setState(ShipState.IN_SUPPLY);
-            newShip.setHex(null);
-            shipService.generateOneShip(newShip);
         } catch (Exception e) {
             System.out.println("Error during ship generation in the game");
             throw new RuntimeException("Error during ship generation in the game: " + name, e);

@@ -173,8 +173,6 @@ export default function PlayGame() {
 
     return (
         <div className="game">
-            <PlayersInfo players={players}/>
-            <HostInfo host={host}/>
             <div className="center-container">
                 <div className="left-sector">
                     <Sector position={0} hexes={hexList.slice(0, 7)} handleClick={handleClick} />

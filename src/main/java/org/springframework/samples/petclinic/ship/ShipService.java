@@ -2,7 +2,6 @@ package org.springframework.samples.petclinic.ship;
 
 import java.util.List;
 
-import org.hibernate.validator.internal.util.logging.Log_.logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -39,11 +38,6 @@ public class ShipService {
             newShip.setState(ShipState.IN_SUPPLY);
             shipRepository.save(newShip);
         }
-    }
-
-    @Transactional
-    public Ship generateOneShip(Ship newShip) {
-        return shipRepository.save(newShip);
     }
 
     @Transactional
