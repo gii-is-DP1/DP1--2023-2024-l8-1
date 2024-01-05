@@ -36,7 +36,7 @@ export default function GameLobby() {
             },
         });
 
-        fetch(
+        /*fetch(
             "/api/v1/gameBoard/" + name, {
             method: "GET",
             headers: {
@@ -46,7 +46,7 @@ export default function GameLobby() {
             },
         });
       
-        navigate('../game/play/' + name);
+        //navigate('../game/play/' + name);*/
 
     }
 

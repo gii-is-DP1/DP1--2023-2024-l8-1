@@ -1,13 +1,20 @@
 package org.springframework.samples.petclinic.game;
 
 import java.util.Optional;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
+import org.springframework.samples.petclinic.phase.Phase;
+import org.springframework.samples.petclinic.phase.PhaseService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.round.Round;
+import org.springframework.samples.petclinic.round.RoundService;
+import org.springframework.samples.petclinic.turn.Turn;
+import org.springframework.samples.petclinic.turn.TurnService;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,12 +28,19 @@ public class GameService {
     GameRepository repo;
     UserService userService;
     PlayerService playerService;
+    RoundService roundService;
+    PhaseService phaseService;
+    TurnService turnService;
 
     @Autowired
-    public GameService(GameRepository repo, UserService userService, PlayerService playerService){
+    public GameService(GameRepository repo, UserService userService, PlayerService playerService,
+                    RoundService roundService, PhaseService phaseService, TurnService turnService){
         this.repo=repo;
         this.userService=userService;
         this.playerService=playerService;
+        this.roundService = roundService;
+        this.phaseService = phaseService;
+        this.turnService = turnService;
     }
     
     @Transactional(readOnly = true)    
@@ -55,7 +69,13 @@ public class GameService {
 
     @Transactional(readOnly = true)
     public List<Player> findGamePlayers(String name) throws AccessDeniedException{
-        return repo.findGamePlayers(findByName(name).getId());
+        Game game = findByName(name);
+        List<Player> players= new ArrayList<>();
+        players.add(game.getHost());
+        for (Player player : game.getPlayers()){
+            players.add(player);
+        }
+        return players;
     }
 
     @Transactional
@@ -81,11 +101,63 @@ public class GameService {
     @Transactional
     public Game startGame(String name) throws BadRequestException{
         Game game = findByName(name);
-        if (game.getPlayers().size() != 2){
-            throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
-        }else{
-            game.setState(GameState.START_PLAYER_CHOICE);
+        List<Round> rounds = new ArrayList<>();
+        game.setState(GameState.START_PLAYER_CHOICE);
+
+        RoundBuilder builder = new RoundBuilder(roundService, phaseService, turnService);
+        Director director = new Director(builder, findGamePlayers(name));
+
+        director.InitialRound();
+
+        rounds.add(builder.getRound());
+        
+        /*Round round = new Round();
+        List<Phase> phases = new ArrayList<>();
+        /*List<Turn> turns1 = new ArrayList<>();
+
+
+        Round round = new Round();
+        Phase phase = new Phase();
+        Phase phase1 = new Phase();        
+        
+        for (int i = 0; i < 2; i++){
+         turns.add(turnService.saveTurn(new Turn()));
         }
+        turns1.add(turnService.saveTurn(new Turn()));
+        phase.setTurns(turns);
+        phase1.setTurns(turns1);
+        phaseService.savePhase(phase);
+        phases.add(phase);
+        phaseService.savePhase(phase1);
+        phases.add(phase1);
+        turns.clear();
+
+        for (int i = 0; i < 2; i++){
+            List<Turn> turns = new ArrayList<>();
+            Phase phase = new Phase(); 
+            for (int j = 0; j < 3; j++){
+                Turn turn = new Turn();
+                turn.setPlayer(findGamePlayers(name).get(j)); 
+                turnService.saveTurn(turn);
+                turns.add(turn);
+            }
+            phase.setTurns(turns);
+            phaseService.savePhase(phase);
+            phases.add(phase);
+        }
+
+        /*Phase phase = phases.get(0);
+        phase.setTurns(turns);
+        phaseService.savePhase(phase);
+        phases.add(phase);
+
+
+
+        round.setPhases(phases);
+        roundService.saveRound(round);
+        rounds.add(round);*/        
+
+        game.setRounds(rounds);
         return saveGame(game);
     }
 

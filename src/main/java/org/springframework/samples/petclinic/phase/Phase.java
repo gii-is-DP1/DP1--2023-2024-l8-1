@@ -19,7 +19,7 @@ import lombok.Setter;
 @Table(name = "phases")
 public class Phase extends BaseEntity{
     
-    private Boolean isOver;
+    private Boolean isOver = false;
 
     @OneToMany
     @Size(min = 3, max = 3)

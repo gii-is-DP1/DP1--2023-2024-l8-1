@@ -18,12 +18,12 @@ import lombok.Setter;
 @Table(name = "rounds")
 public class Round extends BaseEntity{
 
-    private Boolean isOver;
+    private Boolean isOver = false;
 
-    private Boolean isFinal;
+    private Boolean isFinal = false;
 
     @OneToMany
-    @Size(min = 3, max = 3)
+    @Size(min = 2, max = 3)
     // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Phase> phases;
     

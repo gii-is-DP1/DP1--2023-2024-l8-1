@@ -65,7 +65,6 @@ public class GameRestController {
         if (gameToGet == null)
             throw new ResourceNotFoundException("Game with name " + name + "not found!");
         List<Player> gamePlayers = gameService.findGamePlayers(name);
-        gamePlayers.add(gameToGet.getHost());
         return new ResponseEntity<List<Player>>(gamePlayers, HttpStatus.OK);
     }
 
@@ -104,7 +103,9 @@ public class GameRestController {
         Game game = gameService.findByName(name);
         if (aux != game.getHost()){
             throw new AccessDeniedException("No puedes empezar la partida si no eres el host de la partida");
-        }else{    
+        }else if (game.getPlayers().size() != 2){    
+            throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
+        }else{
             gameService.startGame(name);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
