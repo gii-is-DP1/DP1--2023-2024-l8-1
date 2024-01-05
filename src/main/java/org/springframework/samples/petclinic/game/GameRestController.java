@@ -24,11 +24,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/game")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Games", description = "The Game managemet API")
 public class GameRestController {
 
     private final GameService gameService;

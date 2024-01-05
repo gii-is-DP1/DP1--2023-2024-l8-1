@@ -7,13 +7,11 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
-import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.phase.PhaseService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.round.Round;
 import org.springframework.samples.petclinic.round.RoundService;
-import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.turn.TurnService;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
@@ -24,7 +22,7 @@ import jakarta.validation.Valid;
 
 @Service
 public class GameService {
-    
+
     GameRepository repo;
     UserService userService;
     PlayerService playerService;
@@ -42,29 +40,28 @@ public class GameService {
         this.phaseService = phaseService;
         this.turnService = turnService;
     }
-    
-    @Transactional(readOnly = true)    
-    List<Game> getGames(){
+
+    @Transactional(readOnly = true)
+    List<Game> getGames() {
         return repo.findAll();
     }
 
     @Transactional(readOnly = true)
-    public List<Game> getPublicas(){
+    public List<Game> getPublicas() {
         List<Game> result = repo.findPublicas();
         return result;
     }
 
-
     @Transactional(readOnly = true)
-    public Game getById(int id){
+    public Game getById(int id) {
         Optional<Game> result = repo.findById(id);
-        return result.isPresent()?result.get():null;
+        return result.isPresent() ? result.get() : null;
     }
 
     @Transactional(readOnly = true)
-    public Game findByName(String name){
+    public Game findByName(String name) {
         Optional<Game> result = repo.findByName(name);
-        return result.isPresent()?result.get():null;
+        return result.isPresent() ? result.get() : null;
     }
 
     @Transactional(readOnly = true)
@@ -92,12 +89,12 @@ public class GameService {
     }
 
     @Transactional
-	public Game updateGame(Game game, int id) {
-		Game toUpdate = getById(id);
-		BeanUtils.copyProperties(game, toUpdate, "id");
-		return saveGame(toUpdate);
-	}
-    
+    public Game updateGame(Game game, int id) {
+        Game toUpdate = getById(id);
+        BeanUtils.copyProperties(game, toUpdate, "id");
+        return saveGame(toUpdate);
+    }
+
     @Transactional
     public Game startGame(String name) throws BadRequestException{
         Game game = findByName(name);
@@ -185,7 +182,7 @@ public class GameService {
     }
 
     @Transactional
-    public void deleteGameById(int id){
+    public void deleteGameById(int id) {
         Game toDelete = getById(id);
         repo.delete(toDelete);
     }

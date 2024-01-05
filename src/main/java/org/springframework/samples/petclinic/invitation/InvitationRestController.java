@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/invitations")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Invitations", description = "The Invitation managemet API")
 public class InvitationRestController {
 
     private final InvitationService is;
