@@ -20,7 +20,7 @@ public class Ship extends BaseEntity{
     @NotEmpty
     private ShipState state;
 
-    @ManyToOne(optional = true)
+    @ManyToOne
     private Hex hex;
 
     @ManyToOne

@@ -24,11 +24,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/game")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Games", description = "The Game managemet API")
 public class GameRestController {
 
     private final GameService gameService;
@@ -108,11 +110,20 @@ public class GameRestController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Game> startGame(@PathVariable("name") String name) {
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        if (aux.getRol() != PlayerRol.HOST){
-            throw new AccessDeniedException("No puedes echar a un jugador si no eres el host de la partida");
+        Game game = gameService.findByName(name);
+        if (aux != game.getHost()){
+            throw new AccessDeniedException("No puedes empezar la partida si no eres el host de la partida");
         }else{    
             gameService.startGame(name);
         }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    
+    @PutMapping("/generate-ships/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> generateShipsInGame(@PathVariable("name") String name) {
+        gameService.generateShipInGame(name);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

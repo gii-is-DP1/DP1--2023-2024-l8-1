@@ -35,9 +35,31 @@ export default function GameLobby() {
                 "Content-Type": "application/json",
             },
         });
-      
+
+        fetch(
+            "/api/v1/gameBoard/" + name, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        });
+
         navigate('../game/play/' + name);
 
+    }
+
+    function generateShips() {
+        fetch(
+            "/api/v1/game/generate-ships/" + name, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        });
     }
 
     const modal = getErrorModal(setVisible, visible, message);
@@ -82,18 +104,18 @@ export default function GameLobby() {
                         <tbody>{playersList}</tbody>
                     </Table>
 
-                    <Button outline color="success">
-                        <Link
-                            to={`/game/play/${name}`} className="btn sm"
-                            onClick={() => startGame(name)}
-                            style={{ textDecoration: "none" }}>start</Link>
-
+                    <Button outline color="success"
+                        onClick={() => startGame(name)}>start
                     </Button>
                     <Button outline color="success">
                         <Link
                             to={'/invitations/new/'} className="btn sm"
                             style={{ textDecoration: "none" }}>Invite a friend</Link>
 
+                    </Button>
+
+                    <Button outline color="success" onClick={() => generateShips()}>
+                        Generate Ships
                     </Button>
                 </div>
             </div>
