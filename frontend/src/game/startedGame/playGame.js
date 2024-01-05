@@ -1,6 +1,5 @@
 import getIdFromUrl from "../../util/getIdFromUrl";
 import useIntervalFetchState from "../../util/useIntervalFetchState";
-import useFetchState from "../../util/useFetchState"
 import tokenService from "../../services/token.service";
 import { useState } from "react";
 import "./tablero.css"
@@ -35,7 +34,7 @@ function Sector({ position, hexes, handleClick }) {
 function TriPrime({ position, hex, handleClick }) {
     return (
         <div className="sector-container">
-            <Hex value={hex} onhexeClick={() => handleClick(position, 7 * position + 6)} />
+            {hex && <Hex value={hex[3]} onhexeClick={() => handleClick(position, 7 * position + 6)} />}
         </div>
     );
 }
@@ -76,7 +75,7 @@ export default function PlayGame() {
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
     const [lap, setLap] = useState(0);
     const [turn, setTurn] = useState(0);
-    const [hexes, setHexes] = useFetchState(
+    const [hexes, setHexes] = useIntervalFetchState(
         [],
         `/api/v1/gameBoard/${name}`,
         jwt
@@ -173,8 +172,8 @@ export default function PlayGame() {
 
     return (
         <div className="game">
-            <PlayersInfo players={players}/>
-            <HostInfo host={host}/>
+            {players && <PlayersInfo players={players}/>}
+            {host && <HostInfo host={host}/>}
             <div className="center-container">
                 <div className="left-sector">
                     <Sector position={0} hexes={hexList.slice(0, 7)} handleClick={handleClick} />
