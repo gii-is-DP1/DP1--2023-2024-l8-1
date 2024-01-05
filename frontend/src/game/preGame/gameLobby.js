@@ -52,8 +52,8 @@ export default function GameLobby() {
 
     function generateShips() {
         fetch(
-            "/api/v1/game/generate-ships/" + name, {
-            method: "PUT",
+            "/api/v1/game/generateships/" + name, {
+            method: "POST",
             headers: {
                 "Authorization": `Bearer ${jwt}`,
                 Accept: "application/json",

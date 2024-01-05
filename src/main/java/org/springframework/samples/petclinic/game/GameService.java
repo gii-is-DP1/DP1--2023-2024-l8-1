@@ -9,7 +9,9 @@ import org.springframework.data.mapping.AccessOptions.SetOptions.Propagation;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.ship.Ship;
 import org.springframework.samples.petclinic.ship.ShipService;
+import org.springframework.samples.petclinic.ship.ShipState;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.security.access.AccessDeniedException;
@@ -104,6 +106,22 @@ public class GameService {
             shipService.genShipsForOnePlayer(player1.getId());
             shipService.genShipsForOnePlayer(player2.getId());
             shipService.genShipsForOnePlayer(host.getId());
+        } catch (Exception e) {
+            System.out.println("Error during ship generation in the game");
+            throw new RuntimeException("Error during ship generation in the game: " + name, e);
+        }
+    }
+
+    @Transactional
+    public void generateOneShipForPlayerInGame(String name) {
+        try {
+            Game game = findByName(name);
+            Ship newShip = new Ship();
+            Player host = game.getHost();
+            newShip.setPlayer(host);
+            newShip.setState(ShipState.IN_SUPPLY);
+            newShip.setHex(null);
+            shipService.generateOneShip(newShip);
         } catch (Exception e) {
             System.out.println("Error during ship generation in the game");
             throw new RuntimeException("Error during ship generation in the game: " + name, e);
