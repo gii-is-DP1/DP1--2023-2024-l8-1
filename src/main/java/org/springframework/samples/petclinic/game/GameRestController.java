@@ -50,6 +50,13 @@ public class GameRestController {
         return new ResponseEntity<>((List<Game>) gameService.getPublicas(), HttpStatus.OK);
     }
 
+    @GetMapping("/play/{name}")
+    public ResponseEntity<Game> findGameByName(@PathVariable("name") String name) {
+        Game gameToGet = gameService.findByName(name);
+        if (gameToGet == null)
+            throw new ResourceNotFoundException("Game with name " + name + "not found!");
+        return new ResponseEntity<Game>(gameToGet, HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Game> findGame(@PathVariable("id") int id) {

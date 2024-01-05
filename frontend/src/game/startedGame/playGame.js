@@ -1,5 +1,6 @@
 import getIdFromUrl from "../../util/getIdFromUrl";
-import useFetchState from "../../util/useFetchState";
+import useIntervalFetchState from "../../util/useIntervalFetchState";
+import useFetchState from "../../util/useFetchState"
 import tokenService from "../../services/token.service";
 import { useState } from "react";
 import "./tablero.css"
@@ -48,9 +49,30 @@ function Hex({ value, onhexeClick }) {
     );
 }
 
+function PlayersInfo({ players }) {
+    return (
+        <div className="players-info">
+            {players.map((player) => (
+                <div key={player.id}>
+                    <p>{player.user.username}: {player.score}</p>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function HostInfo({ host }) {
+    return (
+        <div className="host-info">
+            <p>Puntuación: {host.score}</p>
+            <p>Naves restantes: {host.numShips}</p>
+        </div>
+    );
+}
+
 export default function PlayGame() {
     const name = getIdFromUrl(3);
-    const [players, setPlayers] = useState(['X', 'O', 'Y']);
+    //const [players, setPlayers] = useState(['X', 'O', 'Y']);
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
     const [lap, setLap] = useState(0);
     const [turn, setTurn] = useState(0);
@@ -65,6 +87,16 @@ export default function PlayGame() {
             const newHex = [h.id, h.puntos, h.occuped, h.position]
             return (newHex)
         })
+
+    const [gameInfo, setGameInfo] = useIntervalFetchState(
+        [],
+        `/api/v1/game/play/${name}`,
+        jwt
+    );
+
+    const host = gameInfo.host;
+    const players = gameInfo.players;
+    const [winner, setWinner] = useState(null);
 
     function handleClick(position, i) {
         if (hexList[i]) {
@@ -141,6 +173,8 @@ export default function PlayGame() {
 
     return (
         <div className="game">
+            <PlayersInfo players={players}/>
+            <HostInfo host={host}/>
             <div className="center-container">
                 <div className="left-sector">
                     <Sector position={0} hexes={hexList.slice(0, 7)} handleClick={handleClick} />
