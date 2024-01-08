@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mapping.AccessOptions.SetOptions.Propagation;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.hex.Hex;
+import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.ship.Ship;
@@ -27,14 +27,16 @@ public class GameService {
     UserService userService;
     PlayerService playerService;
     ShipService shipService;
+    HexService hexService;
 
     @Autowired
     public GameService(GameRepository repo, UserService userService, PlayerService playerService,
-            ShipService shipService) {
+            ShipService shipService, HexService hexService) {
         this.repo = repo;
         this.userService = userService;
         this.playerService = playerService;
         this.shipService = shipService;
+        this.hexService = hexService;
     }
 
     @Transactional(readOnly = true)
@@ -150,5 +152,7 @@ public class GameService {
         shipInHex.setHex(hex);
         shipInHex.setState(ShipState.ON_GAME);
         shipService.updateShip(shipInHex, shipInHex.getId());
+        hex.setOccuped(true);
+        hexService.updateHex(hex, hex.getId());
     }
 }

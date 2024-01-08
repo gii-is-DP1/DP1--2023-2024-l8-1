@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.samples.petclinic.card.CardService;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
@@ -38,12 +39,14 @@ public class GameRestController {
     private final GameService gameService;
     private final UserService userService;
     private final HexService hexService;
+    private final CardService cardService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService, HexService hexService) {
+    public GameRestController(GameService gameService, UserService userService, HexService hexService, CardService cardService) {
         this.gameService = gameService;
         this.userService = userService;
         this.hexService = hexService;
+        this.cardService = cardService;
     }
 
     @GetMapping
@@ -153,6 +156,20 @@ public class GameRestController {
     public ResponseEntity<Void> setUpShipInGameBoard(@PathVariable("name") String name, @PathVariable("hexId") int hexId) {
         Hex hex = hexService.findHexById(hexId);
         gameService.setUpShips(name, hex);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/play/{name}/expand/{hexPosition}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> useCardExpand(@PathVariable("name") String name, @PathVariable("hexPosition") int hexPosition) {
+        cardService.useExpandCard(name, hexPosition);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/play/{name}/explore/{hexPositionOrigin}/{hexPositionTarget}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> useCardExplore(@PathVariable("name") String name, @PathVariable("hexPositionOrigin") int hexPositionOrigin, @PathVariable("hexPositionTarget") int hexPositionTarget) {
+        cardService.useExploreCard(name, hexPositionOrigin, hexPositionTarget);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

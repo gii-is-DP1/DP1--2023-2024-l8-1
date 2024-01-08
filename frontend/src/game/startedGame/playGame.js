@@ -1,5 +1,6 @@
 import getIdFromUrl from "../../util/getIdFromUrl";
 import useIntervalFetchState from "../../util/useIntervalFetchState";
+import useFetchState from "../../util/useFetchState";
 import tokenService from "../../services/token.service";
 import { useState } from "react";
 import "./tablero.css"
@@ -10,22 +11,24 @@ import exterminate from "../../static/images/Exterminate.jpg"
 const jwt = tokenService.getLocalAccessToken();
 
 
-function Sector({ position, hexes, handleClick }) {
-    let puntos = hexes.map((x) => x[3])
+function Sector({ position, hexes,  onClickSetUpShips, onHexClick }) {
+    let puntos = hexes.map((x) => x[1])
+    let hexIds = hexes.map((x) => x[0])
+    let positions = hexes.map((x) => x[3])
     return (
         <div className="sector-container">
             <div className="row-up">
-                <Hex value={puntos[0]} onhexeClick={() => handleClick(position, 7 * position + 0)} />
-                <Hex value={puntos[1]} onhexeClick={() => handleClick(position, 7 * position + 1)} />
+                <Hex value={puntos[0]} position={positions[0]} onHexClick={() => onHexClick(positions[0])} />
+                <Hex value={puntos[1]} position={positions[1]} onHexClick={() => onHexClick(positions[1])} />
             </div>
             <div>
-                <Hex value={puntos[2]} onhexeClick={() => handleClick(position, 7 * position + 3)} />
-                <Hex value={puntos[3]} onhexeClick={() => handleClick(position, 7 * position + 4)} />
-                <Hex value={puntos[4]} onhexeClick={() => handleClick(position, 7 * position + 5)} />
+                <Hex value={puntos[2]} position={positions[2]} onHexClick={() => onHexClick(positions[2])} />
+                <Hex value={puntos[3]} position={positions[3]} onHexClick={() => onHexClick(positions[3])} />
+                <Hex value={puntos[4]} position={positions[4]} onHexClick={() => onHexClick(positions[4])} />
             </div>
             <div className="row-down">
-                <Hex value={puntos[5]} onhexeClick={() => handleClick(position, 7 * position + 6)} />
-                <Hex value={puntos[6]} onhexeClick={() => handleClick(position, 7 * position + 7)} />
+                <Hex value={puntos[5]} position={positions[5]} onHexClick={() => onHexClick(positions[5])} />
+                <Hex value={puntos[6]} position={positions[6]} onHexClick={() => onHexClick(positions[6])} />
             </div>
         </div>
     )
@@ -34,15 +37,15 @@ function Sector({ position, hexes, handleClick }) {
 function TriPrime({ position, hex, handleClick }) {
     return (
         <div className="sector-container">
-            {hex && <Hex value={hex[3]} onhexeClick={() => handleClick(position, 7 * position + 6)} />}
+            {hex && <Hex value={hex[1]} onhexeClick={() => handleClick(position, 7 * position + 6)} />}
         </div>
     );
 }
 
 
-function Hex({ value, onhexeClick }) {
+function Hex({ value, position, onHexClick }) {
     return (
-        <button className="hex" onClick={onhexeClick}>
+        <button className="hex" onClick={() => onHexClick(position)}>
             {value}
         </button>
     );
@@ -72,10 +75,7 @@ function HostInfo({ host }) {
 export default function PlayGame() {
     const name = getIdFromUrl(3);
     //const [players, setPlayers] = useState(['X', 'O', 'Y']);
-    const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-    const [lap, setLap] = useState(0);
-    const [turn, setTurn] = useState(0);
-    const [hexes, setHexes] = useIntervalFetchState(
+    const [hexes, setHexes] = useFetchState(
         [],
         `/api/v1/gameBoard/${name}`,
         jwt
@@ -87,7 +87,7 @@ export default function PlayGame() {
             return (newHex)
         })
 
-    const [gameInfo, setGameInfo] = useIntervalFetchState(
+    const [gameInfo, setGameInfo] = useFetchState(
         [],
         `/api/v1/game/play/${name}`,
         jwt
@@ -96,44 +96,53 @@ export default function PlayGame() {
     const host = gameInfo.host;
     const players = gameInfo.players;
     const [winner, setWinner] = useState(null);
+    const [selectedFunction, setSelectedFunction] = useState(null);
+    const [selectedOriginHex, setSelectedOriginHex] = useState(null);
+    const [selectedTargetHex, setSelectedTargetHex] = useState(null);
 
-    function handleClick(position, i) {
-        if (hexList[i]) {
-            return;
+    const handleFunctionSelection = (selectedFunction) => {
+        setSelectedFunction(selectedFunction);
+    }
+
+    const handleHexClick = (position) => {
+        if (selectedOriginHex === null) {
+            setSelectedOriginHex(position)
+        } else if (selectedTargetHex === null) {
+            setSelectedTargetHex(position)
+            handleAction(selectedFunction, selectedOriginHex, position)
+            setSelectedFunction(null)
+            setSelectedOriginHex(null)
+            setSelectedTargetHex(null)
         }
-        let occuped = false;
+    }
 
-        for (let j = 0; j < 7; j++) {
-            if (hexList[position * 7 + j] !== null) return occuped = true;
+    const handleAction = (selectedFunction, hexPositionOrigin, hexPositionTarget) => {
+        if (selectedFunction === "expand") {
+            handleExpand(hexPositionTarget)
+        } else if (selectedFunction === "explore") {
+            handleExplore(hexPositionOrigin, hexPositionTarget)
+        } else if (selectedFunction === "exterminate") {
+            handleExterminate(hexPositionOrigin, hexPositionTarget)
         }
-
-        if (turn === 0) {
-            if (occuped) {
-                console.log(lap);
-            } else {
-                const nexthexes = hexList.slice();
-
-                nexthexes[i] = players[currentPlayerIndex];
-
-                setHexes(nexthexes);
-
-
-                if (lap === 0) {
-                    setCurrentPlayerIndex(currentPlayerIndex + 1 === 3 ? 2 : currentPlayerIndex + 1);
-                    console.log(currentPlayerIndex);
-                    setLap(currentPlayerIndex === 2 ? 1 : 0);
-                    console.log(lap);
-                } else if (lap === 1) {
-                    setCurrentPlayerIndex(currentPlayerIndex - 1 === -1 ? 0 : currentPlayerIndex - 1);
-                    console.log(currentPlayerIndex);
-                    setTurn(currentPlayerIndex === 0 ? 1 : 0);
-                    console.log(lap);
-                }
-            }
-
-        }
+        
 
     }
+
+    function onClickSetUpShips(hexId) {
+    
+            fetch(`/api/v1/game/play/${name}/${hexId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${jwt}`
+                },
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                })
+        }
 
     const MediaCard = ({ title, imageUrl, onUse, positionClass }) => {
         const mediaStyles = {
@@ -158,12 +167,34 @@ export default function PlayGame() {
         );
     };
 
-    const handleExpand = () => {
-        console.log('Usar expansión');
-    }
+    const handleExpand = (hexPosition) => {
+        fetch(`/api/v1/game/play/${name}/expand/${hexPosition}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${jwt}`,
+          },
+        }).then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+        });
+        console.log("Has usado Expandir")
+      };
 
-    const handleExplore = () => {
-        console.log('Usar explorar');
+    const handleExplore = (hexPositionOrigin, hexPositionTarget) => {
+        fetch(`/api/v1/game/play/${name}/explore/${hexPositionOrigin}/${hexPositionTarget}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${jwt}`,
+            },
+          }).then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+          });
+          console.log("Has usado Explorar")
     }
 
     const handleExterminate = () => {
@@ -172,38 +203,38 @@ export default function PlayGame() {
 
     return (
         <div className="game">
-            {players && <PlayersInfo players={players}/>}
-            {host && <HostInfo host={host}/>}
+            {players && <PlayersInfo players={players} />}
+            {host && <HostInfo host={host} />}
             <div className="center-container">
                 <div className="left-sector">
-                    <Sector position={0} hexes={hexList.slice(0, 7)} handleClick={handleClick} />
+                    <Sector position={0} hexes={hexList.slice(0, 7)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
                 </div>
                 <div className="right-sector">
-                    <Sector position={1} hexes={hexList.slice(7, 14)} handleClick={handleClick} />
+                    <Sector position={1} hexes={hexList.slice(7, 14)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
                 </div>
             </div>
             <div className="center-container">
                 <div className="left-sector">
-                    <Sector position={2} hexes={hexList.slice(14, 21)} handleClick={handleClick} />
+                    <Sector position={2} hexes={hexList.slice(14, 21)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
                 </div>
                 <div className="tri-prime-container">
-                    <TriPrime position={3} hex={hexList[42]} handleClick={handleClick} />
+                    <TriPrime position={3} hex={hexList[42]} onClickSetUpShips={onClickSetUpShips}/>
                 </div>
                 <div className="right-sector">
-                    <Sector position={4} hexes={hexList.slice(21, 28)} handleClick={handleClick} />
+                    <Sector position={4} hexes={hexList.slice(21, 28)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
                 </div>
             </div>
             <div className="center-container">
                 <div className="left-sector">
-                    <Sector position={5} hexes={hexList.slice(28, 35)} handleClick={handleClick} />
+                    <Sector position={5} hexes={hexList.slice(28, 35)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
                 </div>
                 <div className="right-sector">
-                    <Sector position={6} hexes={hexList.slice(35, 42)} handleClick={handleClick} />
+                    <Sector position={6} hexes={hexList.slice(35, 42)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
                 </div>
             </div>
             <div className="cardsContainerStyle">
-                <MediaCard title={"Expand"} imageUrl={expand} onUse={handleExpand} positionClass="left-card" />
-                <MediaCard title={"Explore"} imageUrl={explore} onUse={handleExplore} positionClass="center-card" />
+                <MediaCard title={"Expand"} imageUrl={expand} onUse={() => handleFunctionSelection("expand")} positionClass="left-card" />
+                <MediaCard title={"Explore"} imageUrl={explore} onUse={() => handleFunctionSelection("explore")} positionClass="center-card" />
                 <MediaCard title={"Exterminate"} imageUrl={exterminate} onUse={handleExterminate} positionClass="right-card" />
             </div>
         </div>

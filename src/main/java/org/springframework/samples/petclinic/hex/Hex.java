@@ -52,6 +52,7 @@ public class Hex extends BaseEntity{
     List<Hex> adyacentes;
 
     @OneToMany(mappedBy = "hex")
+    @JsonIgnore
     List<Ship> ships;
     
 }

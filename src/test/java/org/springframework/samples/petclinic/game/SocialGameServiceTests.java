@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.ship.ShipService;
@@ -48,11 +49,14 @@ public class SocialGameServiceTests {
     VetService vs;
 
     @Mock
+    HexService hs;
+
+    @Mock
     private Validator validator;
 
     @BeforeEach
     public void setup() {
-        gs = new GameService(gr, us, ps, ss);
+        gs = new GameService(gr, us, ps, ss, hs);
     }
 
     private Game createValidGame(int id) {
