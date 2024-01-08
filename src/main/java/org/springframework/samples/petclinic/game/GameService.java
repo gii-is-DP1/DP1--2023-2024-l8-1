@@ -7,6 +7,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.AccessOptions.SetOptions.Propagation;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
+import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.ship.Ship;
@@ -141,4 +142,13 @@ public class GameService {
         repo.delete(toDelete);
     }
 
+    @Transactional
+    public void setUpShips(String name, Hex hex) {
+        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        List<Ship> playerShips = shipService.selectShipsFromSupply(me.getId());
+        Ship shipInHex = playerShips.get(0);
+        shipInHex.setHex(hex);
+        shipInHex.setState(ShipState.ON_GAME);
+        shipService.updateShip(shipInHex, shipInHex.getId());
+    }
 }

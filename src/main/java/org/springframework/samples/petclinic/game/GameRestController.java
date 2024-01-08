@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
+import org.springframework.samples.petclinic.hex.Hex;
+import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
@@ -34,12 +36,14 @@ import jakarta.validation.Valid;
 public class GameRestController {
 
     private final GameService gameService;
-    private final UserService userService;;
+    private final UserService userService;
+    private final HexService hexService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService) {
+    public GameRestController(GameService gameService, UserService userService, HexService hexService) {
         this.gameService = gameService;
         this.userService = userService;
+        this.hexService = hexService;
     }
 
     @GetMapping
@@ -118,14 +122,6 @@ public class GameRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
-    @PostMapping("/generateships/{name}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> generateShipsInGame(@PathVariable("name") String name) {
-        gameService.generateShipInGame(name);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
     @PutMapping("/join/{name}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Game> joinGame(@PathVariable("name") String name) {
@@ -149,6 +145,14 @@ public class GameRestController {
     public ResponseEntity<Void> deleteGame(@PathVariable("id") int id) {
         findGame(id);
         gameService.deleteGameById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/play/{name}/{hexId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> setUpShipInGameBoard(@PathVariable("name") String name, @PathVariable("hexId") int hexId) {
+        Hex hex = hexService.findHexById(hexId);
+        gameService.setUpShips(name, hex);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
