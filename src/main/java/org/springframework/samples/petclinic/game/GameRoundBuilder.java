@@ -54,22 +54,12 @@ class RoundBuilder implements GameRoundBuilder{
         List<Turn> turns = new ArrayList<>();
         if (clockwise){
             for (int i = 0; i < 3; i++){
-                if(primerJugador+i > 2){
-                    primerJugador = 0;
-                }else{
-                    primerJugador = primerJugador + i;
-                }
-                //primerJugador = primerJugador+i == 3?0:primerJugador+i;
+                primerJugador = primerJugador+i > 2?0:primerJugador+i;
                 turns.add(setTurn((primerJugador), players));
             }
         }else {
             for (int i = 0; i < 3; i++){
-                if(primerJugador-i < 0){
-                    primerJugador = 2;
-                }else{
-                    primerJugador = primerJugador - i;
-                }
-                //primerJugador = primerJugador-i == -1?2:primerJugador-i;
+                primerJugador = primerJugador-i < 0?2:primerJugador-i;
                 turns.add(setTurn((primerJugador), players));
             }
         }

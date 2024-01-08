@@ -29,6 +29,19 @@ public class RoundService {
     }
 
     @Transactional
+    public void roundIsOver(Round round, Phase phase){
+        if (phase.getTurns().stream().allMatch(s -> s.getIsOver())){
+            phase.setIsOver(true);
+            phaseService.savePhase(phase);
+        } 
+        if (round.getPhases().stream().allMatch(s -> s.getIsOver())){
+            round.setIsOver(true);
+            saveRound(round);
+        }
+        
+    }
+
+    @Transactional
     public Round saveRound(Round round){
         return roundRepository.save(round);
     }

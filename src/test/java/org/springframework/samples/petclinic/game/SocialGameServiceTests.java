@@ -17,9 +17,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.samples.petclinic.phase.PhaseService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
+import org.springframework.samples.petclinic.round.RoundService;
 import org.springframework.samples.petclinic.ship.ShipService;
+import org.springframework.samples.petclinic.turn.TurnService;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.samples.petclinic.vet.VetService;
 import org.springframework.transaction.TransactionSystemException;
@@ -42,7 +45,13 @@ public class SocialGameServiceTests {
     PlayerService ps;
 
     @Mock
-    ShipService ss;
+    RoundService rs;
+
+    @Mock
+    PhaseService phs;
+
+    @Mock
+    TurnService ts;
 
     @Mock
     VetService vs;
@@ -52,7 +61,7 @@ public class SocialGameServiceTests {
 
     @BeforeEach
     public void setup() {
-        gs = new GameService(gr, us, ps, ss);
+       // gs = new GameService(gr, us, ps, rs, phs, ts);
     }
 
     private Game createValidGame(int id) {

@@ -11,7 +11,7 @@ const jwt = tokenService.getLocalAccessToken();
 
 
 function Sector({ position, hexes, handleClick }) {
-    let puntos = hexes.map((x) => x[3])
+    let puntos = hexes.map((x) => x[0])
     return (
         <div className="sector-container">
             <div className="row-up">
@@ -62,46 +62,20 @@ export default function PlayGame() {
 
     const hexList =
         hexes.map((h) => {
-            const newHex = [h.id, h.puntos, h.occuped, h.position]
+            const newHex = [h.puntos, h.occuped, h.position]
             return (newHex)
         })
 
     function handleClick(position, i) {
-        if (hexList[i]) {
-            return;
-        }
-        let occuped = false;
-
-        for (let j = 0; j < 7; j++) {
-            if (hexList[position * 7 + j] !== null) return occuped = true;
-        }
-
-        if (turn === 0) {
-            if (occuped) {
-                console.log(lap);
-            } else {
-                const nexthexes = hexList.slice();
-
-                nexthexes[i] = players[currentPlayerIndex];
-
-                setHexes(nexthexes);
-
-
-                if (lap === 0) {
-                    setCurrentPlayerIndex(currentPlayerIndex + 1 === 3 ? 2 : currentPlayerIndex + 1);
-                    console.log(currentPlayerIndex);
-                    setLap(currentPlayerIndex === 2 ? 1 : 0);
-                    console.log(lap);
-                } else if (lap === 1) {
-                    setCurrentPlayerIndex(currentPlayerIndex - 1 === -1 ? 0 : currentPlayerIndex - 1);
-                    console.log(currentPlayerIndex);
-                    setTurn(currentPlayerIndex === 0 ? 1 : 0);
-                    console.log(lap);
-                }
-            }
-
-        }
-
+        fetch(
+            "/api/v1/game/setHex" + name + position + i, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${jwt}`,
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+            });
     }
 
     const MediaCard = ({ title, imageUrl, onUse, positionClass }) => {

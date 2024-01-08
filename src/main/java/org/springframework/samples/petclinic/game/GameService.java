@@ -7,15 +7,24 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
+import org.springframework.samples.petclinic.gameboard.GameBoardService;
+import org.springframework.samples.petclinic.hex.Hex;
+import org.springframework.samples.petclinic.hex.HexService;
+import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.phase.PhaseService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.round.Round;
 import org.springframework.samples.petclinic.round.RoundService;
+import org.springframework.samples.petclinic.sector.Sector;
+import org.springframework.samples.petclinic.ship.Ship;
+import org.springframework.samples.petclinic.ship.ShipService;
+import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.turn.TurnService;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.security.access.AccessDeniedException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
@@ -29,16 +38,21 @@ public class GameService {
     RoundService roundService;
     PhaseService phaseService;
     TurnService turnService;
+    ShipService shipService;
+    HexService hexService;
 
     @Autowired
     public GameService(GameRepository repo, UserService userService, PlayerService playerService,
-                    RoundService roundService, PhaseService phaseService, TurnService turnService){
+                    RoundService roundService, PhaseService phaseService, TurnService turnService, 
+                    ShipService shipService, HexService hexService){
         this.repo=repo;
         this.userService=userService;
         this.playerService=playerService;
         this.roundService = roundService;
         this.phaseService = phaseService;
         this.turnService = turnService;
+        this.shipService = shipService;
+        this.hexService = hexService;
     }
 
     @Transactional(readOnly = true)
@@ -106,56 +120,53 @@ public class GameService {
 
         director.InitialRound();
 
-        rounds.add(builder.getRound());
-        
-        /*Round round = new Round();
-        List<Phase> phases = new ArrayList<>();
-        /*List<Turn> turns1 = new ArrayList<>();
-
-
-        Round round = new Round();
-        Phase phase = new Phase();
-        Phase phase1 = new Phase();        
-        
-        for (int i = 0; i < 2; i++){
-         turns.add(turnService.saveTurn(new Turn()));
-        }
-        turns1.add(turnService.saveTurn(new Turn()));
-        phase.setTurns(turns);
-        phase1.setTurns(turns1);
-        phaseService.savePhase(phase);
-        phases.add(phase);
-        phaseService.savePhase(phase1);
-        phases.add(phase1);
-        turns.clear();
-
-        for (int i = 0; i < 2; i++){
-            List<Turn> turns = new ArrayList<>();
-            Phase phase = new Phase(); 
-            for (int j = 0; j < 3; j++){
-                Turn turn = new Turn();
-                turn.setPlayer(findGamePlayers(name).get(j)); 
-                turnService.saveTurn(turn);
-                turns.add(turn);
-            }
-            phase.setTurns(turns);
-            phaseService.savePhase(phase);
-            phases.add(phase);
-        }
-
-        /*Phase phase = phases.get(0);
-        phase.setTurns(turns);
-        phaseService.savePhase(phase);
-        phases.add(phase);
-
-
-
-        round.setPhases(phases);
-        roundService.saveRound(round);
-        rounds.add(round);*/        
+        rounds.add(builder.getRound());     
 
         game.setRounds(rounds);
         return saveGame(game);
+    }
+
+    @Transactional
+    public Game initialRound(String name, int sector, int hexPosition, Player player){
+        Game game = findByName(name);
+        Round round = game.getRounds().get(0);
+        
+        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
+
+        if (turn.getPlayer() == player){
+            if (!game.getGameBoard().getSectors().get(sector).getHexs().stream().anyMatch(s -> s.getOccuped())){
+                Hex hex = game.getGameBoard().getSectors().get(sector).getHexs().get(hexPosition-7*sector);
+                Ship ship = (shipService.selectShipsFromSupply(player.getId())).get(0);
+                ship.setHex(hex);
+                hex.setOccuped(true);
+                turn.setIsOver(true);
+                shipService.save(ship);
+                hexService.save(hex);
+                turnService.saveTurn(turn);
+            }
+        } else {
+            throw new AccessDeniedException("No es tu turno.");
+        }
+        roundService.roundIsOver(round,phase);
+        return game;
+    }
+
+    @Transactional
+    public Game setHex(String name, int sector, int hexPosition, Player player){
+        Game game = findByName(name);
+        for (Round round : game.getRounds()){
+            if (!round.getIsOver()) for (Phase phase : round.getPhases()){
+                    if (!phase.getIsOver()) for (Turn turn : phase.getTurns()){
+                            if (!turn.getIsOver()){
+                                if (turn.getPlayer() == player){
+                                    
+                                }
+                            }
+                        }
+                    
+                }
+        }return game;
     }
 
     @Transactional

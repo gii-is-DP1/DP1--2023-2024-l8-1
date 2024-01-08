@@ -113,6 +113,25 @@ public class GameRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PutMapping("/setHex/{name}/{sector}/{hexPosition}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Game> setHex(@PathVariable("name") String name, 
+                            @PathVariable("sector") int sector, @PathVariable("hexPosition") int hexPosition){
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        Game game = gameService.findByName(name);
+        if (aux.getRol() == PlayerRol.SPECTATOR){
+            throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
+        } else{
+            if (!game.getRounds().get(0).getIsOver()){
+                gameService.initialRound(name, sector, hexPosition, aux);
+            }else{
+                gameService.setHex(name, sector, hexPosition, aux);
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
     @PutMapping("/join/{name}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Game> joinGame(@PathVariable("name") String name) {

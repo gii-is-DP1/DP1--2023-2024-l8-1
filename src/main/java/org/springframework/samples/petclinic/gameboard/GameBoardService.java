@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.hex.Hex;
+import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.GameBoardGenerationException;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.sector.Sector;
@@ -62,7 +63,7 @@ public class GameBoardService {
     public GameBoard genRandomGameBoard(String game){
         GameBoard newBoard = new GameBoard();
         List<Sector> aux = new ArrayList<>();
-
+  
         try {
             for(int i = 0; i < 6; i++){
             Sector sector = sectorService.genRandom();
