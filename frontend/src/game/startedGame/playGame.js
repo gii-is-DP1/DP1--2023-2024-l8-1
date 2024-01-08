@@ -1,5 +1,5 @@
 import getIdFromUrl from "../../util/getIdFromUrl";
-import useFetchState from "../../util/useFetchState";
+import useIntervalFetchState from "../../util/useIntervalFetchState";
 import tokenService from "../../services/token.service";
 import { useState } from "react";
 import "./tablero.css"
@@ -34,7 +34,7 @@ function Sector({ position, hexes, handleClick }) {
 function TriPrime({ position, hex, handleClick }) {
     return (
         <div className="sector-container">
-            <Hex value={hex} onhexeClick={() => handleClick(position, 7 * position + 6)} />
+            {hex && <Hex value={hex[3]} onhexeClick={() => handleClick(position, 7 * position + 6)} />}
         </div>
     );
 }
@@ -48,13 +48,34 @@ function Hex({ value, onhexeClick }) {
     );
 }
 
+function PlayersInfo({ players }) {
+    return (
+        <div className="players-info">
+            {players.map((player) => (
+                <div key={player.id}>
+                    <p>{player.user.username}: {player.score}</p>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+function HostInfo({ host }) {
+    return (
+        <div className="host-info">
+            <p>Puntuación: {host.score}</p>
+            <p>Naves restantes: {host.numShips}</p>
+        </div>
+    );
+}
+
 export default function PlayGame() {
     const name = getIdFromUrl(3);
-    const [players, setPlayers] = useState(['X', 'O', 'Y']);
+    //const [players, setPlayers] = useState(['X', 'O', 'Y']);
     const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
     const [lap, setLap] = useState(0);
     const [turn, setTurn] = useState(0);
-    const [hexes, setHexes] = useFetchState(
+    const [hexes, setHexes] = useIntervalFetchState(
         [],
         `/api/v1/gameBoard/${name}`,
         jwt
@@ -65,6 +86,16 @@ export default function PlayGame() {
             const newHex = [h.puntos, h.occuped, h.position]
             return (newHex)
         })
+
+    const [gameInfo, setGameInfo] = useIntervalFetchState(
+        [],
+        `/api/v1/game/play/${name}`,
+        jwt
+    );
+
+    const host = gameInfo.host;
+    const players = gameInfo.players;
+    const [winner, setWinner] = useState(null);
 
     function handleClick(position, i) {
         fetch(
@@ -115,6 +146,8 @@ export default function PlayGame() {
 
     return (
         <div className="game">
+            {players && <PlayersInfo players={players}/>}
+            {host && <HostInfo host={host}/>}
             <div className="center-container">
                 <div className="left-sector">
                     <Sector position={0} hexes={hexList.slice(0, 7)} handleClick={handleClick} />

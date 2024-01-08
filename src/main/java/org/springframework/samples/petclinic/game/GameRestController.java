@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
+import org.springframework.samples.petclinic.hex.Hex;
+import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
@@ -34,12 +36,14 @@ import jakarta.validation.Valid;
 public class GameRestController {
 
     private final GameService gameService;
-    private final UserService userService;;
+    private final UserService userService;
+    private final HexService hexService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService) {
+    public GameRestController(GameService gameService, UserService userService, HexService hexService) {
         this.gameService = gameService;
         this.userService = userService;
+        this.hexService = hexService;
     }
 
     @GetMapping
@@ -52,6 +56,13 @@ public class GameRestController {
         return new ResponseEntity<>((List<Game>) gameService.getPublicas(), HttpStatus.OK);
     }
 
+    @GetMapping("/play/{name}")
+    public ResponseEntity<Game> findGameByName(@PathVariable("name") String name) {
+        Game gameToGet = gameService.findByName(name);
+        if (gameToGet == null)
+            throw new ResourceNotFoundException("Game with name " + name + "not found!");
+        return new ResponseEntity<Game>(gameToGet, HttpStatus.OK);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Game> findGame(@PathVariable("id") int id) {
@@ -76,7 +87,6 @@ public class GameRestController {
         Game result = null;
         if (!br.hasErrors()) {
             result = gameService.createGame(newGame);
-            ;
         } else
             throw new BadRequestException(br.getAllErrors());
         return new ResponseEntity<>(result, HttpStatus.CREATED);
@@ -155,6 +165,14 @@ public class GameRestController {
     public ResponseEntity<Void> deleteGame(@PathVariable("id") int id) {
         findGame(id);
         gameService.deleteGameById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/play/{name}/{hexId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> setUpShipInGameBoard(@PathVariable("name") String name, @PathVariable("hexId") int hexId) {
+        Hex hex = hexService.findHexById(hexId);
+        gameService.setUpShips(name, hex);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

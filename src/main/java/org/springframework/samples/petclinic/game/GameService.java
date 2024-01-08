@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mapping.AccessOptions.SetOptions.Propagation;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.gameboard.GameBoardService;
 import org.springframework.samples.petclinic.hex.Hex;
@@ -21,6 +22,7 @@ import org.springframework.samples.petclinic.ship.Ship;
 import org.springframework.samples.petclinic.ship.ShipService;
 import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.turn.TurnService;
+import org.springframework.samples.petclinic.ship.ShipState;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.security.access.AccessDeniedException;
@@ -110,7 +112,7 @@ public class GameService {
     }
 
     @Transactional
-    public Game startGame(String name) throws BadRequestException{
+    public Game startGame(String name) throws BadRequestException {
         Game game = findByName(name);
         List<Round> rounds = new ArrayList<>();
         game.setState(GameState.START_PLAYER_CHOICE);
@@ -198,4 +200,13 @@ public class GameService {
         repo.delete(toDelete);
     }
 
+    @Transactional
+    public void setUpShips(String name, Hex hex) {
+        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        List<Ship> playerShips = shipService.selectShipsFromSupply(me.getId());
+        Ship shipInHex = playerShips.get(0);
+        shipInHex.setHex(hex);
+        shipInHex.setState(ShipState.ON_GAME);
+        shipService.updateShip(shipInHex, shipInHex.getId());
+    }
 }

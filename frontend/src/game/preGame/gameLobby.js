@@ -45,7 +45,7 @@ export default function GameLobby() {
                 "Content-Type": "application/json",
             },
         });
-      
+
         navigate('../game/play/' + name);
 
     }
@@ -93,8 +93,8 @@ export default function GameLobby() {
                     </Table>
 
                     <Button outline color="success"
-                            onClick={() => startGame(name)}>start
-                            </Button>
+                        onClick={() => startGame(name)}>start
+                    </Button>
                     <Button outline color="success">
                         <Link
                             to={'/invitations/new/'} className="btn sm"

@@ -102,8 +102,7 @@ public class SocialGameServiceTests {
 
     }
 
-    /*
-     * @Test
+     @Test
     public void shouldNotSaveGame() {
 
         Game newGame = createAGameWithoutName(61);
@@ -129,7 +128,5 @@ public class SocialGameServiceTests {
         // Verifica que se haya intentado guardar la entidad
         verify(gr, times(1)).save(newGame);
     }
-
-     */
     
 }

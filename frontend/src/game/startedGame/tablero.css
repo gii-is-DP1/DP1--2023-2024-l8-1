@@ -21,6 +21,41 @@ body {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
+
+.players-info {
+  position: relative;
+  top: 90px;
+  left: -430px;
+  display: flex;
+  flex-direction: column;
+}
+
+.host-info {
+  position: relative;
+  top: 40px;
+  right: -400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.players-info div {
+  margin-bottom: 5px;
+}
+
+.host-info div {
+  margin-bottom: 5px;
+}
+
+.players-info p {
+  margin: 0;
+}
+
+.host-info p {
+  margin: 0;
+}
+
+
+
 .sector-container {
   display: flex;
   flex-direction: column;
