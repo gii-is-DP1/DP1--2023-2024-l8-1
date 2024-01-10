@@ -8,15 +8,15 @@ body {
   background: #34415d;
   border: 1px solid #999;
   float: left;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
   line-height: 34px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 50px;
-  height: 60px;
+  width: 60px;
+  height: 70px;
   position: relative;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
@@ -93,7 +93,7 @@ body {
 
 .left-sector,
 .right-sector {
-  margin: 0 10px;
+  margin: 0px;
 }
 
 .tri-prime-container {

@@ -11,12 +11,17 @@ import exterminate from "../../static/images/Exterminate.jpg"
 const jwt = tokenService.getLocalAccessToken();
 
 
-function Sector({ position, hexes,  onClickSetUpShips, onHexClick }) {
-    let puntos = hexes.map((x) => x[1])
-    let hexIds = hexes.map((x) => x[0])
-    let positions = hexes.map((x) => x[3])
+function Sector({ position, hexes, onClickSetUpShips, onHexClick, style }) {
+    let puntos = hexes.map((x) => x[1]);
+    let positions = hexes.map((x) => x[3]);
+
+    const sectorStyles = {
+        transform: 'rotate(-30deg)',
+        ...style
+    };
+
     return (
-        <div className="sector-container">
+        <div className="sector-container" style={sectorStyles}>
             <div className="row-up">
                 <Hex value={puntos[0]} position={positions[0]} onHexClick={() => onHexClick(positions[0])} />
                 <Hex value={puntos[1]} position={positions[1]} onHexClick={() => onHexClick(positions[1])} />
@@ -31,13 +36,35 @@ function Sector({ position, hexes,  onClickSetUpShips, onHexClick }) {
                 <Hex value={puntos[6]} position={positions[6]} onHexClick={() => onHexClick(positions[6])} />
             </div>
         </div>
-    )
+    );
 }
 
-function TriPrime({ position, hex, handleClick }) {
+function TriPrime({ position, hex, handleClick, style }) {
+
+    const sectorStyles = {
+        transform: 'rotate(-30deg)',
+        ...style
+    };
     return (
-        <div className="sector-container">
-            {hex && <Hex value={hex[1]} onhexeClick={() => handleClick(position, 7 * position + 6)} />}
+        <div className="sector-container" style={sectorStyles}>
+            <div className="row-up">
+                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+            </div>
+            <div>
+
+                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+
+                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+
+                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+            </div>
+            <div className="row-down">
+
+                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+
+                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+            </div>
         </div>
     );
 }
@@ -80,6 +107,28 @@ export default function PlayGame() {
         `/api/v1/gameBoard/${name}`,
         jwt
     );
+
+    const generateSectorStyles = (position) => {
+        // Genera estilos específicos para cada Sector
+        switch (position) {
+            case 0:
+                return { marginTop: '20px', marginLeft: '-30px', marginBottom: '-70px' };
+            case 1:
+                return { marginTop: '-40px', marginLeft: '-15px', marginBottom: '-70px' };
+            case 2:
+                return { marginTop: '5px', marginLeft: '35px' };
+            case 3:
+                return { marginTop: '-50px', marginLeft: '-40px' };
+            case 4:
+                return { marginTop: '-105px', marginLeft: '-40px' };
+            case 5:
+                return { marginTop: '-90px', marginLeft: '100px' };
+            case 6:
+                return { marginTop: '-140px', marginLeft: '-20px' };
+            default:
+                return {};
+        }
+    };
 
     const hexList =
         hexes.map((h) => {
@@ -124,42 +173,60 @@ export default function PlayGame() {
         } else if (selectedFunction === "exterminate") {
             handleExterminate(hexPositionOrigin, hexPositionTarget)
         }
-        
+
 
     }
 
     function onClickSetUpShips(hexId) {
-    
-            fetch(`/api/v1/game/play/${name}/${hexId}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${jwt}`
-                },
+
+        fetch(`/api/v1/game/play/${name}/${hexId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwt}`
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
             })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                })
-        }
+    }
 
     const MediaCard = ({ title, imageUrl, onUse, positionClass }) => {
         const mediaStyles = {
             height: '200px',
+            width: '150px',
             backgroundImage: `url("${imageUrl}")`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '10px', // Espaciado interior
+            borderRadius: '10px', // Borde redondeado (opcional)
+        };
+
+        const textStyles = {
+            fontSize: '14px', // Ajusta el tamaño de la fuente según tus necesidades
+            marginBottom: '8px',
+            textAlign: 'center',
+        };
+
+        const buttonStyles = {
+            fontSize: '14px', // Ajusta el tamaño de la fuente según tus necesidades
+            width: '100%', // Ocupa el 100% del ancho disponible
         };
 
         return (
             <div className={`cardStyles ${positionClass}`}>
                 <div style={mediaStyles} title={title} />
                 <div>
-                    <h3 style={{ marginBottom: '8px', textAlign: 'center' }}>{title}</h3>
+                    <h3 style={textStyles}>{title}</h3>
                 </div>
                 <div>
-                    <button className="buttonStyles" onClick={onUse}>
+                    <button className="buttonStyles" style={buttonStyles} onClick={onUse}>
                         Usar
                     </button>
                 </div>
@@ -169,32 +236,32 @@ export default function PlayGame() {
 
     const handleExpand = (hexPosition) => {
         fetch(`/api/v1/game/play/${name}/expand/${hexPosition}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${jwt}`,
-          },
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`,
+            },
         }).then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
         });
         console.log("Has usado Expandir")
-      };
+    };
 
     const handleExplore = (hexPositionOrigin, hexPositionTarget) => {
         fetch(`/api/v1/game/play/${name}/explore/${hexPositionOrigin}/${hexPositionTarget}`, {
             method: "PUT",
             headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${jwt}`,
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`,
             },
-          }).then((response) => {
+        }).then((response) => {
             if (!response.ok) {
-              throw new Error("Network response was not ok");
+                throw new Error("Network response was not ok");
             }
-          });
-          console.log("Has usado Explorar")
+        });
+        console.log("Has usado Explorar")
     }
 
     const handleExterminate = () => {
@@ -207,29 +274,70 @@ export default function PlayGame() {
             {host && <HostInfo host={host} />}
             <div className="center-container">
                 <div className="left-sector">
-                    <Sector position={0} hexes={hexList.slice(0, 7)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
+                    <Sector
+                        position={0}
+                        hexes={hexList.slice(0, 7)}
+                        onClickSetUpShips={onClickSetUpShips}
+                        onHexClick={handleHexClick}
+                        style={generateSectorStyles(0)}
+                    />
                 </div>
                 <div className="right-sector">
-                    <Sector position={1} hexes={hexList.slice(7, 14)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
+                    <Sector
+                        position={1}
+                        hexes={hexList.slice(7, 14)}
+                        onClickSetUpShips={onClickSetUpShips}
+                        onHexClick={handleHexClick}
+                        style={generateSectorStyles(1)}
+                    />
                 </div>
             </div>
             <div className="center-container">
                 <div className="left-sector">
-                    <Sector position={2} hexes={hexList.slice(14, 21)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
+                    <Sector
+                        position={2}
+                        hexes={hexList.slice(14, 21)}
+                        onClickSetUpShips={onClickSetUpShips}
+                        onHexClick={handleHexClick}
+                        style={generateSectorStyles(2)}
+                    />
                 </div>
                 <div className="tri-prime-container">
-                    <TriPrime position={3} hex={hexList[42]} onClickSetUpShips={onClickSetUpShips}/>
+                    <TriPrime
+                        position={3}
+                        hex={hexList[42]}
+                        onClickSetUpShips={onClickSetUpShips}
+                        style={generateSectorStyles(3)}
+                    />
                 </div>
                 <div className="right-sector">
-                    <Sector position={4} hexes={hexList.slice(21, 28)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
+                    <Sector
+                        position={4}
+                        hexes={hexList.slice(21, 28)}
+                        onClickSetUpShips={onClickSetUpShips}
+                        onHexClick={handleHexClick}
+                        style={generateSectorStyles(4)}
+                    />
                 </div>
             </div>
             <div className="center-container">
                 <div className="left-sector">
-                    <Sector position={5} hexes={hexList.slice(28, 35)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
+                    <Sector
+                        position={5}
+                        hexes={hexList.slice(28, 35)}
+                        onClickSetUpShips={onClickSetUpShips}
+                        onHexClick={handleHexClick}
+                        style={generateSectorStyles(5)}
+                    />
                 </div>
                 <div className="right-sector">
-                    <Sector position={6} hexes={hexList.slice(35, 42)} onClickSetUpShips={onClickSetUpShips} onHexClick={handleHexClick}/>
+                    <Sector
+                        position={6}
+                        hexes={hexList.slice(35, 42)}
+                        onClickSetUpShips={onClickSetUpShips}
+                        onHexClick={handleHexClick}
+                        style={generateSectorStyles(6)}
+                    />
                 </div>
             </div>
             <div className="cardsContainerStyle">
@@ -238,6 +346,5 @@ export default function PlayGame() {
                 <MediaCard title={"Exterminate"} imageUrl={exterminate} onUse={handleExterminate} positionClass="right-card" />
             </div>
         </div>
-
     );
 }
