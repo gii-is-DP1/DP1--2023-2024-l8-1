@@ -112,19 +112,19 @@ export default function PlayGame() {
         // Genera estilos específicos para cada Sector
         switch (position) {
             case 0:
-                return { marginTop: '20px', marginLeft: '-30px', marginBottom: '-70px' };
+                return { marginTop: '10px', marginLeft: '-35px', marginBottom: '-70px' };
             case 1:
-                return { marginTop: '-40px', marginLeft: '-15px', marginBottom: '-70px' };
+                return { marginTop: '-40px', marginLeft: '-10px', marginBottom: '-70px' };
             case 2:
-                return { marginTop: '5px', marginLeft: '35px' };
+                return { marginTop: '10px', marginLeft: '30px' };
             case 3:
-                return { marginTop: '-50px', marginLeft: '-40px' };
+                return { marginTop: '-40px', marginLeft: '-30px' };
             case 4:
-                return { marginTop: '-105px', marginLeft: '-40px' };
+                return { marginTop: '-90px', marginLeft: '-30px' };
             case 5:
-                return { marginTop: '-90px', marginLeft: '100px' };
+                return { marginTop: '-80px', marginLeft: '90px' };
             case 6:
-                return { marginTop: '-140px', marginLeft: '-20px' };
+                return { marginTop: '-140px', marginLeft: '-10px' };
             default:
                 return {};
         }
@@ -204,19 +204,19 @@ export default function PlayGame() {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '10px', // Espaciado interior
-            borderRadius: '10px', // Borde redondeado (opcional)
+            padding: '10px',
+            borderRadius: '10px',
         };
 
         const textStyles = {
-            fontSize: '14px', // Ajusta el tamaño de la fuente según tus necesidades
+            fontSize: '14px',
             marginBottom: '8px',
             textAlign: 'center',
         };
 
         const buttonStyles = {
-            fontSize: '14px', // Ajusta el tamaño de la fuente según tus necesidades
-            width: '100%', // Ocupa el 100% del ancho disponible
+            fontSize: '14px',
+            width: '100%',
         };
 
         return (
@@ -264,8 +264,19 @@ export default function PlayGame() {
         console.log("Has usado Explorar")
     }
 
-    const handleExterminate = () => {
-        console.log('Usar exterminar');
+    const handleExterminate = (hexPositionOrigin, hexPositionTarget) => {
+        fetch(`/api/v1/game/play/${name}/exterminate/${hexPositionOrigin}/${hexPositionTarget}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`,
+            },
+        }).then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+        });
+        console.log("Has usado Exterminate")
     }
 
     return (
@@ -343,7 +354,7 @@ export default function PlayGame() {
             <div className="cardsContainerStyle">
                 <MediaCard title={"Expand"} imageUrl={expand} onUse={() => handleFunctionSelection("expand")} positionClass="left-card" />
                 <MediaCard title={"Explore"} imageUrl={explore} onUse={() => handleFunctionSelection("explore")} positionClass="center-card" />
-                <MediaCard title={"Exterminate"} imageUrl={exterminate} onUse={handleExterminate} positionClass="right-card" />
+                <MediaCard title={"Exterminate"} imageUrl={exterminate} onUse={() => handleFunctionSelection("exterminate")} positionClass="right-card" />
             </div>
         </div>
     );
