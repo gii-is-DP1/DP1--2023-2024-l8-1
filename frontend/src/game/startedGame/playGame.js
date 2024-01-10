@@ -71,8 +71,32 @@ function TriPrime({ position, hex, handleClick, style }) {
 
 
 function Hex({ value, position, onHexClick }) {
+
+    let backgroundColor;
+
+    switch (value) {
+        case 0:
+            backgroundColor = 'gray';
+            break;
+        case 1:
+            backgroundColor = 'pink';
+            break;
+        case 2:
+            backgroundColor = 'orange';
+            break;
+        case 3:
+            backgroundColor = 'green';
+            break;
+        default:
+            backgroundColor = 'transparent';
+    }
+
+    const hexStyles = {
+        background: backgroundColor
+    }
+
     return (
-        <button className="hex" onClick={() => onHexClick(position)}>
+        <button className="hex" style={hexStyles} onClick={() => onHexClick(position)}>
             {value}
         </button>
     );
