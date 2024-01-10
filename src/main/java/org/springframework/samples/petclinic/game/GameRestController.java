@@ -42,7 +42,8 @@ public class GameRestController {
     private final CardService cardService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService, HexService hexService, CardService cardService) {
+    public GameRestController(GameService gameService, UserService userService, HexService hexService,
+            CardService cardService) {
         this.gameService = gameService;
         this.userService = userService;
         this.hexService = hexService;
@@ -117,9 +118,9 @@ public class GameRestController {
     public ResponseEntity<Game> startGame(@PathVariable("name") String name) {
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
         Game game = gameService.findByName(name);
-        if (aux != game.getHost()){
+        if (aux != game.getHost()) {
             throw new AccessDeniedException("No puedes empezar la partida si no eres el host de la partida");
-        }else{    
+        } else {
             gameService.startGame(name);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -135,11 +136,11 @@ public class GameRestController {
     @DeleteMapping("/lobby/{name}/{id}")
     public ResponseEntity<Game> kickPlayer(@PathVariable("name") String name, @PathVariable("id") int id) {
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        if (aux.getRol() != PlayerRol.HOST){
+        if (aux.getRol() != PlayerRol.HOST) {
             throw new AccessDeniedException("No puedes echar a un jugador si no eres el host de la partida");
-        }else{
-        findGame(gameService.findByName(name).getId());
-        gameService.kickPlayer(name, id);
+        } else {
+            findGame(gameService.findByName(name).getId());
+            gameService.kickPlayer(name, id);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -153,7 +154,8 @@ public class GameRestController {
 
     @PutMapping("/play/{name}/{hexId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> setUpShipInGameBoard(@PathVariable("name") String name, @PathVariable("hexId") int hexId) {
+    public ResponseEntity<Void> setUpShipInGameBoard(@PathVariable("name") String name,
+            @PathVariable("hexId") int hexId) {
         Hex hex = hexService.findHexById(hexId);
         gameService.setUpShips(name, hex);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -161,15 +163,27 @@ public class GameRestController {
 
     @PutMapping("/play/{name}/expand/{hexPosition}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> useCardExpand(@PathVariable("name") String name, @PathVariable("hexPosition") int hexPosition) {
+    public ResponseEntity<Void> useCardExpand(@PathVariable("name") String name,
+            @PathVariable("hexPosition") int hexPosition) {
         cardService.useExpandCard(name, hexPosition);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/play/{name}/explore/{hexPositionOrigin}/{hexPositionTarget}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> useCardExplore(@PathVariable("name") String name, @PathVariable("hexPositionOrigin") int hexPositionOrigin, @PathVariable("hexPositionTarget") int hexPositionTarget) {
+    public ResponseEntity<Void> useCardExplore(@PathVariable("name") String name,
+            @PathVariable("hexPositionOrigin") int hexPositionOrigin,
+            @PathVariable("hexPositionTarget") int hexPositionTarget) {
         cardService.useExploreCard(name, hexPositionOrigin, hexPositionTarget);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/play/{name}/exterminate/{hexPositionOrigin}/{hexPositionTarget}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> useCardExterminate(@PathVariable("name") String name,
+            @PathVariable("hexPositionOrigin") int hexPositionOrigin,
+            @PathVariable("hexPositionTarget") int hexPositionTarget) {
+        cardService.useExterminateCard(name, hexPositionOrigin, hexPositionTarget);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

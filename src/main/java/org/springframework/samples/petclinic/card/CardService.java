@@ -55,4 +55,15 @@ public class CardService {
         Explore explore = new Explore(hexService, shipService);
         explore.action(me, origin, target);
     }
+
+    @Transactional
+    public void useExterminateCard(String name, Integer positionOrigin, Integer positionTarget) {
+        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        Game game = gameService.findByName(name);
+        List<Hex> hexs = gameBoardService.getGameBoardHexs(game.getGameBoard());
+        Hex origin = hexs.get(positionOrigin);
+        Hex target = hexs.get(positionTarget);
+        Exterminate exterminate = new Exterminate(hexService, shipService);
+        exterminate.action(me, origin, target);
+    }
 }
