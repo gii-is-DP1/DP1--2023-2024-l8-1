@@ -7,6 +7,10 @@ import "./tablero.css"
 import expand from "../../static/images/Expand.jpg"
 import explore from "../../static/images/Explore.jpg"
 import exterminate from "../../static/images/Exterminate.jpg"
+import stars from "../../static/images/Stars.jpg"
+import planet1 from "../../static/images/Planeta1.jpg"
+import planet2 from "../../static/images/Planeta2.jpg"
+import triPrime from "../../static/images/PlanetaTriPrime.jpg"
 
 const jwt = tokenService.getLocalAccessToken();
 
@@ -72,32 +76,32 @@ function TriPrime({ position, hex, handleClick, style }) {
 
 function Hex({ value, position, onHexClick }) {
 
-    let backgroundColor;
+    let image;
 
     switch (value) {
         case 0:
-            backgroundColor = 'gray';
+            image = stars;
             break;
         case 1:
-            backgroundColor = 'pink';
+            image = planet1;
             break;
         case 2:
-            backgroundColor = 'orange';
+            image = planet2;
             break;
         case 3:
-            backgroundColor = 'green';
+            image = triPrime;
             break;
         default:
-            backgroundColor = 'transparent';
+            image = 'transparent';
     }
 
     const hexStyles = {
-        background: backgroundColor
+        backgroundImage: `url("${image}")`,
+        backgroundSize: 'cover',
     }
 
     return (
-        <button className="hex" style={hexStyles} onClick={() => onHexClick(position)}>
-            {value}
+        <button className="hex" style={hexStyles}onClick={() => onHexClick(position)}>
         </button>
     );
 }
