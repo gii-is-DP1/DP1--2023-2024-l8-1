@@ -38,6 +38,8 @@ public class Expand implements CardActions {
                 shipToSet.setHex(target);
                 shipService.updateShip(shipToSet, shipToSet.getId());
                 target.setOccuped(true);
+                List<Ship> aux = target.getShips(); aux.add(shipToSet);
+                target.setShips(aux);
                 hexService.updateHex(target, target.getId());
         //    } else {
         //        throw new NotOwnedHex("No tienes el control de este Hexagono");

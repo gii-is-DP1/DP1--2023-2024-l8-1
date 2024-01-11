@@ -1,6 +1,7 @@
 package org.springframework.samples.petclinic.game;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -112,6 +113,22 @@ public class GameService {
         } catch (Exception e) {
             System.out.println("Error during ship generation in the game");
             throw new RuntimeException("Error during ship generation in the game: " + name, e);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Ship> getShipsOfGame(String name){
+        try {
+            Game game = findByName(name);
+            Player player1 = game.getPlayers().get(0);
+            Player player2 = game.getPlayers().get(1);
+            Player host = game.getHost();
+            List<Ship> aux = shipService.findAllShips();
+            Set<Integer> ids = Set.of(player1.getId(), player2.getId(), host.getId());
+            aux.stream().map(s -> ids.contains(s.getPlayer().getId()));
+            return aux;
+        } catch (Exception e) {
+            throw new RuntimeException("Error obteniendo las naves de la partida: " + name);
         }
     }
 
