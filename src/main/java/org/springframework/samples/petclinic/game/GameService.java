@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.card.CardService;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
@@ -29,15 +30,17 @@ public class GameService {
     PlayerService playerService;
     ShipService shipService;
     HexService hexService;
+    CardService cardService;
 
     @Autowired
     public GameService(GameRepository repo, UserService userService, PlayerService playerService,
-            ShipService shipService, HexService hexService) {
+            ShipService shipService, HexService hexService, CardService cardService) {
         this.repo = repo;
         this.userService = userService;
         this.playerService = playerService;
         this.shipService = shipService;
         this.hexService = hexService;
+        this.cardService = cardService;
     }
 
     @Transactional(readOnly = true)
@@ -94,16 +97,16 @@ public class GameService {
         if (game.getPlayers().size() != 2) {
             throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
         } else {
-            generateShipInGame(name);
+            generateShipInGame(game);
+            generateCardsInGame(game);
             game.setState(GameState.START_PLAYER_CHOICE);
         }
         return updateGame(game, game.getId());
     }
 
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
-    public void generateShipInGame(String name) {
+    private void generateShipInGame(Game game) {
         try {
-            Game game = findByName(name);
             Player player1 = game.getPlayers().get(0);
             Player player2 = game.getPlayers().get(1);
             Player host = game.getHost();
@@ -112,7 +115,22 @@ public class GameService {
             shipService.genShipsForOnePlayer(host.getId());
         } catch (Exception e) {
             System.out.println("Error during ship generation in the game");
-            throw new RuntimeException("Error during ship generation in the game: " + name, e);
+            throw new RuntimeException("Error during ship generation in the game: " + game.getName(), e);
+        }
+    }
+
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    private void generateCardsInGame(Game game) {
+        try {
+            Player player1 = game.getPlayers().get(0);
+            Player player2 = game.getPlayers().get(1);
+            Player host = game.getHost();
+            cardService.genCardsForOnePlayer(player1.getId());
+            cardService.genCardsForOnePlayer(player2.getId());
+            cardService.genCardsForOnePlayer(host.getId());
+        } catch (Exception e) {
+            System.out.println("Error during card generation in the game");
+            throw new RuntimeException("Error during card generation in the game: " + game.getName(), e);
         }
     }
 

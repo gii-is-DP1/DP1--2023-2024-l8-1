@@ -6,6 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.samples.petclinic.card.ActionsService;
 import org.springframework.samples.petclinic.card.CardService;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
@@ -40,15 +41,14 @@ public class GameRestController {
     private final GameService gameService;
     private final UserService userService;
     private final HexService hexService;
-    private final CardService cardService;
+    private final ActionsService actionsService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService, HexService hexService,
-            CardService cardService) {
+    public GameRestController(GameService gameService, UserService userService, HexService hexService, ActionsService actionsService) {
         this.gameService = gameService;
         this.userService = userService;
         this.hexService = hexService;
-        this.cardService = cardService;
+        this.actionsService = actionsService;
     }
 
     @GetMapping
@@ -173,7 +173,8 @@ public class GameRestController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Void> useCardExpand(@PathVariable("name") String name,
             @PathVariable("hexPosition") int hexPosition) {
-        cardService.useExpandCard(name, hexPosition);
+        Game game = gameService.findByName(name);
+        actionsService.useExpandCard(game, hexPosition);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -182,7 +183,8 @@ public class GameRestController {
     public ResponseEntity<Void> useCardExplore(@PathVariable("name") String name,
             @PathVariable("hexPositionOrigin") int hexPositionOrigin,
             @PathVariable("hexPositionTarget") int hexPositionTarget) {
-        cardService.useExploreCard(name, hexPositionOrigin, hexPositionTarget);
+        Game game = gameService.findByName(name);
+        actionsService.useExploreCard(game, hexPositionOrigin, hexPositionTarget);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -191,7 +193,8 @@ public class GameRestController {
     public ResponseEntity<Void> useCardExterminate(@PathVariable("name") String name,
             @PathVariable("hexPositionOrigin") int hexPositionOrigin,
             @PathVariable("hexPositionTarget") int hexPositionTarget) {
-        cardService.useExterminateCard(name, hexPositionOrigin, hexPositionTarget);
+        Game game = gameService.findByName(name);
+        actionsService.useExterminateCard(game, hexPositionOrigin, hexPositionTarget);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
