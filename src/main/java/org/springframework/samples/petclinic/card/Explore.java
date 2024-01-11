@@ -14,11 +14,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class Explore implements CardActions {
 
-    @Autowired
+    
     HexService hexService;
+    ShipService shipService;
 
     @Autowired
-    ShipService shipService;
+    public Explore(HexService hexService, ShipService shipService) {
+        this.hexService = hexService;
+        this.shipService = shipService;
+    }
 
     @Override
     @Transactional
@@ -26,9 +30,10 @@ public class Explore implements CardActions {
     // Cambiar que no sean todas y que tú puedas decidir cuantas mover
     public void action(Player player, Hex origin, Hex target) throws NotOwnedHex {
         if (shipService.numOfShipsInGameForPlayer(player.getId()) > 0) {
-            if (player.equals(hexService.findPlayerInHex(origin.getId()))) {
+           if (player.equals(hexService.findPlayerInHex(origin.getId()))) {
                 if ((player.equals(hexService.findPlayerInHex(target.getId())) || target.getOccuped() == false)
-                        && (hexService.isNeighbour(origin, target)
+                       && 
+                        (hexService.isNeighbour(origin, target)
                                 || hexService.isNeighbourOfMyNeighbours(origin, target))) {
                     List<Ship> shipsInOrigin = hexService.findShipsInHex(origin.getId());
                     for (int i = 0; i < shipsInOrigin.size(); i++) {
@@ -41,7 +46,7 @@ public class Explore implements CardActions {
                     target.setOccuped(true);
                     hexService.updateHex(target, target.getId());
                 } else {
-                    throw new NotOwnedHex("No puedes moverte a esa posición");
+                   throw new NotOwnedHex("No puedes moverte a esa posición");
                 }
             } else {
                 throw new NotOwnedHex("Este sistema no te pertenece");

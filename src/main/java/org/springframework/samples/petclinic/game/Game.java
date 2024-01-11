@@ -27,6 +27,8 @@ import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.round.Round;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -70,6 +72,7 @@ public class Game extends BaseEntity {
 
     @OneToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private GameBoard gameBoard;
 
     @OneToMany

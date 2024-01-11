@@ -6,6 +6,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.samples.petclinic.card.ActionsService;
+import org.springframework.samples.petclinic.card.CardService;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
@@ -13,6 +15,7 @@ import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
+import org.springframework.samples.petclinic.ship.Ship;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,12 +41,14 @@ public class GameRestController {
     private final GameService gameService;
     private final UserService userService;
     private final HexService hexService;
+    private final ActionsService actionsService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService, HexService hexService) {
+    public GameRestController(GameService gameService, UserService userService, HexService hexService, ActionsService actionsService) {
         this.gameService = gameService;
         this.userService = userService;
         this.hexService = hexService;
+        this.actionsService = actionsService;
     }
 
     @GetMapping
@@ -113,7 +118,7 @@ public class GameRestController {
     public ResponseEntity<Game> startGame(@PathVariable("name") String name) {
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
         Game game = gameService.findByName(name);
-        if (aux != game.getHost()){
+        if (aux != game.getHost()) {
             throw new AccessDeniedException("No puedes empezar la partida si no eres el host de la partida");
         }else if (game.getPlayers().size() != 2){    
             throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
@@ -156,11 +161,11 @@ public class GameRestController {
     @DeleteMapping("/lobby/{name}/{id}")
     public ResponseEntity<Game> kickPlayer(@PathVariable("name") String name, @PathVariable("id") int id) {
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        if (aux.getRol() != PlayerRol.HOST){
+        if (aux.getRol() != PlayerRol.HOST) {
             throw new AccessDeniedException("No puedes echar a un jugador si no eres el host de la partida");
-        }else{
-        findGame(gameService.findByName(name).getId());
-        gameService.kickPlayer(name, id);
+        } else {
+            findGame(gameService.findByName(name).getId());
+            gameService.kickPlayer(name, id);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -174,9 +179,46 @@ public class GameRestController {
 
     @PutMapping("/play/{name}/{hexId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> setUpShipInGameBoard(@PathVariable("name") String name, @PathVariable("hexId") int hexId) {
+    public ResponseEntity<Void> setUpShipInGameBoard(@PathVariable("name") String name,
+            @PathVariable("hexId") int hexId) {
         Hex hex = hexService.findHexById(hexId);
         gameService.setUpShips(name, hex);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/play/{name}/ships")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<Ship>> getShips(@PathVariable("name") String name) {
+        List<Ship> ships = gameService.getShipsOfGame(name);
+        return new ResponseEntity<List<Ship>>(ships, HttpStatus.OK);
+    }
+
+    @PutMapping("/play/{name}/expand/{hexPosition}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> useCardExpand(@PathVariable("name") String name,
+            @PathVariable("hexPosition") int hexPosition) {
+        Game game = gameService.findByName(name);
+        actionsService.useExpandCard(game, hexPosition);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/play/{name}/explore/{hexPositionOrigin}/{hexPositionTarget}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> useCardExplore(@PathVariable("name") String name,
+            @PathVariable("hexPositionOrigin") int hexPositionOrigin,
+            @PathVariable("hexPositionTarget") int hexPositionTarget) {
+        Game game = gameService.findByName(name);
+        actionsService.useExploreCard(game, hexPositionOrigin, hexPositionTarget);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/play/{name}/exterminate/{hexPositionOrigin}/{hexPositionTarget}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> useCardExterminate(@PathVariable("name") String name,
+            @PathVariable("hexPositionOrigin") int hexPositionOrigin,
+            @PathVariable("hexPositionTarget") int hexPositionTarget) {
+        Game game = gameService.findByName(name);
+        actionsService.useExterminateCard(game, hexPositionOrigin, hexPositionTarget);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

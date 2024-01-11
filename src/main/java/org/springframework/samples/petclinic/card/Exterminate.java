@@ -16,11 +16,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class Exterminate implements CardActions {
 
-    @Autowired
     private HexService hexService;
 
-    @Autowired
     private ShipService shipService;
+
+    @Autowired
+    public Exterminate(HexService hexService, ShipService shipService) {
+        this.hexService = hexService;
+        this.shipService = shipService;
+    }
 
     @Override
     @Transactional
@@ -88,13 +92,25 @@ public class Exterminate implements CardActions {
     }
 
     private void removeShipsAndUpdateHex(List<Ship> myShips, List<Ship> enemyShips) {
-        for (int i = 0; i < myShips.size(); i++) {
-            Ship enemyShip = enemyShips.get(i);
-            Ship myShip = myShips.get(i);
-            enemyShip.setState(ShipState.REMOVED);
-            myShip.setState(ShipState.REMOVED);
-            shipService.updateShip(enemyShip, enemyShip.getId());
-            shipService.updateShip(myShip, myShip.getId());
+        if (myShips.size() >= enemyShips.size()) {
+            for (int i = 0; i < enemyShips.size(); i++) {
+                Ship enemyShip = enemyShips.get(i);
+                Ship myShip = myShips.get(i);
+                enemyShip.setState(ShipState.REMOVED);
+                myShip.setState(ShipState.REMOVED);
+                shipService.updateShip(enemyShip, enemyShip.getId());
+                shipService.updateShip(myShip, myShip.getId());
+            }
+        } else {
+            for (int i = 0; i < myShips.size(); i++) {
+                Ship enemyShip = enemyShips.get(i);
+                Ship myShip = myShips.get(i);
+                enemyShip.setState(ShipState.REMOVED);
+                myShip.setState(ShipState.REMOVED);
+                shipService.updateShip(enemyShip, enemyShip.getId());
+                shipService.updateShip(myShip, myShip.getId());
+            }
+
         }
     }
 
@@ -119,4 +135,4 @@ public class Exterminate implements CardActions {
         origin.setOccuped(false);
         hexService.updateHex(origin, origin.getId());
     }
-}
+} 

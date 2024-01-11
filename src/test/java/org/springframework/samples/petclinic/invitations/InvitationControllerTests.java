@@ -102,6 +102,7 @@ public class InvitationControllerTests {
         player2.setId(TEST_PLAYER2_ID);
         player2.setFirstName("Jugador Dos");
         player2.setLastName("Jugador Dos");
+        //player2.setNumCards(3);
         player2.setNumShips(15);
         player2.setScore(0);
         player2.setRol(PlayerRol.GUEST);

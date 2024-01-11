@@ -2,11 +2,12 @@ package org.springframework.samples.petclinic.game;
 
 import java.util.Optional;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mapping.AccessOptions.SetOptions.Propagation;
+import org.springframework.samples.petclinic.card.CardService;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.gameboard.GameBoardService;
 import org.springframework.samples.petclinic.hex.Hex;
@@ -42,11 +43,12 @@ public class GameService {
     TurnService turnService;
     ShipService shipService;
     HexService hexService;
+    CardService cardService;
 
     @Autowired
     public GameService(GameRepository repo, UserService userService, PlayerService playerService,
                     RoundService roundService, PhaseService phaseService, TurnService turnService, 
-                    ShipService shipService, HexService hexService){
+                    ShipService shipService, HexService hexService, CardService cardService){
         this.repo=repo;
         this.userService=userService;
         this.playerService=playerService;
@@ -55,6 +57,7 @@ public class GameService {
         this.turnService = turnService;
         this.shipService = shipService;
         this.hexService = hexService;
+        this.cardService = cardService;
     }
 
     @Transactional(readOnly = true)
@@ -145,15 +148,15 @@ public class GameService {
         game.setState(GameState.START_PLAYER_CHOICE);
 
         addRound(game, true, false);
-        generateShipInGame(name);
+        generateShipInGame(game);
+        generateCardsInGame(game);
 
         return saveGame(game);
     }
 
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
-    public void generateShipInGame(String name) {
+    private void generateShipInGame(Game game) {
         try {
-            Game game = findByName(name);
             Player player1 = game.getPlayers().get(0);
             Player player2 = game.getPlayers().get(1);
             Player host = game.getHost();
@@ -162,7 +165,38 @@ public class GameService {
             shipService.genShipsForOnePlayer(host.getId());
         } catch (Exception e) {
             System.out.println("Error during ship generation in the game");
-            throw new RuntimeException("Error during ship generation in the game: " + name, e);
+            throw new RuntimeException("Error during ship generation in the game: " + game.getName(), e);
+        }
+    }
+
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    private void generateCardsInGame(Game game) {
+        try {
+            Player player1 = game.getPlayers().get(0);
+            Player player2 = game.getPlayers().get(1);
+            Player host = game.getHost();
+            cardService.genCardsForOnePlayer(player1.getId());
+            cardService.genCardsForOnePlayer(player2.getId());
+            cardService.genCardsForOnePlayer(host.getId());
+        } catch (Exception e) {
+            System.out.println("Error during card generation in the game");
+            throw new RuntimeException("Error during card generation in the game: " + game.getName(), e);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<Ship> getShipsOfGame(String name){
+        try {
+            Game game = findByName(name);
+            Player player1 = game.getPlayers().get(0);
+            Player player2 = game.getPlayers().get(1);
+            Player host = game.getHost();
+            List<Ship> aux = shipService.findAllShips();
+            Set<Integer> ids = Set.of(player1.getId(), player2.getId(), host.getId());
+            aux.stream().map(s -> ids.contains(s.getPlayer().getId()));
+            return aux;
+        } catch (Exception e) {
+            throw new RuntimeException("Error obteniendo las naves de la partida: " + name);
         }
     }
 
@@ -276,5 +310,7 @@ public class GameService {
         shipInHex.setHex(hex);
         shipInHex.setState(ShipState.ON_GAME);
         shipService.updateShip(shipInHex, shipInHex.getId());
+        hex.setOccuped(true);
+        hexService.updateHex(hex, hex.getId());
     }
 }
