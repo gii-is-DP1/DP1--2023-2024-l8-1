@@ -92,7 +92,7 @@ function Hex({ value, position, onHexClick }) {
             image = triPrime;
             break;
         default:
-            image = 'transparent';
+            image = stars;
     }
 
     const hexStyles = {

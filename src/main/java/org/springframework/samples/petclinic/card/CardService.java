@@ -1,69 +1,92 @@
 package org.springframework.samples.petclinic.card;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.h2.engine.User;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.samples.petclinic.game.Game;
-import org.springframework.samples.petclinic.game.GameService;
-import org.springframework.samples.petclinic.gameboard.GameBoard;
-import org.springframework.samples.petclinic.gameboard.GameBoardService;
-import org.springframework.samples.petclinic.hex.Hex;
+import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.ship.ShipService;
-import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.samples.petclinic.card.Expand;
+
+import jakarta.validation.Valid;
+
+import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 
 @Service
 public class CardService {
-    
-    UserService userService;
-    GameBoardService gameBoardService;
-    GameService gameService;
+
+    CardRepository cardRepository;
     ShipService shipService;
     HexService hexService;
+    PlayerService playerService;
 
     @Autowired
-    public CardService(UserService userService, GameBoardService gameBoardService, GameService gameService, ShipService shipService, HexService hexService) {
-        this.userService = userService;
-        this.gameBoardService = gameBoardService;
-        this.gameService = gameService;
+    public CardService(CardRepository cardRepository, ShipService shipService, HexService hexService, PlayerService playerService) {
+        this.cardRepository = cardRepository;
         this.shipService = shipService;
         this.hexService = hexService;
-    }   
-
-    @Transactional
-    public void useExpandCard(String name, Integer position) {
-        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        Game game = gameService.findByName(name);
-        List<Hex> hexs = gameBoardService.getGameBoardHexs(game.getGameBoard());
-        Hex target = hexs.get(position);
-        Expand expand = new Expand(shipService, hexService);
-        expand.action(me, null, target);
+        this.playerService = playerService;
     }
 
     @Transactional
-    public void useExploreCard(String name, Integer positionOrigin, Integer positionTarget) {
-        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        Game game = gameService.findByName(name);
-        List<Hex> hexs = gameBoardService.getGameBoardHexs(game.getGameBoard());
-        Hex origin = hexs.get(positionOrigin);
-        Hex target = hexs.get(positionTarget);
-        Explore explore = new Explore(hexService, shipService);
-        explore.action(me, origin, target);
+    public Card saveCard(@Valid Card newCard) {
+        return cardRepository.save(newCard);
+    }
+
+    @Transactional(readOnly = true)
+    public Card findCardById(int id) throws DataAccessException {
+        return cardRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Card", "ID", id));
     }
 
     @Transactional
-    public void useExterminateCard(String name, Integer positionOrigin, Integer positionTarget) {
-        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        Game game = gameService.findByName(name);
-        List<Hex> hexs = gameBoardService.getGameBoardHexs(game.getGameBoard());
-        Hex origin = hexs.get(positionOrigin);
-        Hex target = hexs.get(positionTarget);
-        Exterminate exterminate = new Exterminate(hexService, shipService);
-        exterminate.action(me, origin, target);
+    public Card updateCard(Card card, int id) {
+        Card toUpdate = findCardById(id);
+        BeanUtils.copyProperties(card, toUpdate, "id");
+        return saveCard(toUpdate);
     }
+
+    @Transactional
+    public void genCardsForOnePlayer(Integer playerId) {
+        genExpandCard(playerId);
+        genExploreCard(playerId);
+        genExterminateCard(playerId);
+    }
+
+
+    @Transactional
+    private void genExpandCard(Integer playerId) {
+        Player player = playerService.findPlayerById(playerId);
+        Card newCard = new Card();
+        newCard.setType(CardType.EXPAND);
+        newCard.setPlayer(player);
+        newCard.setPerformingOrder(0);
+        saveCard(newCard);
+
+    }
+
+    @Transactional
+    private void genExploreCard(Integer playerId) {
+        Player player = playerService.findPlayerById(playerId);
+        Card newCard = new Card();
+        newCard.setType(CardType.EXPLORE);
+        newCard.setPlayer(player);
+        newCard.setPerformingOrder(1);
+        saveCard(newCard);
+    }
+
+    @Transactional
+    private void genExterminateCard(Integer playerId) {
+        Player player = playerService.findPlayerById(playerId);
+        Card newCard = new Card();
+        newCard.setType(CardType.EXTERMINATE);
+        newCard.setPlayer(player);
+        newCard.setPerformingOrder(1);
+        saveCard(newCard);
+    }
+
 }

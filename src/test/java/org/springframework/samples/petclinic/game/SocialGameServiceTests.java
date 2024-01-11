@@ -54,10 +54,13 @@ public class SocialGameServiceTests {
     @Mock
     private Validator validator;
 
-    @BeforeEach
+    /*
+     * @BeforeEach
     public void setup() {
         gs = new GameService(gr, us, ps, ss, hs);
     }
+     */
+    
 
     private Game createValidGame(int id) {
 
