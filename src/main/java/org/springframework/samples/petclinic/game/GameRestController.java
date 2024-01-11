@@ -135,7 +135,11 @@ public class GameRestController {
             if (!game.getRounds().get(0).getIsOver()){
                 gameService.initialRound(name, sector, hexPosition, aux);
             }else{
-                gameService.setHex(name, sector, hexPosition, aux);
+                if(game.getRounds().stream().filter(r -> !r.getIsOver()).findFirst().get().getPhases().stream().filter(p -> !p.getIsOver()).findFirst().get().getIsPoint()){
+                    gameService.pointPhase(name, sector, aux);
+                } else {
+                    gameService.setHex(name, sector, hexPosition, aux);
+                }
             }
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

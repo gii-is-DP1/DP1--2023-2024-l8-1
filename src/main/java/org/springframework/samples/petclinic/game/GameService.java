@@ -112,27 +112,64 @@ public class GameService {
     }
 
     @Transactional
+    public Round addRound(Game game, Boolean isInitial, Boolean isFinal){
+        List<Round> rounds = game.getRounds() != null ? game.getRounds():new ArrayList<>();
+        RoundBuilder builder = new RoundBuilder(roundService, phaseService, turnService);
+        if (isInitial){
+            Director director = new Director(builder, findGamePlayers(game.getName()), 0);
+            director.InitialRound();
+        } else {
+            Round round = game.getRounds().get(game.getRounds().size()-1);
+            Player player = (round.getPhases().get(0)).getTurns().get(0).getPlayer();
+            int playerInicial = findGamePlayers(game.getName()).indexOf(player)+1 > 2 ? 
+                        findGamePlayers(game.getName()).indexOf(player)+1-3 : findGamePlayers(game.getName()).indexOf(player)+1;
+            if (isFinal){
+                Director director = new Director(builder, findGamePlayers(game.getName()), playerInicial);
+                director.FinalRound();
+            } else {
+                Director director = new Director(builder, findGamePlayers(game.getName()), playerInicial);
+                director.NormalRound();
+            }
+        }
+        Round round = builder.getRound();
+        rounds.add(round);     
+        game.setRounds(rounds);
+        saveGame(game);
+        return round;
+    }
+
+    @Transactional
     public Game startGame(String name) throws BadRequestException {
         Game game = findByName(name);
-        List<Round> rounds = new ArrayList<>();
+        
         game.setState(GameState.START_PLAYER_CHOICE);
 
-        RoundBuilder builder = new RoundBuilder(roundService, phaseService, turnService);
-        Director director = new Director(builder, findGamePlayers(name));
+        addRound(game, true, false);
+        generateShipInGame(name);
 
-        director.InitialRound();
-
-        rounds.add(builder.getRound());     
-
-        game.setRounds(rounds);
         return saveGame(game);
+    }
+
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
+    public void generateShipInGame(String name) {
+        try {
+            Game game = findByName(name);
+            Player player1 = game.getPlayers().get(0);
+            Player player2 = game.getPlayers().get(1);
+            Player host = game.getHost();
+            shipService.genShipsForOnePlayer(player1.getId());
+            shipService.genShipsForOnePlayer(player2.getId());
+            shipService.genShipsForOnePlayer(host.getId());
+        } catch (Exception e) {
+            System.out.println("Error during ship generation in the game");
+            throw new RuntimeException("Error during ship generation in the game: " + name, e);
+        }
     }
 
     @Transactional
     public Game initialRound(String name, int sector, int hexPosition, Player player){
         Game game = findByName(name);
         Round round = game.getRounds().get(0);
-        
         Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
         Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
 
@@ -141,34 +178,65 @@ public class GameService {
                 Hex hex = game.getGameBoard().getSectors().get(sector).getHexs().get(hexPosition-7*sector);
                 Ship ship = (shipService.selectShipsFromSupply(player.getId())).get(0);
                 ship.setHex(hex);
+                ship.setState(ShipState.ON_GAME);
                 hex.setOccuped(true);
                 turn.setIsOver(true);
                 shipService.save(ship);
                 hexService.save(hex);
                 turnService.saveTurn(turn);
+            } else {
+                throw new AccessDeniedException("El sector debe estar vacio.");
             }
         } else {
             throw new AccessDeniedException("No es tu turno.");
         }
-        roundService.roundIsOver(round,phase);
-        return game;
+        roundService.roundIsOver(round,phase,game);
+        if (game.getRounds().get(0).getIsOver()){
+            game.setState(GameState.IN_PROGRESS);
+        }
+        return saveGame(game);
     }
 
     @Transactional
     public Game setHex(String name, int sector, int hexPosition, Player player){
         Game game = findByName(name);
-        for (Round round : game.getRounds()){
-            if (!round.getIsOver()) for (Phase phase : round.getPhases()){
-                    if (!phase.getIsOver()) for (Turn turn : phase.getTurns()){
-                            if (!turn.getIsOver()){
-                                if (turn.getPlayer() == player){
-                                    
-                                }
-                            }
-                        }
-                    
+        Round round = new Round();
+        if (game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get() == null){
+            round = addRound(game, false, false);   
+        } else {
+            round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        }
+
+        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
+
+        return game;
+    }
+
+    @Transactional
+    public Game pointPhase(String name, int sector, Player player){
+        Game game = findByName(name);
+        Round round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Sector sectorSelected = game.getGameBoard().getSectors().get(sector);
+        if (turn.getPlayer() == player){
+            if (game.getGameBoard().getSectors().get(sector).getHexs().stream().anyMatch(s -> s.getOccuped())){
+                int points = 0;
+                for (Hex hex : sectorSelected.getHexs()) {
+                    if (hex.getOccuped() && hex.getShips().get(0).getPlayer() == player){
+                        points += hex.getPuntos();
+                    }
                 }
-        }return game;
+                player.setScore(player.getScore()+points);
+                playerService.savePlayer(player);
+            } else {
+                throw new AccessDeniedException("El sector debe estar ocupado.");
+            }
+        } else {
+            throw new AccessDeniedException("No es tu turno.");
+        }
+        return saveGame(game);
     }
 
     @Transactional

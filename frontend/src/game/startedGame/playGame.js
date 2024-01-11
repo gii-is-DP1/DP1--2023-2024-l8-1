@@ -19,13 +19,13 @@ function Sector({ position, hexes, handleClick }) {
                 <Hex value={puntos[1]} onhexeClick={() => handleClick(position, 7 * position + 1)} />
             </div>
             <div>
-                <Hex value={puntos[2]} onhexeClick={() => handleClick(position, 7 * position + 3)} />
-                <Hex value={puntos[3]} onhexeClick={() => handleClick(position, 7 * position + 4)} />
-                <Hex value={puntos[4]} onhexeClick={() => handleClick(position, 7 * position + 5)} />
+                <Hex value={puntos[2]} onhexeClick={() => handleClick(position, 7 * position + 2)} />
+                <Hex value={puntos[3]} onhexeClick={() => handleClick(position, 7 * position + 3)} />
+                <Hex value={puntos[4]} onhexeClick={() => handleClick(position, 7 * position + 4)} />
             </div>
             <div className="row-down">
-                <Hex value={puntos[5]} onhexeClick={() => handleClick(position, 7 * position + 6)} />
-                <Hex value={puntos[6]} onhexeClick={() => handleClick(position, 7 * position + 7)} />
+                <Hex value={puntos[5]} onhexeClick={() => handleClick(position, 7 * position + 5)} />
+                <Hex value={puntos[6]} onhexeClick={() => handleClick(position, 7 * position + 6)} />
             </div>
         </div>
     )
@@ -34,7 +34,7 @@ function Sector({ position, hexes, handleClick }) {
 function TriPrime({ position, hex, handleClick }) {
     return (
         <div className="sector-container">
-            {hex && <Hex value={hex[3]} onhexeClick={() => handleClick(position, 7 * position + 6)} />}
+            {hex && <Hex value={hex[0]} onhexeClick={() => handleClick(position, 7 * position + 6)} />}
         </div>
     );
 }
@@ -71,11 +71,7 @@ function HostInfo({ host }) {
 
 export default function PlayGame() {
     const name = getIdFromUrl(3);
-    //const [players, setPlayers] = useState(['X', 'O', 'Y']);
-    const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-    const [lap, setLap] = useState(0);
-    const [turn, setTurn] = useState(0);
-    const [hexes, setHexes] = useIntervalFetchState(
+    const [hexes, setHexes] = useState(
         [],
         `/api/v1/gameBoard/${name}`,
         jwt
@@ -87,7 +83,7 @@ export default function PlayGame() {
             return (newHex)
         })
 
-    const [gameInfo, setGameInfo] = useIntervalFetchState(
+    const [gameInfo, setGameInfo] = useState(
         [],
         `/api/v1/game/play/${name}`,
         jwt
@@ -99,7 +95,7 @@ export default function PlayGame() {
 
     function handleClick(position, i) {
         fetch(
-            "/api/v1/game/setHex" + name + position + i, {
+            "/api/v1/game/setHex/" + name + "/" +position + "/" +i, {
                 method: "PUT",
                 headers: {
                     "Authorization": `Bearer ${jwt}`,

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.phase.PhaseService;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class RoundService {
     }
 
     @Transactional
-    public void roundIsOver(Round round, Phase phase){
+    public void roundIsOver(Round round, Phase phase, Game game){
         if (phase.getTurns().stream().allMatch(s -> s.getIsOver())){
             phase.setIsOver(true);
             phaseService.savePhase(phase);
@@ -38,7 +39,6 @@ public class RoundService {
             round.setIsOver(true);
             saveRound(round);
         }
-        
     }
 
     @Transactional

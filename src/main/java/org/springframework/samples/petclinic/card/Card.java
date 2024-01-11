@@ -1,8 +1,10 @@
 package org.springframework.samples.petclinic.card;
 
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.player.Player;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -19,7 +21,11 @@ public class Card extends BaseEntity{
 
     @NotEmpty
     @Min(0)
-    @Max(3)
+    @Max(2)
     Integer performingOrder;
+
+    @ManyToOne
+    private Player player;
+
     
 }
