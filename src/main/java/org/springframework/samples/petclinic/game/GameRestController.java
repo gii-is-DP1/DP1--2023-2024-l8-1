@@ -150,6 +150,19 @@ public class GameRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PutMapping("/skipTurn/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> skipTurn(@PathVariable("name") String name){
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        Game game = gameService.findByName(name);
+        if (aux.getRol() == PlayerRol.SPECTATOR){
+            throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
+        } else{
+            gameService.skipTurn(game, aux);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 
     @PutMapping("/join/{name}")
     @ResponseStatus(HttpStatus.OK)

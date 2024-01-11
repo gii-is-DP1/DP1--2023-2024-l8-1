@@ -34,7 +34,10 @@ public class RoundService {
         if (phase.getTurns().stream().allMatch(s -> s.getIsOver())){
             phase.setIsOver(true);
             phaseService.savePhase(phase);
-        } 
+            if (phase.getIsPoint()){
+                
+            }
+        }
         if (round.getPhases().stream().allMatch(s -> s.getIsOver())){
             round.setIsOver(true);
             saveRound(round);

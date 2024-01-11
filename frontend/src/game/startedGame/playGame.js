@@ -177,7 +177,7 @@ export default function PlayGame() {
         jwt
     );
 
-    const [shipList, setShips] = useIntervalFetchState(
+    const [shipList, setShips] = useFetchState(
         [],
         `/api/v1/game/play/${name}/ships`,
         jwt
@@ -225,7 +225,7 @@ export default function PlayGame() {
     const [selectedOriginHex, setSelectedOriginHex] = useState(null);
     const [selectedTargetHex, setSelectedTargetHex] = useState(null);
 
-    function handleClick(position, i) {
+    const handleClick = (position, i) => {
         fetch(
             "/api/v1/game/setHex/" + name + "/" + position + "/" + i, {
             method: "PUT",
@@ -353,6 +353,17 @@ export default function PlayGame() {
         console.log("Has usado Exterminate")
     }
 
+    const handleSkip = () => {
+        fetch(`/api/v1/game/skipTurn/${name}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        });
+    }
+
     return (
         <div className="game">
             {players && <PlayersInfo players={players} />}
@@ -443,6 +454,7 @@ export default function PlayGame() {
                 <MediaCard title={"Expand"} imageUrl={expand} onUse={() => handleFunctionSelection("expand")} positionClass="left-card" />
                 <MediaCard title={"Explore"} imageUrl={explore} onUse={() => handleFunctionSelection("explore")} positionClass="center-card" />
                 <MediaCard title={"Exterminate"} imageUrl={exterminate} onUse={() => handleFunctionSelection("exterminate")} positionClass="right-card" />
+                <button onClick={() => handleSkip()}>Pasar</button>
             </div>
         </div>
     );

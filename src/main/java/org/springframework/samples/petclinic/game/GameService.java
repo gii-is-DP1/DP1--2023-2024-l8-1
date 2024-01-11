@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.card.CardService;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
+import org.springframework.samples.petclinic.gameboard.GameBoard;
 import org.springframework.samples.petclinic.gameboard.GameBoardService;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
@@ -144,13 +145,12 @@ public class GameService {
     @Transactional
     public Game startGame(String name) throws BadRequestException {
         Game game = findByName(name);
-        
-        game.setState(GameState.START_PLAYER_CHOICE);
 
         addRound(game, true, false);
         generateShipInGame(game);
         generateCardsInGame(game);
 
+        game.setState(GameState.START_PLAYER_CHOICE);
         return saveGame(game);
     }
 
@@ -197,6 +197,21 @@ public class GameService {
             return aux;
         } catch (Exception e) {
             throw new RuntimeException("Error obteniendo las naves de la partida: " + name);
+        }
+    }
+
+    @Transactional
+    public void skipTurn(Game game, Player player){
+        Round round = game.getRounds().get(0);
+        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
+
+        if (turn.getPlayer() == player){
+            turn.setIsOver(true);
+            turnService.saveTurn(turn);
+            roundService.roundIsOver(round,phase,game);
+        } else {
+            throw new AccessDeniedException("No es tu turno.");
         }
     }
 
@@ -264,13 +279,37 @@ public class GameService {
                 }
                 player.setScore(player.getScore()+points);
                 playerService.savePlayer(player);
+                turn.setIsOver(true);
+                turnService.saveTurn(turn);            
             } else {
                 throw new AccessDeniedException("El sector debe estar ocupado.");
             }
         } else {
             throw new AccessDeniedException("No es tu turno.");
         }
+        roundService.roundIsOver(round,phase,game);
+        if (phase.getIsOver()) limpiarExtras(game);
         return saveGame(game);
+    }
+
+    @Transactional
+    public void limpiarExtras(Game game){
+        GameBoard tablero = game.getGameBoard();
+        for (Sector sector : tablero.getSectors()){
+            for (Hex hex : sector.getHexs()){
+                if (hex.getShips().size() > hex.getPuntos()+1){
+                    for (int i = 0; i < hex.getShips().size()-hex.getPuntos()+1; i++){
+                        List<Ship> ships = hex.getShips();
+                        ships.get(i).setState(ShipState.IN_SUPPLY);
+                        ships.get(i).setHex(null);
+                        ships.remove(i);
+                        hex.setShips(ships);
+                        shipService.save(ships.get(i));
+                        hexService.save(hex);
+                    }
+                }
+            }
+        }
     }
 
     @Transactional

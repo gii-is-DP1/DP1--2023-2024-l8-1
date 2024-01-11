@@ -70,54 +70,37 @@ class RoundBuilder implements GameRoundBuilder{
         }
         //Número de cartas EXPLORE
         List<Card> explore = cards.stream().filter(c -> c.getType() == CardType.EXPLORE).collect(Collectors.toList());
-        if (explore.size() > 1){
-            int p1 = 0;
-            for (Card card : explore){
-                if (Math.abs(players.indexOf(card.getPlayer())-playerInicial) < Math.abs(p1-playerInicial)) p1 = players.indexOf(card.getPlayer());
+        for (int i = 0; i < players.size(); i++){
+                int p2 = playerInicial+i > 2?playerInicial+i-3:playerInicial+i;
+                Card card = explore.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get();
+                if (card != null) turns.add(setTurn(card.getPlayer()));
+                if (explore.size() == 1) card.setUsesLeft(3);
+                if (explore.size() == 2) card.setUsesLeft(2);
+                if (explore.size() == 3) card.setUsesLeft(1);
             }
-            for (int i = 0; i < players.size(); i++){
-                int p2 = p1+i > 2?p1+i-3:p1+i;
-                Player player = explore.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get().getPlayer();
-                if (player != null) turns.add(setTurn(player));
-            }
-
-        } else if (cards.stream().filter(c -> c.getType() == CardType.EXPLORE).count() == 1){
-            turns.add(setTurn(cards.stream().filter(c -> c.getType() == CardType.EXPLORE).findFirst().get().getPlayer()));
-        }
 
         //Número de cartas EXPAND
         List<Card> expand = cards.stream().filter(c -> c.getType() == CardType.EXPAND).collect(Collectors.toList());
-        if (cards.stream().filter(c -> c.getType() == CardType.EXPAND).count() > 1){
-            int p1 = 0;
-            for (Card card : expand){
-                if (Math.abs(players.indexOf(card.getPlayer())-playerInicial) < Math.abs(p1-playerInicial)) p1 = players.indexOf(card.getPlayer());
+        for (int i = 0; i < players.size(); i++){
+                int p2 = playerInicial+i > 2?playerInicial+i-3:playerInicial+i;
+                Card card = expand.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get();
+                if (card != null) turns.add(setTurn(card.getPlayer()));
+                if (expand.size() == 1) card.setUsesLeft(3);
+                if (expand.size() == 2) card.setUsesLeft(2);
+                if (expand.size() == 3) card.setUsesLeft(1);
             }
-            for (int i = 0; i < players.size(); i++){
-                int p2 = p1+i > 2?p1+i-3:p1+i;
-                Player player = expand.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get().getPlayer();
-                if (player != null) turns.add(setTurn(player));
-            }
-        } else if (cards.stream().filter(c -> c.getType() == CardType.EXPAND).count() == 1){
-            turns.add(setTurn(cards.stream().filter(c -> c.getType() == CardType.EXPAND).findFirst().get().getPlayer()));
-        }
 
         //Número de cartas EXTERMINATE
         List<Card> exterminate = cards.stream().filter(c -> c.getType() == CardType.EXTERMINATE).collect(Collectors.toList());
-        if (cards.stream().filter(c -> c.getType() == CardType.EXTERMINATE).count() > 1){
-            int p1 = 0;
-            for (Card card : exterminate){
-                if (Math.abs(players.indexOf(card.getPlayer())-playerInicial) < Math.abs(p1-playerInicial)) p1 = players.indexOf(card.getPlayer());
+        for (int i = 0; i < players.size(); i++){
+                int p2 = playerInicial+i > 2?playerInicial+i-3:playerInicial+i;
+                Card card = exterminate.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get();
+                if (card != null) turns.add(setTurn(card.getPlayer()));
+                if (exterminate.size() == 1) card.setUsesLeft(3);
+                if (exterminate.size() == 2) card.setUsesLeft(2);
+                if (exterminate.size() == 3) card.setUsesLeft(1);
             }
-            for (int i = 0; i < players.size(); i++){
-                int p2 = p1+i > 2?p1+i-3:p1+i;
-                Player player = exterminate.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get().getPlayer();
-                if (player != null) turns.add(setTurn(player));
-            }
-        } else if (cards.stream().filter(c -> c.getType() == CardType.EXTERMINATE).count() == 1){
-            turns.add(setTurn(cards.stream().filter(c -> c.getType() == CardType.EXTERMINATE).findFirst().get().getPlayer()));
-        }
         
-
         phase.setTurns(turns);
         return phaseService.savePhase(phase);
     }
