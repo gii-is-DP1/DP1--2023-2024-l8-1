@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.card.CardService;
+import org.springframework.samples.petclinic.card.CardType;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.gameboard.GameBoard;
 import org.springframework.samples.petclinic.gameboard.GameBoardService;
@@ -223,18 +224,22 @@ public class GameService {
         Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
 
         if (turn.getPlayer() == player){
-            if (!game.getGameBoard().getSectors().get(sector).getHexs().stream().anyMatch(s -> s.getOccuped())){
-                Hex hex = game.getGameBoard().getSectors().get(sector).getHexs().get(hexPosition-7*sector);
-                Ship ship = (shipService.selectShipsFromSupply(player.getId())).get(0);
-                ship.setHex(hex);
-                ship.setState(ShipState.ON_GAME);
-                hex.setOccuped(true);
-                turn.setIsOver(true);
-                shipService.save(ship);
-                hexService.save(hex);
-                turnService.saveTurn(turn);
+            if(!game.getGameBoard().getSectors().get(sector).getIsTriPrime()){
+                if (!game.getGameBoard().getSectors().get(sector).getHexs().stream().anyMatch(s -> s.getOccuped())){
+                    Hex hex = game.getGameBoard().getSectors().get(sector).getHexs().get(hexPosition-7*sector);
+                    Ship ship = (shipService.selectShipsFromSupply(player.getId())).get(0);
+                    ship.setHex(hex);
+                    ship.setState(ShipState.ON_GAME);
+                    hex.setOccuped(true);
+                    turn.setIsOver(true);
+                    shipService.save(ship);
+                    hexService.save(hex);
+                    turnService.saveTurn(turn);
+                } else {
+                    throw new AccessDeniedException("El sector debe estar vacio.");
+                }
             } else {
-                throw new AccessDeniedException("El sector debe estar vacio.");
+                throw new AccessDeniedException("No puedes elegir el sector TriPrime en la ronda inicial");
             }
         } else {
             throw new AccessDeniedException("No es tu turno.");
@@ -290,6 +295,19 @@ public class GameService {
         roundService.roundIsOver(round,phase,game);
         if (phase.getIsOver()) limpiarExtras(game);
         return saveGame(game);
+    }
+
+    @Transactional
+    public String getCurrentAction(Game game, Player player){
+        Round round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        if (turn.getPlayer() == player){
+            CardType tipo = player.getCards().get(round.getPhases().indexOf(phase)).getType();
+            return tipo.toString();
+        } else {
+            throw new AccessDeniedException("No es tu turno.");
+        }
     }
 
     @Transactional

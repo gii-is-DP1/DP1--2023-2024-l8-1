@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -130,7 +131,7 @@ public class GameRestController {
 
     @PutMapping("/setHex/{name}/{sector}/{hexPosition}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Game> setHex(@PathVariable("name") String name, 
+    public ResponseEntity<Void> setHex(@PathVariable("name") String name, 
                             @PathVariable("sector") int sector, @PathVariable("hexPosition") int hexPosition){
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
         Game game = gameService.findByName(name);
@@ -163,6 +164,21 @@ public class GameRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/isInitial/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Boolean> isInitial(@PathVariable("name") String name){
+        Game game = gameService.findByName(name);
+        Boolean res = game.getRounds().get(0) == game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        return new ResponseEntity<Boolean>(res, HttpStatus.OK);
+    }
+
+    @GetMapping("/getAction/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<String> getCurrentAction(@PathVariable("name") String name) {
+        Game game = gameService.findByName(name);
+        Player player = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        return new ResponseEntity<String>(gameService.getCurrentAction(game, player), HttpStatus.OK);
+    }
 
     @PutMapping("/join/{name}")
     @ResponseStatus(HttpStatus.OK)
