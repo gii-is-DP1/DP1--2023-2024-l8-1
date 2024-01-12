@@ -13,6 +13,7 @@ import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
+import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.ship.Ship;
@@ -175,10 +176,17 @@ public class GameRestController {
 
     @GetMapping("/getCurrentTurn/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> getCurrentTurn(@PathVariable("name") String name){
+    public ResponseEntity<List<String>> getCurrentTurn(@PathVariable("name") String name){
         Game game = gameService.findByName(name);
-        //return gameService.getCurrentTurn(game).getPlayer().getUser().getUsername();
-        return new ResponseEntity<String>("jugador2", HttpStatus.OK);
+        List<String> ls = List.of(gameService.getCurrentTurn(game).getPlayer().getUser().getUsername());
+        return new ResponseEntity<List<String>>(ls, HttpStatus.OK);
+    }
+
+    @GetMapping("/getCurrentPhase/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Phase> getCurrentPhase(@PathVariable("name") String name){
+        Game game = gameService.findByName(name);
+        return new ResponseEntity<Phase>(gameService.getCurrentPhase(game),HttpStatus.OK);
     }
 
     @PutMapping("/setOrder/{name}")
@@ -193,10 +201,14 @@ public class GameRestController {
 
     @GetMapping("/getAction/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<String> getCurrentAction(@PathVariable("name") String name) {
+    public ResponseEntity<List<String>> getCurrentAction(@PathVariable("name") String name) {
         Game game = gameService.findByName(name);
         Player player = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        return new ResponseEntity<String>(gameService.getCurrentAction(game, player), HttpStatus.OK);
+        if (game.getRounds().get(0) != game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get()){
+            return new ResponseEntity<List<String>>(List.of(gameService.getCurrentAction(game, player)), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<List<String>>(List.of("nada"), HttpStatus.OK);
+        }
     }
 
     @PutMapping("/join/{name}")

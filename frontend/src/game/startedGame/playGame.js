@@ -178,19 +178,25 @@ export default function PlayGame() {
         [],
         `/api/v1/game/isInitial/${name}`,
         jwt
-    )
+    );
 
     const [currentTurn, setCurrentTurn] = useFetchState(
-        /*[],
+        [],
         `/api/v1/game/getCurrentTurn/${name}`,
-        jwt*/
+        jwt
+    );
+
+    const [currentPhase, setCurrentPhase] = useFetchState(
+        [],
+        `/api/v1/game/getCurrentPhase/${name}`,
+        jwt
     );
 
     const [currentAction, setCurrentAction] = useFetchState(
-        /*[],
+        [],
         `/api/v1/game/getAction/${name}`,
-        jwt*/
-    )
+        jwt
+    );
 
     const generateSectorStyles = (position) => {
         // Genera estilos específicos para cada Sector
@@ -250,6 +256,7 @@ export default function PlayGame() {
         if (isInitial) {
             handleClick(sector, position)
         } else if (!isInitial) {
+            console.log(currentAction[0])
             if (currentAction === "expand") {
                 handleExpand(position)
             } else {
@@ -459,7 +466,8 @@ export default function PlayGame() {
             {players && <PlayersInfo players={players} />}
             <div>
                 <p>Es turno de:</p>
-                <p>{currentTurn}</p>
+                {currentPhase.isOrder && <p>Ordena tus cartas</p>}
+                <p>{currentTurn[0]}</p>
             </div>
 
             {host && <HostInfo host={host} />}
@@ -548,43 +556,43 @@ export default function PlayGame() {
             <div className="cardsContainerStyle">
                 <div className="cardContainer">
                     <MediaCard title={"Expand"} imageUrl={expand} positionClass="left-card" />
-                    <select
+                    { currentPhase.isOrder &&<select
                         value={playerCardsList[0] + 1}
                         onChange={(e) => handleChangeOrder("expand", parseInt(e.target.value))}
                     >
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
-                    </select>
+                    </select>}
                 </div>
                 <div className="cardContainer">
                     <MediaCard title={"Explore"} imageUrl={explore} positionClass="center-card" />
-                    <select
+                    { currentPhase.isOrder && <select
                         value={playerCardsList[1] + 1}
                         onChange={(e) => handleChangeOrder("explore", parseInt(e.target.value))}
                     >
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
-                    </select>
+                    </select> }
                 </div>
 
                 <div className="cardContainer">
                     <MediaCard title={"Exterminate"} imageUrl={exterminate} positionClass="right-card" />
-                    <select
+                    { currentPhase.isOrder &&<select
                         value={playerCardsList[2] + 1}
                         onChange={(e) => handleChangeOrder("exterminate", parseInt(e.target.value))}
                     >
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
-                    </select>
+                    </select>}
                 </div>
                 <div>
-                    <button onClick={() => handleSkip()}>Pasar</button>
+                    {!isInitial && <button onClick={() => handleSkip()}>Pasar</button>}
                 </div>
                 <div>
-                    <button onClick={() => handleSetOrder()}>Ordenar Cartas</button>
+                    {currentPhase.isOrder && <button onClick={() => handleSetOrder()}>Ordenar Cartas</button>}
                 </div>
 
             </div>

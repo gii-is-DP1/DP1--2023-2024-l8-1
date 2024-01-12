@@ -211,6 +211,13 @@ public class GameService {
     }
 
     @Transactional
+    public Phase getCurrentPhase(Game game) {
+        Round round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        return phase;
+    }
+
+    @Transactional
     public void skipTurn(Game game, Player player) {
         Round round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
         Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
