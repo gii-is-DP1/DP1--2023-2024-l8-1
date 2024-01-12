@@ -15,7 +15,7 @@ import triPrime from "../../static/images/PlanetaTriPrime.jpg"
 const jwt = tokenService.getLocalAccessToken();
 
 
-function Sector({ position, hexes, onClickSetUpShips, onHexClick, style }) {
+function Sector({ host, players, position, hexes, ships, onHexClick, style }) {
     let puntos = hexes.map((x) => x[1]);
     let positions = hexes.map((x) => x[3]);
 
@@ -27,23 +27,23 @@ function Sector({ position, hexes, onClickSetUpShips, onHexClick, style }) {
     return (
         <div className="sector-container" style={sectorStyles}>
             <div className="row-up">
-                <Hex value={puntos[0]} position={positions[0]} onHexClick={() => onHexClick(positions[0])} />
-                <Hex value={puntos[1]} position={positions[1]} onHexClick={() => onHexClick(positions[1])} />
+                <Hex host={host} players={players} value={puntos[0]} hexPosition={positions[0]} ships={ships} onHexClick={() => onHexClick(positions[0])} />
+                <Hex host={host} players={players} value={puntos[1]} hexPosition={positions[1]} ships={ships} onHexClick={() => onHexClick(positions[1])} />
             </div>
             <div>
-                <Hex value={puntos[2]} position={positions[2]} onHexClick={() => onHexClick(positions[2])} />
-                <Hex value={puntos[3]} position={positions[3]} onHexClick={() => onHexClick(positions[3])} />
-                <Hex value={puntos[4]} position={positions[4]} onHexClick={() => onHexClick(positions[4])} />
+                <Hex host={host} players={players} value={puntos[2]} hexPosition={positions[2]} ships={ships} onHexClick={() => onHexClick(positions[2])} />
+                <Hex host={host} players={players} value={puntos[3]} hexPosition={positions[3]} ships={ships} onHexClick={() => onHexClick(positions[3])} />
+                <Hex host={host} players={players} value={puntos[4]} hexPosition={positions[4]} ships={ships} onHexClick={() => onHexClick(positions[4])} />
             </div>
             <div className="row-down">
-                <Hex value={puntos[5]} position={positions[5]} onHexClick={() => onHexClick(positions[5])} />
-                <Hex value={puntos[6]} position={positions[6]} onHexClick={() => onHexClick(positions[6])} />
+                <Hex host={host} players={players} value={puntos[5]} hexPosition={positions[5]} ships={ships} onHexClick={() => onHexClick(positions[5])} />
+                <Hex host={host} players={players} value={puntos[6]} hexPosition={positions[6]} ships={ships} onHexClick={() => onHexClick(positions[6])} />
             </div>
         </div>
     );
 }
 
-function TriPrime({ position, hex, handleClick, style }) {
+function TriPrime({ host, players, position, hex, ships, handleClick, style }) {
 
     const sectorStyles = {
         transform: 'rotate(-30deg)',
@@ -52,29 +52,29 @@ function TriPrime({ position, hex, handleClick, style }) {
     return (
         <div className="sector-container" style={sectorStyles}>
             <div className="row-up">
-                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
-                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
             </div>
             <div>
 
-                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
 
-                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
 
-                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
             </div>
             <div className="row-down">
 
-                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
 
-                {hex && <Hex value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
             </div>
         </div>
     );
 }
 
 
-function Hex({ value, position, onHexClick }) {
+function Hex({ host, players, value, hexPosition, ships, onHexClick }) {
 
     let image;
 
@@ -100,8 +100,36 @@ function Hex({ value, position, onHexClick }) {
         backgroundSize: 'cover',
     }
 
+    const renderShips = () => {
+        // Filtra las naves para este hexágono
+        const shipsInHex = ships.filter((ship) => ship.hex !== null && ship.hex.position === hexPosition);
+        return (
+            <div className="ships-container">
+                {shipsInHex.map((ship) => {
+                    let numeroColor = 0;
+                    let owner = ship.player.user.username;
+                    if (owner === host.user.username) {
+                        numeroColor = 1;
+                    } else if (owner === players[0].user.username) {
+                        numeroColor = 2;
+                    } else if (owner === players[1].user.username) {
+                        numeroColor = 3;
+                    }
+
+                    return (
+                        <div
+                            key={ship.id}
+                            className={`ship player-${numeroColor}`}
+                        />
+                    );
+                })}
+            </div>
+        );
+    };
+
     return (
-        <button className="hex" style={hexStyles} onClick={() => onHexClick(position)}>
+        <button className="hex" style={hexStyles} onClick={() => onHexClick(hexPosition)}>
+            {ships && renderShips()}
         </button>
     );
 }
@@ -136,6 +164,12 @@ export default function PlayGame() {
         jwt
     );
 
+    const [shipList, setShips] = useIntervalFetchState(
+        [],
+        `/api/v1/game/play/${name}/ships`,
+        jwt
+    )
+
     const generateSectorStyles = (position) => {
         // Genera estilos específicos para cada Sector
         switch (position) {
@@ -164,7 +198,7 @@ export default function PlayGame() {
             return (newHex)
         })
 
-    const [gameInfo, setGameInfo] = useFetchState(
+    const [gameInfo, setGameInfo] = useIntervalFetchState(
         [],
         `/api/v1/game/play/${name}`,
         jwt
@@ -172,6 +206,7 @@ export default function PlayGame() {
 
     const host = gameInfo.host;
     const players = gameInfo.players;
+
     const [winner, setWinner] = useState(null);
     const [selectedFunction, setSelectedFunction] = useState(null);
     const [selectedOriginHex, setSelectedOriginHex] = useState(null);
@@ -273,6 +308,7 @@ export default function PlayGame() {
 
     }
 
+
     const MediaCard = ({ title, imageUrl, onUse, positionClass }) => {
 
         const mediaStyles = {
@@ -368,18 +404,22 @@ export default function PlayGame() {
             <div className="center-container">
                 <div className="left-sector">
                     <Sector
+                        host={host}
+                        players={players}
                         position={0}
                         hexes={hexList.slice(0, 7)}
-                        onClickSetUpShips={onClickSetUpShips}
+                        ships={shipList}
                         onHexClick={handleHexClick}
                         style={generateSectorStyles(0)}
                     />
                 </div>
                 <div className="right-sector">
                     <Sector
+                        host={host}
+                        players={players}
                         position={1}
                         hexes={hexList.slice(7, 14)}
-                        onClickSetUpShips={onClickSetUpShips}
+                        ships={shipList}
                         onHexClick={handleHexClick}
                         style={generateSectorStyles(1)}
                     />
@@ -388,26 +428,32 @@ export default function PlayGame() {
             <div className="center-container">
                 <div className="left-sector">
                     <Sector
+                        host={host}
+                        players={players}
                         position={2}
                         hexes={hexList.slice(14, 21)}
-                        onClickSetUpShips={onClickSetUpShips}
+                        ships={shipList}
                         onHexClick={handleHexClick}
                         style={generateSectorStyles(2)}
                     />
                 </div>
                 <div className="tri-prime-container">
                     <TriPrime
+                        host={host}
+                        players={players}
                         position={3}
                         hex={hexList[42]}
-                        onClickSetUpShips={onClickSetUpShips}
+                        ships={shipList}
                         style={generateSectorStyles(3)}
                     />
                 </div>
                 <div className="right-sector">
                     <Sector
+                        host={host}
+                        players={players}
                         position={4}
                         hexes={hexList.slice(21, 28)}
-                        onClickSetUpShips={onClickSetUpShips}
+                        ships={shipList}
                         onHexClick={handleHexClick}
                         style={generateSectorStyles(4)}
                     />
@@ -416,18 +462,22 @@ export default function PlayGame() {
             <div className="center-container">
                 <div className="left-sector">
                     <Sector
+                        host={host}
+                        players={players}
                         position={5}
                         hexes={hexList.slice(28, 35)}
-                        onClickSetUpShips={onClickSetUpShips}
+                        ships={shipList}
                         onHexClick={handleHexClick}
                         style={generateSectorStyles(5)}
                     />
                 </div>
                 <div className="right-sector">
                     <Sector
+                        host={host}
+                        players={players}
                         position={6}
                         hexes={hexList.slice(35, 42)}
-                        onClickSetUpShips={onClickSetUpShips}
+                        ships={shipList}
                         onHexClick={handleHexClick}
                         style={generateSectorStyles(6)}
                     />

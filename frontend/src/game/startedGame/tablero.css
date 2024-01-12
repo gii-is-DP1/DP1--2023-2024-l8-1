@@ -21,6 +21,39 @@ body {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
 
+.ships-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ship {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 2px;
+  display: inline-block;
+  clip-path: polygon(80% 50%, 25% 75%, 0 50%, 25% 25%);
+  background-color: white;
+}
+
+.ship.player-0 {
+  background-color: white;
+}
+
+.ship.player-1 {
+  background-color: red;
+}
+
+.ship.player-2 {
+  background-color: blue;
+}
+
+.ship.player-3 {
+  background-color: rgb(31, 232, 31);
+}
+
 
 .players-info {
   position: relative;
@@ -109,6 +142,7 @@ body {
   max-width: 200px;
   overflow: hidden;
 }
+
 
 .buttonStyles {
   display: flex;

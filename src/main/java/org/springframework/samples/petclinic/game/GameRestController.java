@@ -15,6 +15,7 @@ import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
+import org.springframework.samples.petclinic.ship.Ship;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -159,6 +160,13 @@ public class GameRestController {
         Hex hex = hexService.findHexById(hexId);
         gameService.setUpShips(name, hex);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/play/{name}/ships")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<Ship>> getShips(@PathVariable("name") String name) {
+        List<Ship> ships = gameService.getShipsOfGame(name);
+        return new ResponseEntity<List<Ship>>(ships, HttpStatus.OK);
     }
 
     @PutMapping("/play/{name}/expand/{hexPosition}")

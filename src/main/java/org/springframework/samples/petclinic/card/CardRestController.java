@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,5 +66,5 @@ public class CardRestController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    
+
 }

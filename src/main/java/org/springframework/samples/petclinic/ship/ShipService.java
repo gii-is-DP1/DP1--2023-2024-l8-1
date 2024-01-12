@@ -28,6 +28,11 @@ public class ShipService {
         return shipRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ship", "ID", id));
     }
 
+    @Transactional(readOnly = true)
+    public List<Ship> findAllShips(){
+        return shipRepository.findAll();
+    }
+
     @Transactional
     public void genShipsForOnePlayer(Integer playerId) {
         Player player = playerService.findPlayerById(playerId);
