@@ -16,6 +16,7 @@ import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.ship.Ship;
+import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -166,10 +167,28 @@ public class GameRestController {
 
     @GetMapping("/isInitial/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Boolean> isInitial(@PathVariable("name") String name){
+    public Boolean isInitial(@PathVariable("name") String name){
         Game game = gameService.findByName(name);
         Boolean res = game.getRounds().get(0) == game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
-        return new ResponseEntity<Boolean>(res, HttpStatus.OK);
+        return res;
+    }
+
+    @GetMapping("/getCurrentTurn/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<String> getCurrentTurn(@PathVariable("name") String name){
+        Game game = gameService.findByName(name);
+        //return gameService.getCurrentTurn(game).getPlayer().getUser().getUsername();
+        return new ResponseEntity<String>("jugador2", HttpStatus.OK);
+    }
+
+    @PutMapping("/setOrder/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> setOrder(@PathVariable("name") String name){
+        Game game = gameService.findByName(name);
+        Player player = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        gameService.orderCards(game, player);  
+        return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     @GetMapping("/getAction/{name}")

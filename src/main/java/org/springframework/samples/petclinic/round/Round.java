@@ -23,7 +23,7 @@ public class Round extends BaseEntity{
     private Boolean isFinal = false;
 
     @OneToMany
-    @Size(min = 2, max = 3)
+    @Size(min = 2, max = 5)
     // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Phase> phases;
     

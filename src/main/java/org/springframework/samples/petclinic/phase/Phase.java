@@ -23,6 +23,8 @@ public class Phase extends BaseEntity{
 
     private Boolean isPoint = false;
 
+    private Boolean isOrder = false;
+
     @OneToMany
     @Size(min = 3, max = 3)
     // @OnDelete(action = OnDeleteAction.CASCADE)

@@ -49,11 +49,11 @@ public class GameService {
 
     @Autowired
     public GameService(GameRepository repo, UserService userService, PlayerService playerService,
-                    RoundService roundService, PhaseService phaseService, TurnService turnService, 
-                    ShipService shipService, HexService hexService, CardService cardService){
-        this.repo=repo;
-        this.userService=userService;
-        this.playerService=playerService;
+            RoundService roundService, PhaseService phaseService, TurnService turnService,
+            ShipService shipService, HexService hexService, CardService cardService) {
+        this.repo = repo;
+        this.userService = userService;
+        this.playerService = playerService;
         this.roundService = roundService;
         this.phaseService = phaseService;
         this.turnService = turnService;
@@ -86,11 +86,11 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<Player> findGamePlayers(String name) throws AccessDeniedException{
+    public List<Player> findGamePlayers(String name) throws AccessDeniedException {
         Game game = findByName(name);
-        List<Player> players= new ArrayList<>();
+        List<Player> players = new ArrayList<>();
         players.add(game.getHost());
-        for (Player player : game.getPlayers()){
+        for (Player player : game.getPlayers()) {
             players.add(player);
         }
         return players;
@@ -117,18 +117,19 @@ public class GameService {
     }
 
     @Transactional
-    public Round addRound(Game game, Boolean isInitial, Boolean isFinal){
-        List<Round> rounds = game.getRounds() != null ? game.getRounds():new ArrayList<>();
-        RoundBuilder builder = new RoundBuilder(roundService, phaseService, turnService);
-        if (isInitial){
+    public Round addRound(Game game, Boolean isInitial, Boolean isFinal) {
+        List<Round> rounds = game.getRounds() != null ? game.getRounds() : new ArrayList<>();
+        RoundBuilder builder = new RoundBuilder(roundService, phaseService, turnService, cardService);
+        if (isInitial) {
             Director director = new Director(builder, findGamePlayers(game.getName()), 0);
             director.InitialRound();
         } else {
-            Round round = game.getRounds().get(game.getRounds().size()-1);
+            Round round = game.getRounds().get(game.getRounds().size() - 1);
             Player player = (round.getPhases().get(0)).getTurns().get(0).getPlayer();
-            int playerInicial = findGamePlayers(game.getName()).indexOf(player)+1 > 2 ? 
-                        findGamePlayers(game.getName()).indexOf(player)+1-3 : findGamePlayers(game.getName()).indexOf(player)+1;
-            if (isFinal){
+            int playerInicial = findGamePlayers(game.getName()).indexOf(player) + 1 > 2
+                    ? findGamePlayers(game.getName()).indexOf(player) + 1 - 3
+                    : findGamePlayers(game.getName()).indexOf(player) + 1;
+            if (isFinal) {
                 Director director = new Director(builder, findGamePlayers(game.getName()), playerInicial);
                 director.FinalRound();
             } else {
@@ -137,7 +138,7 @@ public class GameService {
             }
         }
         Round round = builder.getRound();
-        rounds.add(round);     
+        rounds.add(round);
         game.setRounds(rounds);
         saveGame(game);
         return round;
@@ -186,7 +187,7 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<Ship> getShipsOfGame(String name){
+    public List<Ship> getShipsOfGame(String name) {
         try {
             Game game = findByName(name);
             Player player1 = game.getPlayers().get(0);
@@ -202,61 +203,103 @@ public class GameService {
     }
 
     @Transactional
-    public void skipTurn(Game game, Player player){
-        Round round = game.getRounds().get(0);
+    public Turn getCurrentTurn(Game game) {
+        Round round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        return turn;
+    }
+
+    @Transactional
+    public void skipTurn(Game game, Player player) {
+        Round round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
         Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
         Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
 
-        if (turn.getPlayer() == player){
-            turn.setIsOver(true);
-            turnService.saveTurn(turn);
-            roundService.roundIsOver(round,phase,game);
+        if (round != game.getRounds().get(0)) {
+            if (turn.getPlayer() == player) {
+                turn.setIsOver(true);
+                turnService.saveTurn(turn);
+                roundService.roundIsOver(round, phase, game);
+            } else {
+                throw new AccessDeniedException("No es tu turno.");
+            }
         } else {
-            throw new AccessDeniedException("No es tu turno.");
+            throw new AccessDeniedException("No se puede pasar en la ronda inicial.");
         }
     }
 
     @Transactional
-    public Game initialRound(String name, int sector, int hexPosition, Player player){
+    public Game initialRound(String name, int sector, int hexPosition, Player player) {
         Game game = findByName(name);
         Round round = game.getRounds().get(0);
         Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
         Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
-
-        if (turn.getPlayer() == player){
-            if(!game.getGameBoard().getSectors().get(sector).getIsTriPrime()){
-                if (!game.getGameBoard().getSectors().get(sector).getHexs().stream().anyMatch(s -> s.getOccuped())){
-                    Hex hex = game.getGameBoard().getSectors().get(sector).getHexs().get(hexPosition-7*sector);
-                    Ship ship = (shipService.selectShipsFromSupply(player.getId())).get(0);
-                    ship.setHex(hex);
-                    ship.setState(ShipState.ON_GAME);
-                    hex.setOccuped(true);
-                    turn.setIsOver(true);
-                    shipService.save(ship);
-                    hexService.save(hex);
-                    turnService.saveTurn(turn);
+        if (!phase.getIsOrder()) {
+            if (turn.getPlayer() == player) {
+                if (!game.getGameBoard().getSectors().get(sector).getIsTriPrime()) {
+                    if (!game.getGameBoard().getSectors().get(sector).getHexs().stream()
+                            .anyMatch(s -> s.getOccuped())) {
+                        Hex hex = game.getGameBoard().getSectors().get(sector).getHexs().get(hexPosition - 7 * sector);
+                        Ship ship = (shipService.selectShipsFromSupply(player.getId())).get(0);
+                        ship.setHex(hex);
+                        ship.setState(ShipState.ON_GAME);
+                        hex.setOccuped(true);
+                        turn.setIsOver(true);
+                        shipService.save(ship);
+                        hexService.save(hex);
+                        turnService.saveTurn(turn);
+                    } else {
+                        throw new AccessDeniedException("El sector debe estar vacio.");
+                    }
                 } else {
-                    throw new AccessDeniedException("El sector debe estar vacio.");
+                    throw new AccessDeniedException("No puedes elegir el sector TriPrime en la ronda inicial");
                 }
             } else {
-                throw new AccessDeniedException("No puedes elegir el sector TriPrime en la ronda inicial");
+                throw new AccessDeniedException("No es tu turno.");
             }
         } else {
-            throw new AccessDeniedException("No es tu turno.");
+            throw new AccessDeniedException("Es hora de ordenar las cartas.");
         }
-        roundService.roundIsOver(round,phase,game);
-        if (game.getRounds().get(0).getIsOver()){
+        roundService.roundIsOver(round, phase, game);
+        if (game.getRounds().get(0).getIsOver()) {
             game.setState(GameState.IN_PROGRESS);
+            addRound(game, false, false);
         }
         return saveGame(game);
     }
 
     @Transactional
-    public Game setHex(String name, int sector, int hexPosition, Player player){
+    public void orderCards(Game game, Player player) {
+        Round round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        if (phase.getIsOrder()) {
+            if (turn.getPlayer() == player) {
+                turn.setIsOver(true);
+                turnService.saveTurn(turn);
+            } else {
+                throw new AccessDeniedException("No es tu turno.");
+            }
+        } else {
+            throw new AccessDeniedException("No es hora de ordenar las cartas.");
+        }
+        roundService.roundIsOver(round, phase, game);
+        if (round == game.getRounds().get(0) && round.getIsOver()) {
+            game.setState(GameState.IN_PROGRESS);
+            addRound(game, false, false);
+        } else if (round.getIsOver()) {
+            addRound(game, false, false);
+        }
+
+    }
+
+    @Transactional
+    public Game setHex(String name, int sector, int hexPosition, Player player) {
         Game game = findByName(name);
         Round round = new Round();
-        if (game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get() == null){
-            round = addRound(game, false, false);   
+        if (game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get() == null) {
+            round = addRound(game, false, false);
         } else {
             round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
         }
@@ -268,41 +311,42 @@ public class GameService {
     }
 
     @Transactional
-    public Game pointPhase(String name, int sector, Player player){
+    public Game pointPhase(String name, int sector, Player player) {
         Game game = findByName(name);
         Round round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
-        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
+        Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver() && s.getIsPoint()).findFirst().get();
         Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
         Sector sectorSelected = game.getGameBoard().getSectors().get(sector);
-        if (turn.getPlayer() == player){
-            if (game.getGameBoard().getSectors().get(sector).getHexs().stream().anyMatch(s -> s.getOccuped())){
+        if (turn.getPlayer() == player) {
+            if (game.getGameBoard().getSectors().get(sector).getHexs().stream().anyMatch(s -> s.getOccuped())) {
                 int points = 0;
                 for (Hex hex : sectorSelected.getHexs()) {
-                    if (hex.getOccuped() && hex.getShips().get(0).getPlayer() == player){
+                    if (hex.getOccuped() && hex.getShips().get(0).getPlayer() == player) {
                         points += hex.getPuntos();
                     }
                 }
-                player.setScore(player.getScore()+points);
+                player.setScore(player.getScore() + points);
                 playerService.savePlayer(player);
                 turn.setIsOver(true);
-                turnService.saveTurn(turn);            
+                turnService.saveTurn(turn);
             } else {
                 throw new AccessDeniedException("El sector debe estar ocupado.");
             }
         } else {
             throw new AccessDeniedException("No es tu turno.");
         }
-        roundService.roundIsOver(round,phase,game);
-        if (phase.getIsOver()) limpiarExtras(game);
+        roundService.roundIsOver(round, phase, game);
+        if (phase.getIsOver())
+            limpiarExtras(game);
         return saveGame(game);
     }
 
     @Transactional
-    public String getCurrentAction(Game game, Player player){
+    public String getCurrentAction(Game game, Player player) {
         Round round = game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get();
         Phase phase = round.getPhases().stream().filter(s -> !s.getIsOver()).findFirst().get();
         Turn turn = phase.getTurns().stream().filter(s -> !s.getIsOver()).findFirst().get();
-        if (turn.getPlayer() == player){
+        if (turn.getPlayer() == player) {
             CardType tipo = player.getCards().get(round.getPhases().indexOf(phase)).getType();
             return tipo.toString();
         } else {
@@ -311,12 +355,12 @@ public class GameService {
     }
 
     @Transactional
-    public void limpiarExtras(Game game){
+    public void limpiarExtras(Game game) {
         GameBoard tablero = game.getGameBoard();
-        for (Sector sector : tablero.getSectors()){
-            for (Hex hex : sector.getHexs()){
-                if (hex.getShips().size() > hex.getPuntos()+1){
-                    for (int i = 0; i < hex.getShips().size()-hex.getPuntos()+1; i++){
+        for (Sector sector : tablero.getSectors()) {
+            for (Hex hex : sector.getHexs()) {
+                if (hex.getShips().size() > hex.getPuntos() + 1) {
+                    for (int i = 0; i < hex.getShips().size() - hex.getPuntos() + 1; i++) {
                         List<Ship> ships = hex.getShips();
                         ships.get(i).setState(ShipState.IN_SUPPLY);
                         ships.get(i).setHex(null);

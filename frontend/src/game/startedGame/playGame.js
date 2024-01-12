@@ -180,10 +180,16 @@ export default function PlayGame() {
         jwt
     )
 
+    const [currentTurn, setCurrentTurn] = useFetchState(
+        /*[],
+        `/api/v1/game/getCurrentTurn/${name}`,
+        jwt*/
+    );
+
     const [currentAction, setCurrentAction] = useFetchState(
-        [],
+        /*[],
         `/api/v1/game/getAction/${name}`,
-        jwt
+        jwt*/
     )
 
     const generateSectorStyles = (position) => {
@@ -214,7 +220,7 @@ export default function PlayGame() {
             return (newHex)
         })
 
-    const [gameInfo, setGameInfo] = useState(
+    const [gameInfo, setGameInfo] = useFetchState(
         [],
         `/api/v1/game/play/${name}`,
         jwt
@@ -336,7 +342,7 @@ export default function PlayGame() {
     const [expandOrder, setExpandOrder] = useState(null); // Estado para el valor seleccionado
     const [exploreOrder, setExploreOrder] = useState(null);
     const [exterminateOrder, setExterminateOrder] = useState(null);
-    const [playerCards, setPlayerCards] = useFetchState(
+    const [playerCards, setPlayerCards] = useIntervalFetchState(
         [],
         `/api/v1/cards`,
         jwt
@@ -437,9 +443,25 @@ export default function PlayGame() {
         });
     }
 
+    const handleSetOrder = () => {
+        fetch(`/api/v1/game/setOrder/${name}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        });
+    }
+
     return (
         <div className="game">
             {players && <PlayersInfo players={players} />}
+            <div>
+                <p>Es turno de:</p>
+                <p>{currentTurn}</p>
+            </div>
+
             {host && <HostInfo host={host} />}
             <div className="center-container">
                 <div className="left-sector">
@@ -557,6 +579,12 @@ export default function PlayGame() {
                         <option value={2}>2</option>
                         <option value={3}>3</option>
                     </select>
+                </div>
+                <div>
+                    <button onClick={() => handleSkip()}>Pasar</button>
+                </div>
+                <div>
+                    <button onClick={() => handleSetOrder()}>Ordenar Cartas</button>
                 </div>
 
             </div>

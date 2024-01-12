@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 import org.springframework.samples.petclinic.card.Card;
+import org.springframework.samples.petclinic.card.CardService;
 import org.springframework.samples.petclinic.card.CardType;
 import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.phase.PhaseService;
@@ -29,12 +30,14 @@ class RoundBuilder implements GameRoundBuilder{
     private RoundService roundService;
     private PhaseService phaseService;
     private TurnService turnService;
+    private CardService cardService;
     private Random random = new Random();
 
-    public RoundBuilder(RoundService roundService, PhaseService phaseService, TurnService turnService){
+    public RoundBuilder(RoundService roundService, PhaseService phaseService, TurnService turnService, CardService cardService){
         this.roundService = roundService;
         this.phaseService = phaseService;
         this.turnService = turnService;
+        this.cardService = cardService;
         this.reset();
     }
 
@@ -49,6 +52,9 @@ class RoundBuilder implements GameRoundBuilder{
             Phase phase1 = setPhaseInicial(primerJugador, true, players);
             phases.add(phase1);
             phases.add(setPhaseInicial((primerJugador-1 < 0?2:primerJugador-1), false, players));
+            Phase phase2 = setPhaseInicial(playerInicial, true, players);
+            phase2.setIsOrder(true);
+            phases.add(phaseService.savePhase(phase2));
         } else {
             for (int i = 0; i < 3; i++){
                 phases.add(setPhase(playerInicial, i, players));
@@ -56,6 +62,9 @@ class RoundBuilder implements GameRoundBuilder{
             Phase phase = setPhaseInicial(playerInicial, true, players);
             phase.setIsPoint(true);
             phases.add(phaseService.savePhase(phase));
+            Phase phase2 = setPhaseInicial(playerInicial, true, players);
+            phase2.setIsOrder(true);
+            phases.add(phaseService.savePhase(phase2));
         }
         round.setIsFinal(isFinal);
         round.setPhases(phases);
@@ -72,33 +81,44 @@ class RoundBuilder implements GameRoundBuilder{
         List<Card> explore = cards.stream().filter(c -> c.getType() == CardType.EXPLORE).collect(Collectors.toList());
         for (int i = 0; i < players.size(); i++){
                 int p2 = playerInicial+i > 2?playerInicial+i-3:playerInicial+i;
-                Card card = explore.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get();
-                if (card != null) turns.add(setTurn(card.getPlayer()));
-                if (explore.size() == 1) card.setUsesLeft(3);
-                if (explore.size() == 2) card.setUsesLeft(2);
-                if (explore.size() == 3) card.setUsesLeft(1);
+                if (explore.stream().anyMatch(c -> c.getPlayer().equals(players.get(p2)))){
+                    Card card = explore.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get();
+                    turns.add(setTurn(card.getPlayer()));
+                    if (explore.size() == 1) card.setUsesLeft(3);
+                    if (explore.size() == 2) card.setUsesLeft(2);
+                    if (explore.size() == 3) card.setUsesLeft(1);
+                    cardService.saveCard(card);
+                } 
+                
             }
 
         //Número de cartas EXPAND
         List<Card> expand = cards.stream().filter(c -> c.getType() == CardType.EXPAND).collect(Collectors.toList());
         for (int i = 0; i < players.size(); i++){
                 int p2 = playerInicial+i > 2?playerInicial+i-3:playerInicial+i;
-                Card card = expand.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get();
-                if (card != null) turns.add(setTurn(card.getPlayer()));
-                if (expand.size() == 1) card.setUsesLeft(3);
-                if (expand.size() == 2) card.setUsesLeft(2);
-                if (expand.size() == 3) card.setUsesLeft(1);
+                if (expand.stream().anyMatch(c -> c.getPlayer().equals(players.get(p2)))){
+                    Card card = expand.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get();
+                    turns.add(setTurn(card.getPlayer()));
+                    if (expand.size() == 1) card.setUsesLeft(3);
+                    if (expand.size() == 2) card.setUsesLeft(2);
+                    if (expand.size() == 3) card.setUsesLeft(1);
+                    cardService.saveCard(card);
+                } 
             }
 
         //Número de cartas EXTERMINATE
         List<Card> exterminate = cards.stream().filter(c -> c.getType() == CardType.EXTERMINATE).collect(Collectors.toList());
         for (int i = 0; i < players.size(); i++){
                 int p2 = playerInicial+i > 2?playerInicial+i-3:playerInicial+i;
-                Card card = exterminate.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get();
-                if (card != null) turns.add(setTurn(card.getPlayer()));
-                if (exterminate.size() == 1) card.setUsesLeft(3);
-                if (exterminate.size() == 2) card.setUsesLeft(2);
-                if (exterminate.size() == 3) card.setUsesLeft(1);
+                if (exterminate.stream().anyMatch(c -> c.getPlayer().equals(players.get(p2)))){
+                    Card card = exterminate.stream().filter(c -> c.getPlayer().equals(players.get(p2))).findAny().get();
+                    turns.add(setTurn(card.getPlayer()));
+                    if (exterminate.size() == 1) card.setUsesLeft(3);
+                    if (exterminate.size() == 2) card.setUsesLeft(2);
+                    if (exterminate.size() == 3) card.setUsesLeft(1);
+                    cardService.saveCard(card);
+                } 
+                
             }
         
         phase.setTurns(turns);
