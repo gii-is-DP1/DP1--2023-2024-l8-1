@@ -170,7 +170,7 @@ function HostInfo({ host }) {
 
 export default function PlayGame() {
     const name = getIdFromUrl(3);
-    //const [players, setPlayers] = useState(['X', 'O', 'Y']);
+
     const [hexes, setHexes] = useFetchState(
         [],
         `/api/v1/gameBoard/${name}`,
@@ -266,8 +266,81 @@ export default function PlayGame() {
     
     >>>>>>> 6bc66870dc0d54b8eb5741c5c434117d61904281
         }*/
+    
+
+    function onClickSetUpShips(hexId) {
+
+        fetch(`/api/v1/game/play/${name}/${hexId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jwt}`
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            })
+    }
+
+    const [expandOrder, setExpandOrder] = useState(null); // Estado para el valor seleccionado
+    const [exploreOrder, setExploreOrder] = useState(null);
+    const [exterminateOrder, setExterminateOrder] = useState(null);
+    const [playerCards, setPlayerCards] = useFetchState(
+        [],
+        `/api/v1/cards`,
+        jwt
+    );
+
+    const playerCardsList =
+        playerCards.map((c) => {
+            const card = c.performingOrder
+            return (card)
+        })
+
+    const handleChangeOrder = (cardType, order) => {
+        // Lógica para manejar el cambio de orden y realizar la llamada a la API
+        if (cardType) {
+            // Utilizar el tipo de carta correspondiente
+            switch (cardType) {
+                case 'expand':
+                    setExpandOrder(order);
+                    console.log(cardType, order)
+                    console.log(playerCardsList[0][0])
+                    break;
+                case 'explore':
+                    setExploreOrder(order);
+                    console.log(cardType, order)
+                    console.log(playerCardsList[1])
+                    break;
+                case 'exterminate':
+                    setExterminateOrder(order);
+                    console.log(cardType, order)
+                    console.log(playerCardsList[2])
+                    break;
+                default:
+                    break;
+            }
+
+            fetch(`/api/v1/cards/${cardType}/${order}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${jwt}`,
+                },
+            }).then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok")
+                }
+            })
+        }
+
+    }
+
 
     const MediaCard = ({ title, imageUrl, onUse, positionClass }) => {
+
         const mediaStyles = {
             height: '200px',
             width: '150px',
@@ -291,6 +364,7 @@ export default function PlayGame() {
         const buttonStyles = {
             fontSize: '14px',
             width: '100%',
+            marginBottom: "8px"
         };
 
         return (
@@ -300,7 +374,7 @@ export default function PlayGame() {
                     <h3 style={textStyles}>{title}</h3>
                 </div>
                 <div>
-                    <button className="buttonStyles" style={buttonStyles} onClick={onUse}>
+                    <button className="buttonStyles" style={buttonStyles} onClick={onUse} >
                         Usar
                     </button>
                 </div>
@@ -451,10 +525,41 @@ export default function PlayGame() {
                 </div>
             </div>
             <div className="cardsContainerStyle">
-                <MediaCard title={"Expand"} imageUrl={expand} onUse={() => handleFunctionSelection("expand")} positionClass="left-card" />
-                <MediaCard title={"Explore"} imageUrl={explore} onUse={() => handleFunctionSelection("explore")} positionClass="center-card" />
-                <MediaCard title={"Exterminate"} imageUrl={exterminate} onUse={() => handleFunctionSelection("exterminate")} positionClass="right-card" />
-                <button onClick={() => handleSkip()}>Pasar</button>
+                <div className="cardContainer">
+                    <MediaCard title={"Expand"} imageUrl={expand} onUse={() => handleFunctionSelection("expand")} positionClass="left-card" />
+                    <select
+                        value={playerCardsList[0] + 1}
+                        onChange={(e) => handleChangeOrder("expand", parseInt(e.target.value))}
+                    >
+                        <option value={1}>1</option>
+                        <option value={2}>2</option>
+                        <option value={3}>3</option>
+                    </select>
+                </div>
+                <div className="cardContainer">
+                    <MediaCard title={"Explore"} imageUrl={explore} onUse={() => handleFunctionSelection("explore")} positionClass="center-card" />
+                    <select
+                        value={playerCardsList[1] + 1}
+                        onChange={(e) => handleChangeOrder("explore", parseInt(e.target.value))}
+                    >
+                        <option value={1}>1</option>
+                        <option value={2}>2</option>
+                        <option value={3}>3</option>
+                    </select>
+                </div>
+
+                <div className="cardContainer">
+                    <MediaCard title={"Exterminate"} imageUrl={exterminate} onUse={() => handleFunctionSelection("exterminate")} positionClass="right-card" />
+                    <select
+                        value={playerCardsList[2] + 1}
+                        onChange={(e) => handleChangeOrder("exterminate", parseInt(e.target.value))}
+                    >
+                        <option value={1}>1</option>
+                        <option value={2}>2</option>
+                        <option value={3}>3</option>
+                    </select>
+                </div>
+
             </div>
         </div>
     );

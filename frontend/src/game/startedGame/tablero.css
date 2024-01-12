@@ -163,6 +163,16 @@ body {
   margin-top: 20px;
 }
 
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 10px;
+  max-width: 200px;
+  overflow: hidden;
+}
+
 .left-card {
   order: 1;
 }
