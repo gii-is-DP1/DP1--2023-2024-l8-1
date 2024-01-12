@@ -50,6 +50,7 @@ public class Player extends Person {
 
     @OneToMany(mappedBy = "player")
     @Size(min = 3, max = 3)
+    @JsonIgnore
     private List<Card> cards;
 
     @Min(0)

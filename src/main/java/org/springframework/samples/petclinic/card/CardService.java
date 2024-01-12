@@ -2,6 +2,7 @@ package org.springframework.samples.petclinic.card;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,12 @@ import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.ship.ShipService;
+import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.validation.Valid;
+import lombok.val;
 
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 
@@ -24,13 +27,16 @@ public class CardService {
     ShipService shipService;
     HexService hexService;
     PlayerService playerService;
+    UserService userService;
 
     @Autowired
-    public CardService(CardRepository cardRepository, ShipService shipService, HexService hexService, PlayerService playerService) {
+    public CardService(CardRepository cardRepository, ShipService shipService, HexService hexService,
+            PlayerService playerService, UserService userService) {
         this.cardRepository = cardRepository;
         this.shipService = shipService;
         this.hexService = hexService;
         this.playerService = playerService;
+        this.userService = userService;
     }
 
     @Transactional
@@ -56,7 +62,6 @@ public class CardService {
         genExploreCard(playerId);
         genExterminateCard(playerId);
     }
-
 
     @Transactional
     private void genExpandCard(Integer playerId) {
@@ -85,8 +90,27 @@ public class CardService {
         Card newCard = new Card();
         newCard.setType(CardType.EXTERMINATE);
         newCard.setPlayer(player);
-        newCard.setPerformingOrder(1);
+        newCard.setPerformingOrder(2);
         saveCard(newCard);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Card> getPlayerCards(Integer playerId) {
+        Player player = playerService.findPlayerById(playerId);
+        return cardRepository.getCardsForPlayer(player.getId());
+    }
+    
+    @Transactional
+    public void setOrder(CardType type, Integer playerId, Integer order) {
+        
+        Card oldCard = cardRepository.findCardByOrder(order - 1, playerId);
+        Card card = cardRepository.findCardByType(type, playerId);
+        oldCard.setPerformingOrder(card.getPerformingOrder());
+        card.setPerformingOrder(order - 1);
+
+        updateCard(card, card.getId());
+        updateCard(oldCard, oldCard.getId());
+        
     }
 
 }
