@@ -54,14 +54,33 @@ body {
   background-color: rgb(31, 232, 31);
 }
 
+.players-info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  position: absolute;  /* Cambiado a absolute para usar left */
+  left: 50px;  /* Ajusta según sea necesario */
+  top: 10px;   /* Ajusta según sea necesario */
+}
 
+.players-info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+/*
 .players-info {
   position: relative;
   top: 90px;
   left: -430px;
   display: flex;
   flex-direction: column;
-}
+  margin-bottom: 10px;
+}*/
 
 .host-info {
   position: relative;
@@ -116,7 +135,8 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin-top: 100px;
+  margin-top: 150px;
+  position: relative;
 }
 
 .center-container {
@@ -183,4 +203,8 @@ body {
 
 .right-card {
   order: 3;
+}
+
+.red-text {
+  color: red;
 }
