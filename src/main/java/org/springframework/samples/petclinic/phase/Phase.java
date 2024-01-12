@@ -20,7 +20,11 @@ import lombok.Setter;
 @Table(name = "phases")
 public class Phase extends BaseEntity{
     
-    private Boolean isOver;
+    private Boolean isOver = false;
+
+    private Boolean isPoint = false;
+
+    private Boolean isOrder = false;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Size(min = 3, max = 3)

@@ -19,9 +19,9 @@ import lombok.Setter;
 @Table(name = "rounds")
 public class Round extends BaseEntity{
 
-    private Boolean isOver;
+    private Boolean isOver = false;
 
-    private Boolean isFinal;
+    private Boolean isFinal = false;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Size(min = 3, max = 3)
