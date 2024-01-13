@@ -20,6 +20,12 @@ export default function GameList() {
         `/api/v1/game/publicas`,
         jwt
     );
+
+    const [friendGames, setFriendGames] = useFetchState(
+        [],
+        `/api/v1/game/friendGames`,
+        jwt
+    );
     const gameList =
         games.map((a) => {
             return (
@@ -60,7 +66,7 @@ export default function GameList() {
     return (
         <div>
             <div className="admin-page-container">
-                <h1 className="text-center">Games Started</h1>
+                <h1 className="text-center" style={{marginTop: "20px"}}>Games Started</h1>
                 <div>
                     <Table aria-label="achievements" className="mt-4">
                         <thead>

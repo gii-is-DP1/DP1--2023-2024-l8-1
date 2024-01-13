@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.samples.petclinic.card.Card;
 import org.springframework.samples.petclinic.model.Person;
+import org.springframework.samples.petclinic.ship.Ship;
 import org.springframework.samples.petclinic.user.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -60,8 +61,9 @@ public class Player extends Person {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Card> cards;
 
-    @Min(0)
-    @Max(15)
-    private Integer numShips;
+    @OneToMany(mappedBy = "player")
+    @Size(min = 0, max = 15)
+    @JsonIgnore
+    private List<Ship> ships;
 
 }

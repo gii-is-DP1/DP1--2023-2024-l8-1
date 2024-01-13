@@ -53,6 +53,7 @@ INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (4, 1, '
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (5, 5, 'prueba5', false, '2023-11-11 21:16', 'LOBBY');
 
 INSERT INTO games_players(game_id, players_id) VALUES (1,2), (1,3);
+INSERT INTO games_players(game_id, players_id) VALUES (3,4), (3,5);
 
 /*Invitaciones de amistad*/
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (1, null, false, 4, 5, 'FRIENDSHIP');

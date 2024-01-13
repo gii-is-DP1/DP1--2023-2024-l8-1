@@ -1,5 +1,7 @@
 package org.springframework.samples.petclinic.game;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -13,14 +15,17 @@ import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
+import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.ship.Ship;
+import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +49,8 @@ public class GameRestController {
     private final ActionsService actionsService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService, HexService hexService, ActionsService actionsService) {
+    public GameRestController(GameService gameService, UserService userService, HexService hexService,
+            ActionsService actionsService) {
         this.gameService = gameService;
         this.userService = userService;
         this.hexService = hexService;
@@ -59,6 +65,12 @@ public class GameRestController {
     @GetMapping("/publicas")
     public ResponseEntity<List<Game>> publicGames() {
         return new ResponseEntity<>((List<Game>) gameService.getPublicas(), HttpStatus.OK);
+    }
+
+    @GetMapping("/friendGames")
+    public ResponseEntity<List<Game>> friendGames() {
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        return new ResponseEntity<>((List<Game>) gameService.getFriendGames(aux), HttpStatus.OK);
     }
 
     @GetMapping("/play/{name}")
@@ -83,8 +95,14 @@ public class GameRestController {
         if (gameToGet == null)
             throw new ResourceNotFoundException("Game with name " + name + "not found!");
         List<Player> gamePlayers = gameService.findGamePlayers(name);
-        gamePlayers.add(gameToGet.getHost());
         return new ResponseEntity<List<Player>>(gamePlayers, HttpStatus.OK);
+    }
+
+    @GetMapping("/getWinner/{name}")
+    public ResponseEntity<List<Player>> findSortedGamePlayers(@PathVariable("name") String name){
+        List<Player> ls = findGamePlayers(name).getBody();
+        ls.sort(Comparator.comparing(Player::getScore).reversed());
+        return new ResponseEntity<List<Player>>(ls, HttpStatus.OK);
     }
 
     @PostMapping
@@ -121,10 +139,94 @@ public class GameRestController {
         Game game = gameService.findByName(name);
         if (aux != game.getHost()) {
             throw new AccessDeniedException("No puedes empezar la partida si no eres el host de la partida");
+        } else if (game.getPlayers().size() != 2) {
+            throw new BadRequestException("La sala debe estar completa antes de empezar la partida");
         } else {
             gameService.startGame(name);
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/setHex/{name}/{sector}/{hexPosition}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> setHex(@PathVariable("name") String name,
+            @PathVariable("sector") int sector, @PathVariable("hexPosition") int hexPosition) {
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        Game game = gameService.findByName(name);
+        if (aux.getRol() == PlayerRol.SPECTATOR) {
+            throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
+        } else {
+            if (!game.getRounds().get(0).getIsOver()) {
+                gameService.initialRound(name, sector, hexPosition, aux);
+            } else {
+                if (game.getRounds().stream().filter(r -> !r.getIsOver()).findFirst().get().getPhases().stream()
+                        .filter(p -> !p.getIsOver()).findFirst().get().getIsPoint()) {
+                    gameService.pointPhase(game, sector, aux);
+                }
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/skipTurn/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> skipTurn(@PathVariable("name") String name) {
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        Game game = gameService.findByName(name);
+        if (aux.getRol() == PlayerRol.SPECTATOR) {
+            throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
+        } else {
+            gameService.skipTurn(game, aux);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/isInitial/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public Boolean isInitial(@PathVariable("name") String name) {
+        Game game = gameService.findByName(name);
+        Boolean res = game.getRounds().get(0) == game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst()
+                .get();
+        return res;
+    }
+
+    @GetMapping("/getCurrentTurn/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<String>> getCurrentTurn(@PathVariable("name") String name) {
+        Game game = gameService.findByName(name);
+        List<String> ls = List.of(gameService.getCurrentTurn(game).getPlayer().getUser().getUsername());
+        return new ResponseEntity<List<String>>(ls, HttpStatus.OK);
+    }
+
+    @GetMapping("/getCurrentPhase/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Phase> getCurrentPhase(@PathVariable("name") String name) {
+        Game game = gameService.findByName(name);
+        return new ResponseEntity<Phase>(gameService.getCurrentPhase(game), HttpStatus.OK);
+    }
+
+    @PutMapping("/setOrder/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Void> setOrder(@PathVariable("name") String name) {
+        Game game = gameService.findByName(name);
+        Player player = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        gameService.orderCards(game, player);
+        return new ResponseEntity<>(HttpStatus.OK);
+
+    }
+
+    @GetMapping("/getAction/{name}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<String>> getCurrentAction(@PathVariable("name") String name) {
+        Game game = gameService.findByName(name);
+        List<String> ls = new ArrayList<>();
+        if (game.getRounds().get(0) != game.getRounds().stream().filter(s -> !s.getIsOver()).findFirst().get()
+                && !getCurrentPhase(name).getBody().getIsOrder() && !getCurrentPhase(name).getBody().getIsPoint()) {
+            ls.add(gameService.getCurrentAction(game).getType().toString());
+        } else {
+            ls.add("nada");
+        }
+        return new ResponseEntity<List<String>>(ls, HttpStatus.OK);
     }
 
     @PutMapping("/join/{name}")
@@ -174,7 +276,8 @@ public class GameRestController {
     public ResponseEntity<Void> useCardExpand(@PathVariable("name") String name,
             @PathVariable("hexPosition") int hexPosition) {
         Game game = gameService.findByName(name);
-        actionsService.useExpandCard(game, hexPosition);
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        gameService.useExpandCard(game, hexPosition, aux);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -184,7 +287,8 @@ public class GameRestController {
             @PathVariable("hexPositionOrigin") int hexPositionOrigin,
             @PathVariable("hexPositionTarget") int hexPositionTarget) {
         Game game = gameService.findByName(name);
-        actionsService.useExploreCard(game, hexPositionOrigin, hexPositionTarget);
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        gameService.useExploreCard(game, hexPositionOrigin, hexPositionTarget, aux);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -194,7 +298,8 @@ public class GameRestController {
             @PathVariable("hexPositionOrigin") int hexPositionOrigin,
             @PathVariable("hexPositionTarget") int hexPositionTarget) {
         Game game = gameService.findByName(name);
-        actionsService.useExterminateCard(game, hexPositionOrigin, hexPositionTarget);
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        gameService.useExterminateCard(game, hexPositionOrigin, hexPositionTarget, aux);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

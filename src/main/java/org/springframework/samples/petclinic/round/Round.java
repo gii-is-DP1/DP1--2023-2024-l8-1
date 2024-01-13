@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.phase.Phase;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -18,13 +19,12 @@ import lombok.Setter;
 @Table(name = "rounds")
 public class Round extends BaseEntity{
 
-    private Boolean isOver;
+    private Boolean isOver = false;
 
-    private Boolean isFinal;
+    private Boolean isFinal = false;
 
-    @OneToMany
-    @Size(min = 3, max = 3)
-    // @OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @Size(min = 2, max = 5)
     private List<Phase> phases;
     
 }

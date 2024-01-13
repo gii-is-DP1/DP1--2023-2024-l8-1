@@ -26,8 +26,12 @@ public class Card extends BaseEntity{
     CardType type;
 
     @Min(0)
-    @Max(3)
+    @Max(2)
     Integer performingOrder;
+
+    @Min(0)
+    @Max(3)
+    Integer usesLeft;
 
     @ManyToOne(optional = false)
     Player player;
