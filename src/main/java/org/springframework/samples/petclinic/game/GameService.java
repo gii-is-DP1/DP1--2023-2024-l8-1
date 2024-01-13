@@ -154,18 +154,15 @@ public class GameService {
         List<Round> rounds = game.getRounds() != null ? game.getRounds() : new ArrayList<>();
         RoundBuilder builder = new RoundBuilder(roundService, phaseService, turnService, cardService);
         if (isInitial) {
-            Director director = new Director(builder, findGamePlayers(game.getName()), 0, null);
+            Director director = new Director(builder, findGamePlayers(game.getName()), 0);
             director.InitialRound();
         } else {
-            Player triPrimePlayer = hexService.findPlayerInHex(
-                    game.getGameBoard().getSectors().stream().filter(s -> s.getIsTriPrime()).findFirst().get().getId());
             Round round = game.getRounds().get(game.getRounds().size() - 1);
             Player player = (round.getPhases().get(0)).getTurns().get(0).getPlayer();
             int playerInicial = findGamePlayers(game.getName()).indexOf(player) + 1 > 2
                     ? findGamePlayers(game.getName()).indexOf(player) + 1 - 3
                     : findGamePlayers(game.getName()).indexOf(player) + 1;
-            Director director = new Director(builder, findGamePlayers(game.getName()), playerInicial,
-                    triPrimePlayer);
+            Director director = new Director(builder, findGamePlayers(game.getName()), playerInicial);
             director.NormalRound();
 
         }
@@ -268,7 +265,7 @@ public class GameService {
             if (turn.getPlayer() == player) {
                 turn.setIsOver(true);
                 turnService.saveTurn(turn);
-                roundService.roundIsOver(round, phase, game);
+                roundService.roundIsOver(round, phase, game, null);
             } else {
                 throw new AccessDeniedException("No es tu turno.");
             }
@@ -309,7 +306,7 @@ public class GameService {
         } else {
             throw new AccessDeniedException("Es hora de ordenar las cartas.");
         }
-        roundService.roundIsOver(round, phase, game);
+        roundService.roundIsOver(round, phase, game, null);
         if (game.getRounds().get(0).getIsOver()) {
             game.setState(GameState.IN_PROGRESS);
             addRound(game, false);
@@ -333,7 +330,7 @@ public class GameService {
         } else {
             throw new AccessDeniedException("No es hora de ordenar las cartas.");
         }
-        roundService.roundIsOver(round, phase, game);
+        roundService.roundIsOver(round, phase, game, null);
 
         if (round == game.getRounds().get(0) && round.getIsOver()) {
             game.setState(GameState.IN_PROGRESS);
@@ -376,7 +373,7 @@ public class GameService {
         if (card.getUsesLeft() == 0) {
             turn.setIsOver(true);
             turnService.saveTurn(turn);
-            roundService.roundIsOver(round, phase, game);
+            roundService.roundIsOver(round, phase, game, null);
         }
 
     }
@@ -403,7 +400,7 @@ public class GameService {
         if (card.getUsesLeft() == 0) {
             turn.setIsOver(true);
             turnService.saveTurn(turn);
-            roundService.roundIsOver(round, phase, game);
+            roundService.roundIsOver(round, phase, game, null);
         }
     }
 
@@ -429,7 +426,7 @@ public class GameService {
         if (card.getUsesLeft() == 0) {
             turn.setIsOver(true);
             turnService.saveTurn(turn);
-            roundService.roundIsOver(round, phase, game);
+            roundService.roundIsOver(round, phase, game, null);
         }
     }
 
@@ -466,7 +463,10 @@ public class GameService {
         } else {
             throw new AccessDeniedException("No es tu turno.");
         }
-        roundService.roundIsOver(round, phase, game);
+        Player triPrimePlayer = hexService.findPlayerInHex(
+                game.getGameBoard().getSectors().stream().filter(s -> s.getIsTriPrime()).findFirst().get().getHexs()
+                        .get(0).getId());
+        roundService.roundIsOver(round, phase, game, triPrimePlayer);
         if (phase.getIsOver()) {
             limpiarExtras(game);
             if (game.getRounds().stream().count() == 10 ||
@@ -510,8 +510,9 @@ public class GameService {
         GameBoard tablero = game.getGameBoard();
         for (Sector sector : tablero.getSectors()) {
             for (Hex hex : sector.getHexs()) {
-                if (hex.getOccuped() && hex.getShips().size() > hex.getPuntos() + 1) {
-                    for (int i = 0; i < hex.getShips().size() - hex.getPuntos() + 1; i++) {
+                if (hex.getShips().size() > hex.getPuntos() + 1) {
+                    int i = 0;
+                    while (hex.getShips().size() > hex.getPuntos() + 1) {
                         List<Ship> ships = hex.getShips();
                         Ship ship = ships.get(i);
                         ship.setState(ShipState.IN_SUPPLY);
@@ -520,6 +521,7 @@ public class GameService {
                         ships.remove(i);
                         hex.setShips(ships);
                         hexService.save(hex);
+                        i++;
                     }
                 }
             }
