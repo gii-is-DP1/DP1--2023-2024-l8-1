@@ -25,25 +25,25 @@ INSERT INTO appusers(id,username,password,authority) VALUES (41,'ejemplo12','$2a
 INSERT INTO appusers(id,username,password,authority) VALUES (42,'ejemplo13','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
 
 
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name, is_online) VALUES (1,15,2,0,false,24,'Play','Yer', 0);
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (2,15,1,0,false,25,'Play','Yer');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (3,15,0,0,false,26,'Play','Yer');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (4,15,2,0,false,27,'Manuel','Serrano');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (5,15,1,0,false,28,'Raúl','Lozano');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (6,15,0,0,false,29,'Urbano','Blanes');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (7,15,0,0,false,30,'ejemplo','1');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (8,15,0,0,false,31,'ejemplo','2');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (9,15,0,0,false,32,'ejemplo','3');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (10,15,0,0,false,33,'ejemplo','4');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (11,15,0,0,false,34,'ejemplo','5');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (12,15,0,0,false,35,'ejemplo','6');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (13,15,0,0,false,36,'ejemplo','7');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (14,15,0,0,false,37,'ejemplo','8');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (15,15,0,0,false,38,'ejemplo','9');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (16,15,0,0,false,39,'ejemplo','10');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (17,15,0,0,false,40,'ejemplo','11');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (18,15,0,0,false,41,'ejemplo','12');
-INSERT INTO players(id, num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (19,15,0,0,false,42,'ejemplo','13');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (1,2,0,false,24,'Play','Yer');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (2,0,5,false,25,'Play','Yer');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (3,0,0,false,26,'Play','Yer');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (4,2,12,false,27,'Manuel','Serrano');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (5,1,5,false,28,'Raúl','Lozano');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (6,0,0,false,29,'Urbano','Blanes');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (7,0,0,false,30,'ejemplo','1');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (8,0,0,false,31,'ejemplo','2');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (9,0,0,false,32,'ejemplo','3');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (10,0,0,false,33,'ejemplo','4');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (11,0,0,false,34,'ejemplo','5');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (12,0,0,false,35,'ejemplo','6');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (13,0,0,false,36,'ejemplo','7');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (14,0,0,false,37,'ejemplo','8');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (15,0,0,false,38,'ejemplo','9');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (16,0,0,false,39,'ejemplo','10');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (17,0,0,false,40,'ejemplo','11');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (18,0,0,false,41,'ejemplo','12');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (19,0,0,false,42,'ejemplo','13');
 
 
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (1, 1, 'prueba', true, '2023-11-11 21:16', 'LOBBY');
