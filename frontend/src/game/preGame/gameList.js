@@ -20,6 +20,12 @@ export default function GameList() {
         `/api/v1/game/publicas`,
         jwt
     );
+
+    const [friendGames, setFriendGames] = useFetchState(
+        [],
+        `/api/v1/game/friendGames`,
+        jwt
+    );
     const gameList =
         games.map((a) => {
             return (
