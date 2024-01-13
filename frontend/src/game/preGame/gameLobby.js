@@ -17,13 +17,24 @@ export default function GameLobby() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [alerts, setAlerts] = useState([]);
+    const navigate = useNavigate();
     const [players, setPlayers] = useFetchState(
         [],
         `/api/v1/game/lobby/${name}`,
         jwt
     );
 
-    const navigate = useNavigate();
+    const [gameInfo, setGameInfo] = useFetchState(
+        [],
+        `/api/v1/game/play/${name}`,
+        jwt
+    );
+    /*
+        if (gameInfo.state !== "LOBBY" && gameInfo.state !== "OVER") {
+            navigate('../game/play/' + name);
+        }
+    
+        */
 
     function startGame(name) {
         fetch(
@@ -95,11 +106,8 @@ export default function GameLobby() {
                     <Button outline color="success"
                         onClick={() => startGame(name)}>start
                     </Button>
-                    <Button outline color="success">
-                        <Link
-                            to={'/invitations/new/'} className="btn sm"
-                            style={{ textDecoration: "none" }}>Invite a friend</Link>
-
+                    <Button outline color="warning" onClick={() => navigate('../invitations/new/')}>
+                        Invite a friend
                     </Button>
                 </div>
             </div>

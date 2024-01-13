@@ -140,12 +140,22 @@ function Hex({ host, players, value, hexPosition, position, ships, onHexClick })
 }
 
 
-function PlayersInfo({ player, playerShips }) {
+function PlayersInfo({ player, playerShips, host, players }) {
     const loggedUser = tokenService.getUser()
+    let numeroColor = 0;
+    if (player === host) {
+        numeroColor = 1;
+    } else if (player === players[0]) {
+        numeroColor = 2;
+    } else if (player === players[1]) {
+        numeroColor = 3;
+    }
     return (
         <div className="players-info">
-            <p style={{color: player.user.username === loggedUser.username ? 'red' : 'black'}}>{player.user.username}</p>
+            <p className={`player-${numeroColor}`}>{player.user.username}{ player.user.username === loggedUser.username ? ' <- You' : '' }</p>
             <p>Naves restantes: {playerShips}</p>
+            <p>Puntuación: {player.score}</p>
+            <p></p>
         </div>
     );
 }
@@ -161,7 +171,7 @@ export default function PlayGame() {
         jwt
     );
 
-    if (gameInfo.state === "OVER"){
+    if (gameInfo.state === "OVER") {
         navigate('../game/over/' + name);
     }
 
@@ -362,22 +372,6 @@ export default function PlayGame() {
         console.log("Has usado Exterminate")
     }
 
-    function onClickSetUpShips(hexId) {
-
-        fetch(`/api/v1/game/play/${name}/${hexId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwt}`
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-            })
-    }
-
     const [expandOrder, setExpandOrder] = useState(null); // Estado para el valor seleccionado
     const [exploreOrder, setExploreOrder] = useState(null);
     const [exterminateOrder, setExterminateOrder] = useState(null);
@@ -496,9 +490,9 @@ export default function PlayGame() {
     return (
         <div className="game">
             <div className="players-info-container">
-                {host && host.user && <PlayersInfo player={host} playerShips={hostShips} />}
-                {players && <PlayersInfo player={players[0]} playerShips={player1Ships} />}
-                {players && <PlayersInfo player={players[1]} playerShips={player2Ships} />}
+                {host && host.user && <PlayersInfo player={host} playerShips={hostShips} host={host} players={players}/>}
+                {players && <PlayersInfo player={players[0]} playerShips={player1Ships} host={host} players={players}/>}
+                {players && <PlayersInfo player={players[1]} playerShips={player2Ships} host={host} players={players}/>}
             </div>
             <div>
                 <p>Es turno de:</p>

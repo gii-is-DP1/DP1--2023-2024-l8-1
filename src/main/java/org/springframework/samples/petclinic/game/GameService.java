@@ -82,8 +82,26 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<Game> getFriendGames(Player player){
-        List<Game> ls = getGames();
+    public List<Game> getFriendGames(Player player) {
+        List<Game> ls = new ArrayList<>();
+        for (Game game : getGames()) {
+            if (player.getFriends().containsAll(findGamePlayers(game.getName())) && game.getState() != GameState.LOBBY
+                    && game.getState() != GameState.OVER) {
+                ls.add(game);
+            }
+        }
+        return ls;
+
+    }
+
+    @Transactional(readOnly = true)
+    public List<Game> getPlayerGames(Player player) {
+        List<Game> ls = new ArrayList<>();
+        for (Game game : getGames()) {
+            if (findGamePlayers(game.getName()).contains(player)) {
+                ls.add(game);
+            }
+        }
         return ls;
 
     }
@@ -172,8 +190,8 @@ public class GameService {
     }
 
     @Transactional
-    public void resetScore(String name){
-        for (Player player : findGamePlayers(name)){
+    public void resetScore(String name) {
+        for (Player player : findGamePlayers(name)) {
             player.setScore(0);
             playerService.savePlayer(player);
         }
@@ -468,9 +486,9 @@ public class GameService {
     public void finalPoint(Game game) {
         for (Sector sector : game.getGameBoard().getSectors()) {
             for (Hex hex : sector.getHexs()) {
-                if (hex.getOccuped() && hex.getPuntos()>0){
+                if (hex.getOccuped() && hex.getPuntos() > 0) {
                     Player hexPlayer = hexService.findPlayerInHex(hex.getId());
-                    hexPlayer.setScore(hexPlayer.getScore() + hex.getPuntos()*2);
+                    hexPlayer.setScore(hexPlayer.getScore() + hex.getPuntos() * 2);
                     playerService.savePlayer(hexPlayer);
                 }
             }
@@ -492,7 +510,7 @@ public class GameService {
         GameBoard tablero = game.getGameBoard();
         for (Sector sector : tablero.getSectors()) {
             for (Hex hex : sector.getHexs()) {
-                if (hex.getShips().size() > hex.getPuntos() + 1) {
+                if (hex.getOccuped() && hex.getShips().size() > hex.getPuntos() + 1) {
                     for (int i = 0; i < hex.getShips().size() - hex.getPuntos() + 1; i++) {
                         List<Ship> ships = hex.getShips();
                         Ship ship = ships.get(i);
