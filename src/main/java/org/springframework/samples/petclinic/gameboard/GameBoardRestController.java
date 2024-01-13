@@ -11,8 +11,6 @@ import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
-import org.springframework.samples.petclinic.player.PlayerRol;
-import org.springframework.samples.petclinic.sector.SectorService;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,7 +48,7 @@ public class GameBoardRestController {
             if (aux != game.getHost()){
                 throw new AccessDeniedException("Esta partida no está empezada");
             }else{   
-                GameBoard gb = gameBoardService.genRandomGameBoard(name);
+                gameBoardService.genRandomGameBoard(name);
             }
         }
         

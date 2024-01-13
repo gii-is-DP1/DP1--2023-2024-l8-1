@@ -15,29 +15,33 @@ import triPrime from "../../static/images/PlanetaTriPrime.jpg"
 const jwt = tokenService.getLocalAccessToken();
 
 
-function Sector({ host, players, position, hexes, ships, onHexClick, style }) {
-    let puntos = hexes.map((x) => x[1]);
-    let positions = hexes.map((x) => x[3]);
+function Sector({ host, players, position, hexes, ships, handleClick, style }) {
+    let puntos = hexes.map((x) => x[0]);
+    let positions = hexes.map((x) => x[2]);
 
     const sectorStyles = {
         transform: 'rotate(-30deg)',
         ...style
     };
 
+
     return (
         <div className="sector-container" style={sectorStyles}>
             <div className="row-up">
-                <Hex host={host} players={players} value={puntos[0]} hexPosition={positions[0]} ships={ships} onHexClick={() => onHexClick(positions[0])} />
-                <Hex host={host} players={players} value={puntos[1]} hexPosition={positions[1]} ships={ships} onHexClick={() => onHexClick(positions[1])} />
+                <Hex host={host} players={players} value={puntos[0]} hexPosition={positions[0]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 0)} />
+                <Hex host={host} players={players} value={puntos[1]} hexPosition={positions[1]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 1)} />
             </div>
             <div>
-                <Hex host={host} players={players} value={puntos[2]} hexPosition={positions[2]} ships={ships} onHexClick={() => onHexClick(positions[2])} />
-                <Hex host={host} players={players} value={puntos[3]} hexPosition={positions[3]} ships={ships} onHexClick={() => onHexClick(positions[3])} />
-                <Hex host={host} players={players} value={puntos[4]} hexPosition={positions[4]} ships={ships} onHexClick={() => onHexClick(positions[4])} />
+
+                <Hex host={host} players={players} value={puntos[2]} hexPosition={positions[2]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 2)} />
+                <Hex host={host} players={players} value={puntos[3]} hexPosition={positions[3]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 3)} />
+                <Hex host={host} players={players} value={puntos[4]} hexPosition={positions[4]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 4)} />
             </div>
             <div className="row-down">
-                <Hex host={host} players={players} value={puntos[5]} hexPosition={positions[5]} ships={ships} onHexClick={() => onHexClick(positions[5])} />
-                <Hex host={host} players={players} value={puntos[6]} hexPosition={positions[6]} ships={ships} onHexClick={() => onHexClick(positions[6])} />
+                <Hex host={host} players={players} value={puntos[5]} hexPosition={positions[5]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 5)} />
+                <Hex host={host} players={players} value={puntos[6]} hexPosition={positions[6]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 6)} />
+
+
             </div>
         </div>
     );
@@ -52,29 +56,29 @@ function TriPrime({ host, players, position, hex, ships, handleClick, style }) {
     return (
         <div className="sector-container" style={sectorStyles}>
             <div className="row-up">
-                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
-                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
             </div>
             <div>
 
-                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
 
-                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
 
-                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
             </div>
             <div className="row-down">
 
-                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
 
-                {hex && <Hex host={host} players={players} value={hex[1]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
             </div>
         </div>
     );
 }
 
 
-function Hex({ host, players, value, hexPosition, ships, onHexClick }) {
+function Hex({ host, players, value, hexPosition, position, ships, onHexClick }) {
 
     let image;
 
@@ -128,7 +132,7 @@ function Hex({ host, players, value, hexPosition, ships, onHexClick }) {
     };
 
     return (
-        <button className="hex" style={hexStyles} onClick={() => onHexClick(hexPosition)}>
+        <button className="hex" style={hexStyles} onClick={onHexClick}>
             {ships && renderShips()}
         </button>
     );
@@ -172,7 +176,31 @@ export default function PlayGame() {
         [],
         `/api/v1/game/play/${name}/ships`,
         jwt
-    )
+    );
+
+    const [isInitial, setIsInitial] = useFetchState(
+        [],
+        `/api/v1/game/isInitial/${name}`,
+        jwt
+    );
+
+    const [currentTurn, setCurrentTurn] = useFetchState(
+        [],
+        `/api/v1/game/getCurrentTurn/${name}`,
+        jwt
+    );
+
+    const [currentPhase, setCurrentPhase] = useFetchState(
+        [],
+        `/api/v1/game/getCurrentPhase/${name}`,
+        jwt
+    );
+
+    const [currentAction, setCurrentAction] = useFetchState(
+        [],
+        `/api/v1/game/getAction/${name}`,
+        jwt
+    );
 
     const generateSectorStyles = (position) => {
         // Genera estilos específicos para cada Sector
@@ -198,11 +226,11 @@ export default function PlayGame() {
 
     const hexList =
         hexes.map((h) => {
-            const newHex = [h.id, h.puntos, h.occuped, h.position]
+            const newHex = [h.puntos, h.occuped, h.position]
             return (newHex)
         })
 
-    const [gameInfo, setGameInfo] = useIntervalFetchState(
+    const [gameInfo, setGameInfo] = useFetchState(
         [],
         `/api/v1/game/play/${name}`,
         jwt
@@ -251,30 +279,94 @@ export default function PlayGame() {
     const [selectedOriginHex, setSelectedOriginHex] = useState(null);
     const [selectedTargetHex, setSelectedTargetHex] = useState(null);
 
-    const handleFunctionSelection = (selectedFunction) => {
-        setSelectedFunction(selectedFunction);
+    function handleClick(position, i) {
+        fetch(
+            "/api/v1/game/setHex/" + name + "/" + position + "/" + i, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        });
     }
 
-    const handleHexClick = (position) => {
-        if (selectedOriginHex === null) {
-            setSelectedOriginHex(position)
-        } else if (selectedTargetHex === null) {
-            setSelectedTargetHex(position)
-            handleAction(selectedFunction, selectedOriginHex, position)
-            setSelectedFunction(null)
-            setSelectedOriginHex(null)
-            setSelectedTargetHex(null)
+    const handleHexClick = (sector, position) => {
+        if (isInitial) {
+            handleClick(sector, position)
+        } else if (!isInitial) {
+            console.log(currentAction[0])
+            if (currentAction === "expand") {
+                handleExpand(position)
+            } else {
+                if (selectedOriginHex === null) {
+                    setSelectedOriginHex(position)
+                } else if (selectedTargetHex === null) {
+                    setSelectedTargetHex(position)
+                    handleAction(currentAction, selectedOriginHex, position)
+                    setSelectedFunction(null)
+                    setSelectedOriginHex(null)
+                    setSelectedTargetHex(null)
+                }
+            }
         }
     }
 
     const handleAction = (selectedFunction, hexPositionOrigin, hexPositionTarget) => {
-        if (selectedFunction === "expand") {
-            handleExpand(hexPositionTarget)
-        } else if (selectedFunction === "explore") {
+        if (selectedFunction === "explore") {
             handleExplore(hexPositionOrigin, hexPositionTarget)
         } else if (selectedFunction === "exterminate") {
             handleExterminate(hexPositionOrigin, hexPositionTarget)
         }
+    }
+
+    const handleFunctionSelection = (selectedFunction) => {
+        setSelectedFunction(selectedFunction);
+    }
+
+    const handleExpand = (hexPosition) => {
+        fetch(`/api/v1/game/play/${name}/expand/${hexPosition}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`,
+            },
+        }).then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+        });
+        console.log("Has usado Expandir")
+    };
+
+    const handleExplore = (hexPositionOrigin, hexPositionTarget) => {
+        fetch(`/api/v1/game/play/${name}/explore/${hexPositionOrigin}/${hexPositionTarget}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`,
+            },
+        }).then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+        });
+        console.log("Has usado Explorar")
+    }
+
+    const handleExterminate = (hexPositionOrigin, hexPositionTarget) => {
+        fetch(`/api/v1/game/play/${name}/exterminate/${hexPositionOrigin}/${hexPositionTarget}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${jwt}`,
+            },
+        }).then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+        });
+        console.log("Has usado Exterminate")
     }
 
     function onClickSetUpShips(hexId) {
@@ -296,7 +388,7 @@ export default function PlayGame() {
     const [expandOrder, setExpandOrder] = useState(null); // Estado para el valor seleccionado
     const [exploreOrder, setExploreOrder] = useState(null);
     const [exterminateOrder, setExterminateOrder] = useState(null);
-    const [playerCards, setPlayerCards] = useFetchState(
+    const [playerCards, setPlayerCards] = useIntervalFetchState(
         [],
         `/api/v1/cards`,
         jwt
@@ -382,58 +474,30 @@ export default function PlayGame() {
                 <div>
                     <h3 style={textStyles}>{title}</h3>
                 </div>
-                <div>
-                    <button className="buttonStyles" style={buttonStyles} onClick={onUse} >
-                        Usar
-                    </button>
-                </div>
             </div>
         );
     };
 
-    const handleExpand = (hexPosition) => {
-        fetch(`/api/v1/game/play/${name}/expand/${hexPosition}`, {
+    const handleSkip = () => {
+        fetch(`/api/v1/game/skipTurn/${name}`, {
             method: "PUT",
             headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`,
             },
-        }).then((response) => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
         });
-        console.log("Has usado Expandir")
-    };
-
-    const handleExplore = (hexPositionOrigin, hexPositionTarget) => {
-        fetch(`/api/v1/game/play/${name}/explore/${hexPositionOrigin}/${hexPositionTarget}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`,
-            },
-        }).then((response) => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-        });
-        console.log("Has usado Explorar")
     }
 
-    const handleExterminate = (hexPositionOrigin, hexPositionTarget) => {
-        fetch(`/api/v1/game/play/${name}/exterminate/${hexPositionOrigin}/${hexPositionTarget}`, {
+    const handleSetOrder = () => {
+        fetch(`/api/v1/game/setOrder/${name}`, {
             method: "PUT",
             headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${jwt}`,
             },
-        }).then((response) => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
         });
-        console.log("Has usado Exterminate")
     }
 
     return (
@@ -443,6 +507,11 @@ export default function PlayGame() {
                 {players && <PlayersInfo player={players[0]} playerShips={player1Ships} />}
                 {players && <PlayersInfo player={players[1]} playerShips={player2Ships} />}
             </div>
+            <div>
+                <p>Es turno de:</p>
+                {currentPhase.isOrder && <p>Ordena tus cartas</p>}
+                <p>{currentTurn[0]}</p>
+            </div>
             <div className="center-container">
                 <div className="left-sector">
                     <Sector
@@ -451,7 +520,7 @@ export default function PlayGame() {
                         position={0}
                         hexes={hexList.slice(0, 7)}
                         ships={shipList}
-                        onHexClick={handleHexClick}
+                        handleClick={handleHexClick}
                         style={generateSectorStyles(0)}
                     />
                 </div>
@@ -462,7 +531,7 @@ export default function PlayGame() {
                         position={1}
                         hexes={hexList.slice(7, 14)}
                         ships={shipList}
-                        onHexClick={handleHexClick}
+                        handleClick={handleHexClick}
                         style={generateSectorStyles(1)}
                     />
                 </div>
@@ -475,7 +544,7 @@ export default function PlayGame() {
                         position={2}
                         hexes={hexList.slice(14, 21)}
                         ships={shipList}
-                        onHexClick={handleHexClick}
+                        handleClick={handleHexClick}
                         style={generateSectorStyles(2)}
                     />
                 </div>
@@ -483,7 +552,7 @@ export default function PlayGame() {
                     <TriPrime
                         host={host}
                         players={players}
-                        position={3}
+                        position={6}
                         hex={hexList[42]}
                         ships={shipList}
                         style={generateSectorStyles(3)}
@@ -493,10 +562,10 @@ export default function PlayGame() {
                     <Sector
                         host={host}
                         players={players}
-                        position={4}
+                        position={3}
                         hexes={hexList.slice(21, 28)}
                         ships={shipList}
-                        onHexClick={handleHexClick}
+                        handleClick={handleHexClick}
                         style={generateSectorStyles(4)}
                     />
                 </div>
@@ -506,10 +575,10 @@ export default function PlayGame() {
                     <Sector
                         host={host}
                         players={players}
-                        position={5}
+                        position={4}
                         hexes={hexList.slice(28, 35)}
                         ships={shipList}
-                        onHexClick={handleHexClick}
+                        handleClick={handleHexClick}
                         style={generateSectorStyles(5)}
                     />
                 </div>
@@ -517,48 +586,54 @@ export default function PlayGame() {
                     <Sector
                         host={host}
                         players={players}
-                        position={6}
+                        position={5}
                         hexes={hexList.slice(35, 42)}
                         ships={shipList}
-                        onHexClick={handleHexClick}
+                        handleClick={handleHexClick}
                         style={generateSectorStyles(6)}
                     />
                 </div>
             </div>
             <div className="cardsContainerStyle">
                 <div className="cardContainer">
-                    <MediaCard title={"Expand"} imageUrl={expand} onUse={() => handleFunctionSelection("expand")} positionClass="left-card" />
-                    <select
+                    <MediaCard title={"Expand"} imageUrl={expand} positionClass="left-card" />
+                    { currentPhase.isOrder &&<select
                         value={playerCardsList[0] + 1}
                         onChange={(e) => handleChangeOrder("expand", parseInt(e.target.value))}
                     >
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
-                    </select>
+                    </select>}
                 </div>
                 <div className="cardContainer">
-                    <MediaCard title={"Explore"} imageUrl={explore} onUse={() => handleFunctionSelection("explore")} positionClass="center-card" />
-                    <select
+                    <MediaCard title={"Explore"} imageUrl={explore} positionClass="center-card" />
+                    { currentPhase.isOrder && <select
                         value={playerCardsList[1] + 1}
                         onChange={(e) => handleChangeOrder("explore", parseInt(e.target.value))}
                     >
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
-                    </select>
+                    </select> }
                 </div>
 
                 <div className="cardContainer">
-                    <MediaCard title={"Exterminate"} imageUrl={exterminate} onUse={() => handleFunctionSelection("exterminate")} positionClass="right-card" />
-                    <select
+                    <MediaCard title={"Exterminate"} imageUrl={exterminate} positionClass="right-card" />
+                    { currentPhase.isOrder &&<select
                         value={playerCardsList[2] + 1}
                         onChange={(e) => handleChangeOrder("exterminate", parseInt(e.target.value))}
                     >
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
-                    </select>
+                    </select>}
+                </div>
+                <div>
+                    {!isInitial && <button onClick={() => handleSkip()}>Pasar</button>}
+                </div>
+                <div>
+                    {currentPhase.isOrder && <button onClick={() => handleSetOrder()}>Ordenar Cartas</button>}
                 </div>
 
             </div>

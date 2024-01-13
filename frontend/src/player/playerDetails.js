@@ -80,7 +80,7 @@ export default function PlayerDetails() {
                     <Button outline color="success" >
                         <Link
                             to={'/invitations/new'} className="btn sm"
-                            style={{ textDecoration: "none" }}>add a friend</Link>
+                            style={{ textDecoration: "none" }}>Add a friend</Link>
                     </Button>
                 </div>
             </div>
