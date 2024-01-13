@@ -94,7 +94,7 @@ public class PlayerService {
         List<Player> myFriends = me.getFriends();
         myFriends.remove(source);
         me.setFriends(myFriends);
-        
+
         List<Player> sourceFriends = source.getFriends();
         sourceFriends.remove(me);
         source.setFriends(sourceFriends);
@@ -103,7 +103,9 @@ public class PlayerService {
     @Transactional
     public Player updatePlayer(Player p, int id) {
         Player toUpdate = findPlayerById(id);
-        BeanUtils.copyProperties(p, toUpdate, "id", "user");
+        BeanUtils.copyProperties(p, toUpdate, "id", "user", "friends");
+        // ignora friends porque si no al actualizar datos del player se fuma la lista
+        // de friends
         return savePlayer(toUpdate);
     }
 
