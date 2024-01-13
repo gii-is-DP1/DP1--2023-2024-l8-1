@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.model.BaseEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -32,10 +33,10 @@ public class Sector extends BaseEntity{
     @NotNull
     private Boolean isTriPrime = false;
 
+
     private Boolean isScored = false;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Size(max = 7)
-    // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Hex> hexs;    
 }

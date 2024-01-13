@@ -139,23 +139,13 @@ function Hex({ host, players, value, hexPosition, position, ships, onHexClick })
     );
 }
 
-function PlayersInfo({ players }) {
+
+function PlayersInfo({ player, playerShips }) {
+    const loggedUser = tokenService.getUser()
     return (
         <div className="players-info">
-            {players.map((player) => (
-                <div key={player.id}>
-                    <p>{player.user.username}: {player.score}</p>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-function HostInfo({ host }) {
-    return (
-        <div className="host-info">
-            <p>Puntuación: {host.score}</p>
-
+            <p style={{color: player.user.username === loggedUser.username ? 'red' : 'black'}}>{player.user.username}</p>
+            <p>Naves restantes: {playerShips}</p>
         </div>
     );
 }
@@ -241,6 +231,41 @@ export default function PlayGame() {
 
     const host = gameInfo.host;
     const players = gameInfo.players;
+    let primerJugador;
+    let segundoJugador;
+    let hostUsername;
+    // const hostUsername = host.user.username;
+    if (players && players.length >= 2) {
+        primerJugador = players[0].user.username;
+        segundoJugador = players[1].user.username;
+        hostUsername = host.user.username;
+
+        // Ahora puedes usar primerJugador y segundoJugador como desees
+        console.log("Primer jugador:", primerJugador);
+        console.log("Segundo jugador:", segundoJugador);
+        console.log("Host:", hostUsername)
+    } else {
+        console.error("La matriz 'players' no tiene al menos dos elementos.");
+    }
+    // const primerJugadorUsername = primerJugador.user.username;
+    // const segundoJugadorUsername = segundoJugador.user.username;
+    // const hostUsername = host.user.username;
+
+    const [hostShips, setHostShips] = useIntervalFetchState(
+        [],
+        `/api/v1/players/${hostUsername}/remainingShips`,
+        jwt
+    )
+    const [player1Ships, setPlayer1Ships] = useIntervalFetchState(
+        [],
+        `/api/v1/players/${primerJugador}/remainingShips`,
+        jwt
+    )
+    const [player2Ships, setPlayer2Ships] = useIntervalFetchState(
+        [],
+        `/api/v1/players/${segundoJugador}/remainingShips`,
+        jwt
+    )
 
     const [winner, setWinner] = useState(null);
     const [selectedFunction, setSelectedFunction] = useState(null);
@@ -470,15 +495,17 @@ export default function PlayGame() {
 
     return (
         <div className="game">
-            {players && <PlayersInfo players={players} />}
+            <div className="players-info-container">
+                {host && host.user && <PlayersInfo player={host} playerShips={hostShips} />}
+                {players && <PlayersInfo player={players[0]} playerShips={player1Ships} />}
+                {players && <PlayersInfo player={players[1]} playerShips={player2Ships} />}
+            </div>
             <div>
                 <p>Es turno de:</p>
                 <p>{currentTurn[0]}</p>
                 {isInitial && !currentPhase.isOrder && <p>Elige un Hexágono</p>}{currentPhase.isOrder && <p>Ordena tus cartas</p>}{currentPhase.isPoint && <p>Elige un sector para puntuar</p>}{currentAction[0] !== "nada" && <p>{currentAction}</p>}
 
             </div>
-
-            {host && <HostInfo host={host} />}
             <div className="center-container">
                 <div className="left-sector">
                     <Sector

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.turn.Turn;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -25,9 +26,8 @@ public class Phase extends BaseEntity{
 
     private Boolean isOrder = false;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Size(min = 3, max = 4)
-    // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Turn> turns;
 
 }
