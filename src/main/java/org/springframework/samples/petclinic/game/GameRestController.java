@@ -67,6 +67,12 @@ public class GameRestController {
         return new ResponseEntity<>((List<Game>) gameService.getPublicas(), HttpStatus.OK);
     }
 
+    @GetMapping("/friendGames")
+    public ResponseEntity<List<Game>> friendGames() {
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        return new ResponseEntity<>((List<Game>) gameService.getFriendGames(aux), HttpStatus.OK);
+    }
+
     @GetMapping("/play/{name}")
     public ResponseEntity<Game> findGameByName(@PathVariable("name") String name) {
         Game gameToGet = gameService.findByName(name);
@@ -95,7 +101,7 @@ public class GameRestController {
     @GetMapping("/getWinner/{name}")
     public ResponseEntity<List<Player>> findSortedGamePlayers(@PathVariable("name") String name){
         List<Player> ls = findGamePlayers(name).getBody();
-        ls.sort(Comparator.comparing(Player::getScore));
+        ls.sort(Comparator.comparing(Player::getScore).reversed());
         return new ResponseEntity<List<Player>>(ls, HttpStatus.OK);
     }
 

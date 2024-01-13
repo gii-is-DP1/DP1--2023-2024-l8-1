@@ -135,10 +135,10 @@ INSERT INTO appusers(id,username,password,authority) VALUES (27,'manubrioh03','$
 INSERT INTO appusers(id,username,password,authority) VALUES (28,'loza3','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
 INSERT INTO appusers(id,username,password,authority) VALUES (29,'urbanoblon','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
 INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (1,2,0,false,24,'Play','Yer');
-INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (2,0,0,false,25,'Play','Yer');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (2,0,5,false,25,'Play','Yer');
 INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (3,0,0,false,26,'Play','Yer');
-INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (4,2,0,false,27,'Manuel','Serrano');
-INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (5,1,0,false,28,'Raúl','Lozano');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (4,2,12,false,27,'Manuel','Serrano');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (5,1,5,false,28,'Raúl','Lozano');
 INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (6,0,0,false,29,'Urbano','Blanes');
 
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (1, 1, 'prueba', true, '2023-11-11 21:16', 'LOBBY');
@@ -148,6 +148,7 @@ INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (4, 1, '
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (5, 5, 'prueba5', false, '2023-11-11 21:16', 'LOBBY');
 
 INSERT INTO games_players(game_id, players_id) VALUES (1,2), (1,3);
+INSERT INTO games_players(game_id, players_id) VALUES (3,4), (3,5);
 
 /*Invitaciones de amistad*/
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (1, null, false, 4, 5, 'FRIENDSHIP');

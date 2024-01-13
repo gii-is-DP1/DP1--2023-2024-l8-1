@@ -82,6 +82,13 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
+    public List<Game> getFriendGames(Player player){
+        List<Game> ls = getGames();
+        return ls;
+
+    }
+
+    @Transactional(readOnly = true)
     public Game getById(int id) {
         Optional<Game> result = repo.findById(id);
         return result.isPresent() ? result.get() : null;
@@ -156,11 +163,20 @@ public class GameService {
         Game game = findByName(name);
 
         addRound(game, true);
+        resetScore(name);
         generateShipInGame(game);
         generateCardsInGame(game);
 
         game.setState(GameState.START_PLAYER_CHOICE);
         return saveGame(game);
+    }
+
+    @Transactional
+    public void resetScore(String name){
+        for (Player player : findGamePlayers(name)){
+            player.setScore(0);
+            playerService.savePlayer(player);
+        }
     }
 
     @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRES_NEW)
@@ -435,7 +451,7 @@ public class GameService {
         roundService.roundIsOver(round, phase, game);
         if (phase.getIsOver()) {
             limpiarExtras(game);
-            if (game.getRounds().stream().count() == 3 ||
+            if (game.getRounds().stream().count() == 10 ||
                     findGamePlayers(game.getName()).stream().anyMatch(
                             p -> p.getShips().stream().allMatch(s -> s.getState() == ShipState.REMOVED))) {
                 finalPoint(game);
@@ -452,9 +468,9 @@ public class GameService {
     public void finalPoint(Game game) {
         for (Sector sector : game.getGameBoard().getSectors()) {
             for (Hex hex : sector.getHexs()) {
-                if (hex.getOccuped()){
+                if (hex.getOccuped() && hex.getPuntos()>0){
                     Player hexPlayer = hexService.findPlayerInHex(hex.getId());
-                    hexPlayer.setScore(hexPlayer.getScore() + hex.getPuntos());
+                    hexPlayer.setScore(hexPlayer.getScore() + hex.getPuntos()*2);
                     playerService.savePlayer(hexPlayer);
                 }
             }
