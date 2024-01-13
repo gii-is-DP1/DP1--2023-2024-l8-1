@@ -52,9 +52,7 @@ public class Player extends Person {
     @JoinTable(name = "players_friends", joinColumns = @JoinColumn(name = "player_id"), inverseJoinColumns = @JoinColumn(name = "friend_id"), uniqueConstraints = @UniqueConstraint(columnNames = {
             "player_id", "friend_id" }))
     List<Player> friends;
-
-    Integer isOnline;
-
+    
     @OneToMany(mappedBy = "player")
     @Size(min = 3, max = 3)
     @JsonIgnore
