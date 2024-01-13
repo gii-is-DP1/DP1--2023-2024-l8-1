@@ -134,12 +134,12 @@ INSERT INTO appusers(id,username,password,authority) VALUES (26,'player3','$2a$1
 INSERT INTO appusers(id,username,password,authority) VALUES (27,'manubrioh03','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
 INSERT INTO appusers(id,username,password,authority) VALUES (28,'loza3','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
 INSERT INTO appusers(id,username,password,authority) VALUES (29,'urbanoblon','$2a$10$DaS6KIEfF5CRTFrxIoGc7emY3BpZZ0.fVjwA3NiJ.BjpGNmocaS3e',5);
-INSERT INTO players(id,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (1,15,2,0,false,24,'Play','Yer');
-INSERT INTO players(id,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (2,15,0,0,false,25,'Play','Yer');
-INSERT INTO players(id,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (3,15,0,0,false,26,'Play','Yer');
-INSERT INTO players(id,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (4,15,2,0,false,27,'Manuel','Serrano');
-INSERT INTO players(id,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (5,15,1,0,false,28,'Raúl','Lozano');
-INSERT INTO players(id,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (6,15,0,0,false,29,'Urbano','Blanes');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (1,2,0,false,24,'Play','Yer');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (2,0,0,false,25,'Play','Yer');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (3,0,0,false,26,'Play','Yer');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (4,2,0,false,27,'Manuel','Serrano');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (5,1,0,false,28,'Raúl','Lozano');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (6,0,0,false,29,'Urbano','Blanes');
 
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (1, 1, 'prueba', true, '2023-11-11 21:16', 'LOBBY');
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (2, 2, 'prueba2', true, '2023-11-11 21:16', 'LOBBY');

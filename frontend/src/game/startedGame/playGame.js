@@ -11,6 +11,7 @@ import stars from "../../static/images/Stars.jpg"
 import planet1 from "../../static/images/Planeta1.jpg"
 import planet2 from "../../static/images/Planeta2.jpg"
 import triPrime from "../../static/images/PlanetaTriPrime.jpg"
+import { useNavigate } from 'react-router-dom';
 
 const jwt = tokenService.getLocalAccessToken();
 
@@ -154,13 +155,25 @@ function HostInfo({ host }) {
     return (
         <div className="host-info">
             <p>Puntuación: {host.score}</p>
-            <p>Naves restantes: {host.numShips}</p>
+
         </div>
     );
 }
 
 export default function PlayGame() {
     const name = getIdFromUrl(3);
+
+    const navigate = useNavigate();
+
+    const [gameInfo, setGameInfo] = useFetchState(
+        [],
+        `/api/v1/game/play/${name}`,
+        jwt
+    );
+
+    if (gameInfo.state === "OVER"){
+        navigate('../game/over/' + name);
+    }
 
     const [hexes, setHexes] = useFetchState(
         [],
@@ -174,25 +187,25 @@ export default function PlayGame() {
         jwt
     );
 
-    const [isInitial, setIsInitial] = useFetchState(
+    const [isInitial, setIsInitial] = useIntervalFetchState(
         [],
         `/api/v1/game/isInitial/${name}`,
         jwt
     );
 
-    const [currentTurn, setCurrentTurn] = useFetchState(
+    const [currentTurn, setCurrentTurn] = useIntervalFetchState(
         [],
         `/api/v1/game/getCurrentTurn/${name}`,
         jwt
     );
 
-    const [currentPhase, setCurrentPhase] = useFetchState(
+    const [currentPhase, setCurrentPhase] = useIntervalFetchState(
         [],
         `/api/v1/game/getCurrentPhase/${name}`,
         jwt
     );
 
-    const [currentAction, setCurrentAction] = useFetchState(
+    const [currentAction, setCurrentAction] = useIntervalFetchState(
         [],
         `/api/v1/game/getAction/${name}`,
         jwt
@@ -226,12 +239,6 @@ export default function PlayGame() {
             return (newHex)
         })
 
-    const [gameInfo, setGameInfo] = useFetchState(
-        [],
-        `/api/v1/game/play/${name}`,
-        jwt
-    );
-
     const host = gameInfo.host;
     const players = gameInfo.players;
 
@@ -240,9 +247,9 @@ export default function PlayGame() {
     const [selectedOriginHex, setSelectedOriginHex] = useState(null);
     const [selectedTargetHex, setSelectedTargetHex] = useState(null);
 
-    function handleClick(position, i) {
+    function handleClick(sector, position) {
         fetch(
-            "/api/v1/game/setHex/" + name + "/" + position + "/" + i, {
+            "/api/v1/game/setHex/" + name + "/" + sector + "/" + position, {
             method: "PUT",
             headers: {
                 "Authorization": `Bearer ${jwt}`,
@@ -253,18 +260,18 @@ export default function PlayGame() {
     }
 
     const handleHexClick = (sector, position) => {
-        if (isInitial) {
+        console.log(currentPhase.isOrder)
+        if (isInitial || currentPhase.isPoint) {
             handleClick(sector, position)
-        } else if (!isInitial) {
-            console.log(currentAction[0])
-            if (currentAction === "expand") {
+        } else if (!isInitial && !currentPhase.isPoint) {
+            if (currentAction[0] === "EXPAND") {
                 handleExpand(position)
             } else {
                 if (selectedOriginHex === null) {
                     setSelectedOriginHex(position)
                 } else if (selectedTargetHex === null) {
                     setSelectedTargetHex(position)
-                    handleAction(currentAction, selectedOriginHex, position)
+                    handleAction(currentAction[0], selectedOriginHex, position)
                     setSelectedFunction(null)
                     setSelectedOriginHex(null)
                     setSelectedTargetHex(null)
@@ -274,9 +281,9 @@ export default function PlayGame() {
     }
 
     const handleAction = (selectedFunction, hexPositionOrigin, hexPositionTarget) => {
-        if (selectedFunction === "explore") {
+        if (selectedFunction === "EXPLORE") {
             handleExplore(hexPositionOrigin, hexPositionTarget)
-        } else if (selectedFunction === "exterminate") {
+        } else if (selectedFunction === "EXTERMINATE") {
             handleExterminate(hexPositionOrigin, hexPositionTarget)
         }
     }
@@ -385,7 +392,7 @@ export default function PlayGame() {
                     break;
             }
 
-            fetch(`/api/v1/cards/${cardType}/${order}`, {
+            fetch(`/api/v1/cards/${name}/${cardType}/${order}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -466,8 +473,9 @@ export default function PlayGame() {
             {players && <PlayersInfo players={players} />}
             <div>
                 <p>Es turno de:</p>
-                {currentPhase.isOrder && <p>Ordena tus cartas</p>}
                 <p>{currentTurn[0]}</p>
+                {isInitial && !currentPhase.isOrder && <p>Elige un Hexágono</p>}{currentPhase.isOrder && <p>Ordena tus cartas</p>}{currentPhase.isPoint && <p>Elige un sector para puntuar</p>}{currentAction[0] !== "nada" && <p>{currentAction}</p>}
+
             </div>
 
             {host && <HostInfo host={host} />}
@@ -556,7 +564,7 @@ export default function PlayGame() {
             <div className="cardsContainerStyle">
                 <div className="cardContainer">
                     <MediaCard title={"Expand"} imageUrl={expand} positionClass="left-card" />
-                    { currentPhase.isOrder &&<select
+                    {currentPhase.isOrder && <select
                         value={playerCardsList[0] + 1}
                         onChange={(e) => handleChangeOrder("expand", parseInt(e.target.value))}
                     >
@@ -567,19 +575,19 @@ export default function PlayGame() {
                 </div>
                 <div className="cardContainer">
                     <MediaCard title={"Explore"} imageUrl={explore} positionClass="center-card" />
-                    { currentPhase.isOrder && <select
+                    {currentPhase.isOrder && <select
                         value={playerCardsList[1] + 1}
                         onChange={(e) => handleChangeOrder("explore", parseInt(e.target.value))}
                     >
                         <option value={1}>1</option>
                         <option value={2}>2</option>
                         <option value={3}>3</option>
-                    </select> }
+                    </select>}
                 </div>
 
                 <div className="cardContainer">
                     <MediaCard title={"Exterminate"} imageUrl={exterminate} positionClass="right-card" />
-                    { currentPhase.isOrder &&<select
+                    {currentPhase.isOrder && <select
                         value={playerCardsList[2] + 1}
                         onChange={(e) => handleChangeOrder("exterminate", parseInt(e.target.value))}
                     >
@@ -589,7 +597,7 @@ export default function PlayGame() {
                     </select>}
                 </div>
                 <div>
-                    {!isInitial && <button onClick={() => handleSkip()}>Pasar</button>}
+                    {!isInitial && !currentPhase.isOrder && <button onClick={() => handleSkip()}>Pasar</button>}
                 </div>
                 <div>
                     {currentPhase.isOrder && <button onClick={() => handleSetOrder()}>Ordenar Cartas</button>}

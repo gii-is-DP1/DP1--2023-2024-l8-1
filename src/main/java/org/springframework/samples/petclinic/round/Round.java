@@ -20,8 +20,6 @@ public class Round extends BaseEntity{
 
     private Boolean isOver = false;
 
-    private Boolean isFinal = false;
-
     @OneToMany
     @Size(min = 2, max = 5)
     // @OnDelete(action = OnDeleteAction.CASCADE)

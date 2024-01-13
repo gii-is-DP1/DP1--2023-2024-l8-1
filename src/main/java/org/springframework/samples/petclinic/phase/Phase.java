@@ -26,7 +26,7 @@ public class Phase extends BaseEntity{
     private Boolean isOrder = false;
 
     @OneToMany
-    @Size(min = 3, max = 3)
+    @Size(min = 3, max = 4)
     // @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Turn> turns;
 

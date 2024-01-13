@@ -32,6 +32,8 @@ public class Sector extends BaseEntity{
     @NotNull
     private Boolean isTriPrime = false;
 
+    private Boolean isScored = false;
+
     @OneToMany
     @Size(max = 7)
     // @OnDelete(action = OnDeleteAction.CASCADE)

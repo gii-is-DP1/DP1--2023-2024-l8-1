@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.phase.PhaseService;
+import org.springframework.samples.petclinic.sector.Sector;
+import org.springframework.samples.petclinic.sector.SectorService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +18,13 @@ public class RoundService {
 
     private RoundRepository roundRepository;
     private PhaseService phaseService;
+    private SectorService sectorService;
 
     @Autowired
-    public RoundService(RoundRepository roundRepository, PhaseService phaseService){
+    public RoundService(RoundRepository roundRepository, PhaseService phaseService, SectorService sectorService){
         this.roundRepository = roundRepository;
         this.phaseService = phaseService;
+        this.sectorService = sectorService;
     }
 
     @Transactional(readOnly = true)
@@ -35,7 +39,10 @@ public class RoundService {
             phase.setIsOver(true);
             phaseService.savePhase(phase);
             if (phase.getIsPoint()){
-                
+                for (Sector sector : game.getGameBoard().getSectors()){
+                    sector.setIsScored(false);
+                    sectorService.save(sector);
+                }
             }
         }
         if (round.getPhases().stream().allMatch(s -> s.getIsOver())){

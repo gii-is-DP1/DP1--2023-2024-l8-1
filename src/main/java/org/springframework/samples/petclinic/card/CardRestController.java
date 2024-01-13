@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.samples.petclinic.game.Game;
+import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,11 +27,13 @@ public class CardRestController {
 
     private final UserService userService;
     private final CardService cardService;
+    private GameService gameService;
 
     @Autowired
-    public CardRestController(UserService userService, CardService cardService) {
+    public CardRestController(UserService userService, CardService cardService, GameService gameService) {
         this.userService = userService;
         this.cardService = cardService;
+        this.gameService = gameService;
     }
 
     @GetMapping
@@ -39,12 +43,12 @@ public class CardRestController {
         return playerCards;
     }
 
-    @PutMapping("/{type}/{order}")
+    @PutMapping("/{name}/{type}/{order}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> changePerformingOrder(@PathVariable("type") String cardType,
+    public ResponseEntity<Void> changePerformingOrder(@PathVariable("name") String name, @PathVariable("type") String cardType,
             @PathVariable("order") int performingOrder) {
         Player loggedPlayer = userService.findPlayerByUser(userService.findCurrentUser().getId());
-
+        Game game = gameService.findByName(name);
         CardType cardTypeEnum;
         switch (cardType) {
             case "expand":
@@ -61,7 +65,7 @@ public class CardRestController {
                 throw new IllegalArgumentException("Tipo de carta no válido: " + cardType);
         }
 
-        cardService.setOrder(cardTypeEnum, loggedPlayer.getId(), performingOrder);
+        cardService.setOrder(cardTypeEnum, loggedPlayer, performingOrder, game);
 
         return new ResponseEntity<>(HttpStatus.OK);
     }

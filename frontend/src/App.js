@@ -35,6 +35,7 @@ import InvitationList from "./invitation/invitationList";
 import GameLobby from "./game/preGame/gameLobby";
 import PlayGame from "./game/startedGame/playGame"
 import PlayerDetails from "./player/playerDetails";
+import OverGame from "./game/startedGame/endGame"
 
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -100,6 +101,7 @@ function App() {
           <Route path="/invitations/new" element={<CreateInvitation />} />
           <Route path="/invitations" element={<InvitationList />} />
           <Route path="/game/play/:gameName" element={<PlayGame />} />
+          <Route path="/game/over/:gameName" element={<OverGame />} />
         </>
       )
     }

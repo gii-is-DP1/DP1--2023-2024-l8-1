@@ -72,4 +72,9 @@ public class SectorService {
         return aux;
     }
 
+    @Transactional
+    public Sector save(Sector sector){
+        return sectorRepository.save(sector);
+    }
+
 }
