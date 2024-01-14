@@ -144,7 +144,7 @@ function PlayersInfo({ player, playerShips }) {
     const loggedUser = tokenService.getUser()
     return (
         <div className="players-info">
-            <p style={{color: player.user.username === loggedUser.username ? 'red' : 'black'}}>{player.user.username}</p>
+            <p style={{ color: player.user.username === loggedUser.username ? 'red' : 'black' }}>{player.user.username}</p>
             <p>Naves restantes: {playerShips}</p>
         </div>
     );
@@ -161,7 +161,7 @@ export default function PlayGame() {
         jwt
     );
 
-    if (gameInfo.state === "OVER"){
+    if (gameInfo.state === "OVER") {
         navigate('../game/over/' + name);
     }
 
@@ -241,9 +241,6 @@ export default function PlayGame() {
         hostUsername = host.user.username;
 
         // Ahora puedes usar primerJugador y segundoJugador como desees
-        console.log("Primer jugador:", primerJugador);
-        console.log("Segundo jugador:", segundoJugador);
-        console.log("Host:", hostUsername)
     } else {
         console.error("La matriz 'players' no tiene al menos dos elementos.");
     }
@@ -281,7 +278,14 @@ export default function PlayGame() {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-        });
+        }).then((response) => {
+            if (!response.ok) {
+                return response.json().then((errorData) => {
+                    let errorMessage = errorData.message;
+                    alert(errorMessage);
+                });
+            }
+        })
     }
 
     const handleHexClick = (sector, position) => {
@@ -326,9 +330,19 @@ export default function PlayGame() {
             },
         }).then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                const contentType = response.headers.get("Content-Type");
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json().then((errorData) => {
+                        let errorMessage = errorData.message;
+                        alert(errorMessage);
+                    });
+                } else {
+                    return response.text().then((errorMessage) => {
+                        alert(errorMessage);
+                    });
+                }
             }
-        });
+        })
         console.log("Has usado Expandir")
     };
 
@@ -341,9 +355,19 @@ export default function PlayGame() {
             },
         }).then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                const contentType = response.headers.get("Content-Type");
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json().then((errorData) => {
+                        let errorMessage = errorData.message;
+                        alert(errorMessage);
+                    });
+                } else {
+                    return response.text().then((errorMessage) => {
+                        alert(errorMessage);
+                    });
+                }
             }
-        });
+        })
         console.log("Has usado Explorar")
     }
 
@@ -356,9 +380,19 @@ export default function PlayGame() {
             },
         }).then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                const contentType = response.headers.get("Content-Type");
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json().then((errorData) => {
+                        let errorMessage = errorData.message;
+                        alert(errorMessage);
+                    });
+                } else {
+                    return response.text().then((errorMessage) => {
+                        alert(errorMessage);
+                    });
+                }
             }
-        });
+        })
         console.log("Has usado Exterminate")
     }
 
@@ -425,7 +459,10 @@ export default function PlayGame() {
                 },
             }).then((response) => {
                 if (!response.ok) {
-                    throw new Error("Network response was not ok")
+                    return response.json().then((errorData) => {
+                        let errorMessage = errorData.message;
+                        alert(errorMessage);
+                    });
                 }
             })
         }
@@ -479,7 +516,14 @@ export default function PlayGame() {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-        });
+        }).then((response) => {
+            if (!response.ok) {
+                return response.json().then((errorData) => {
+                    let errorMessage = errorData.message;
+                    alert(errorMessage);
+                });
+            }
+        })
     }
 
     const handleSetOrder = () => {
@@ -490,7 +534,14 @@ export default function PlayGame() {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-        });
+        }).then((response) => {
+            if (!response.ok) {
+                return response.json().then((errorData) => {
+                    let errorMessage = errorData.message;
+                    alert(errorMessage);
+                });
+            }
+        })
     }
 
     return (

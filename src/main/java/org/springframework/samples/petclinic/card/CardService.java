@@ -120,7 +120,7 @@ public class CardService {
             updateCard(card, card.getId());
             updateCard(oldCard, oldCard.getId());
         } else {
-            throw new AccessDeniedException("Ya no puedes ordenar tus cartas.");
+            throw new AccessDeniedException("No es tu turno para ordenar las cartas.");
         }
         
     }
