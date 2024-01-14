@@ -31,25 +31,10 @@ function AppNavbar() {
             adminLinks = (
                 <>
                     <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/owners">Owners</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/pets">Pets</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/vets">Vets</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/consultations">Consultations</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/clinicOwners">Clinic Owners</NavLink>
-                    </NavItem>
-                    <NavItem>
-                        <NavLink style={{ color: "white" }} tag={Link} to="/clinics">Clinics</NavLink>
-                    </NavItem>
-                    <NavItem>
                         <NavLink style={{ color: "white" }} tag={Link} to="/users">Users</NavLink>
+                    </NavItem>
+                    <NavItem>
+                        <NavLink style={{ color: "white" }} tag={Link} to="/games">Games</NavLink>
                     </NavItem>
                 </>
             )
