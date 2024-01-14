@@ -105,6 +105,7 @@ public class GameRestController {
     public ResponseEntity<List<Game>> findAllPlayerGames() {
         List<Game> currentPlayerGames = gameService.findCurrentPlayerUserGames();
         return new ResponseEntity<List<Game>>(currentPlayerGames, HttpStatus.OK);
+    }
 
     @GetMapping("/getWinner/{name}")
     public ResponseEntity<List<Player>> findSortedGamePlayers(@PathVariable("name") String name) {
