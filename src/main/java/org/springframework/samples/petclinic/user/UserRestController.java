@@ -19,7 +19,9 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.auth.payload.response.MessageResponse;
@@ -37,20 +39,22 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @RequestMapping("/api/v1/users")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Users", description = "API for the management of users of the application")
 class UserRestController {
 
 	private final UserService userService;
 	private final AuthoritiesService authService;
-
+	
 	@Autowired
 	public UserRestController(UserService userService, AuthoritiesService authService) {
 		this.userService = userService;
 		this.authService = authService;
-	}
+			}
 
 	@GetMapping
 	public ResponseEntity<List<User>> findAll(@RequestParam(required = false) String auth) {
@@ -60,6 +64,11 @@ class UserRestController {
 		} else
 			res = (List<User>) userService.findAll();
 		return new ResponseEntity<>(res, HttpStatus.OK);
+	}
+
+	@GetMapping("/admin")
+	public Page<User> findAllAdmin(Pageable pageable) {
+		return userService.findAllAdmin(pageable);
 	}
 
 	@GetMapping("authorities")

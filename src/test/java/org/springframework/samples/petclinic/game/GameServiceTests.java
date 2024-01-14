@@ -170,6 +170,29 @@ public class GameServiceTests {
     }
 
     @Test
+    @WithMockUser(username = "player2", authorities = "PLAYER")
+    void shouldNotCreateAGameWithBlankName() {
+
+        assertThrows(TransactionSystemException.class, () -> {
+            Game newGame = createAGameWithNotValidName();
+            gameService.createGame(newGame);
+        });
+    }
+
+    private Game createAGameWithNotValidName() {
+
+        Game newGame = new Game();
+
+        newGame.setName("");
+        newGame.setPublica(true);
+        newGame.setState(GameState.LOBBY);
+        newGame.setStartTime(LocalDateTime.now());
+
+        return newGame;
+
+    }
+
+    @Test
     void shouldUpdateGame() {
 
         Game game = gameService.findByName("prueba");
@@ -186,9 +209,10 @@ public class GameServiceTests {
 
         Game game = gameService.findByName("prueba3");
         game.setName(null);
-        
+
         assertThrows(TransactionSystemException.class, () -> {
-        gameService.updateGame(game, game.getId());});
+            gameService.updateGame(game, game.getId());
+        });
 
     }
 
@@ -211,7 +235,8 @@ public class GameServiceTests {
     void shouldNotAddPlayerToGameIfNotAuthenticated() {
 
         assertThrows(ResourceNotFoundException.class, () -> {
-        gameService.joinPlayer("prueba2");});
+            gameService.joinPlayer("prueba2");
+        });
 
     }
 
@@ -241,6 +266,5 @@ public class GameServiceTests {
         assertEquals(gamesSize - 1, updatedGames.size());
 
     }
-
 
 }

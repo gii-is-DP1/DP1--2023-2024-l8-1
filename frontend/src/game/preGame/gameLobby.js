@@ -2,13 +2,13 @@ import {
     Table, Button
 } from "reactstrap";
 
-import getIdFromUrl from "./../util/getIdFromUrl";
-import tokenService from "../services/token.service";
-import useFetchState from "../util/useFetchState";
-import deleteFromList from "../util/deleteFromList";
+import getIdFromUrl from "../../util/getIdFromUrl";
+import tokenService from "../../services/token.service";
+import useFetchState from "../../util/useFetchState";
+import deleteFromList from "../../util/deleteFromList";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import getErrorModal from "../util/getErrorModal";
+import getErrorModal from "../../util/getErrorModal";
 import { useNavigate } from 'react-router-dom';
 
 const jwt = tokenService.getLocalAccessToken();
@@ -17,15 +17,26 @@ export default function GameLobby() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [alerts, setAlerts] = useState([]);
+    const navigate = useNavigate();
     const [players, setPlayers] = useFetchState(
         [],
         `/api/v1/game/lobby/${name}`,
         jwt
     );
 
-    const navigate = useNavigate();
+    const [gameInfo, setGameInfo] = useFetchState(
+        [],
+        `/api/v1/game/play/${name}`,
+        jwt
+    );
+    /*
+        if (gameInfo.state !== "LOBBY" && gameInfo.state !== "OVER") {
+            navigate('../game/play/' + name);
+        }
+    
+        */
 
-    function startGame(name){
+    function startGame(name) {
         fetch(
             "/api/v1/game/start/" + name, {
             method: "PUT",
@@ -36,7 +47,18 @@ export default function GameLobby() {
             },
         });
 
-        navigate('../game/lobby/' + name);
+        fetch(
+            "/api/v1/gameBoard/" + name, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${jwt}`,
+                Accept: "application/json",
+                "Content-Type": "application/json",
+            },
+        });
+
+        navigate('../game/play/' + name);
+
     }
 
     const modal = getErrorModal(setVisible, visible, message);
@@ -80,14 +102,12 @@ export default function GameLobby() {
                         </thead>
                         <tbody>{playersList}</tbody>
                     </Table>
+
                     <Button outline color="success"
-                        onClick={() => startGame(name)} >
-                        Start Game
+                        onClick={() => startGame(name)}>start
                     </Button>
-                    <Button outline color="success">
-                        <Link
-                        to={'/invitations/new/'} className="btn sm"
-                        style={{ textDecoration: "none" }}>Invite a friend</Link>
+                    <Button outline color="warning" onClick={() => navigate('../invitations/new/')}>
+                        Invite a friend
                     </Button>
                 </div>
             </div>

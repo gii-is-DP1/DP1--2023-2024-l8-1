@@ -6,6 +6,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.auth.payload.response.MessageResponse;
+import org.springframework.samples.petclinic.ship.Ship;
+import org.springframework.samples.petclinic.ship.ShipService;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.samples.petclinic.util.RestPreconditions;
@@ -20,19 +22,23 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/players")
 @SecurityRequirement(name = "bearerAuth")
+@Tag(name = "Players", description = "The Player managemet API")
 public class PlayerRestController {
 
     private final PlayerService ps;
     private final UserService us;
+    private final ShipService ss;
 
-    public PlayerRestController(PlayerService ps, UserService us){
+    public PlayerRestController(PlayerService ps, UserService us, ShipService ss){
         this.ps=ps;
         this.us=us;
+        this.ss=ss;
     }
 
     @GetMapping
@@ -49,6 +55,23 @@ public class PlayerRestController {
     public ResponseEntity<Player> getDetails(){
         int id = (us.findPlayerByUser(us.findCurrentUser().getId())).getId();
         return findById(id);
+    }
+
+    @PutMapping("/startSpectating/{username}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> startSpectating(@PathVariable("username") String username){
+        User user = us.findUser(username);
+        Player player = ps.findPlayerByUser(user.getId());
+        ps.startSpectating(player);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/{username}/remainingShips")
+    public Integer getPlayerRemainingShips(@PathVariable("username") String username) {
+        User user = us.findUser(username);
+        Player player = ps.findPlayerByUser(user.getId());
+        List<Ship> playerShips = ss.selectShipsFromSupply(player.getId());
+        return playerShips.size();
     }
 
     @GetMapping("/{id}")
@@ -79,6 +102,13 @@ public class PlayerRestController {
     public ResponseEntity<Player> addFriend(@PathVariable("id") int id){
         ps.addFriend(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<MessageResponse> deleteFriend(@PathVariable("id") int id){
+        ps.deleteFriend(id);
+        return new ResponseEntity<>(new MessageResponse("Friend deleted"),HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
