@@ -286,14 +286,18 @@ public class GameService {
                     if (!game.getGameBoard().getSectors().get(sector).getHexs().stream()
                             .anyMatch(s -> s.getOccuped())) {
                         Hex hex = game.getGameBoard().getSectors().get(sector).getHexs().get(hexPosition - 7 * sector);
-                        Ship ship = (shipService.selectShipsFromSupply(player.getId())).get(0);
-                        ship.setHex(hex);
-                        ship.setState(ShipState.ON_GAME);
-                        hex.setOccuped(true);
-                        turn.setIsOver(true);
-                        shipService.save(ship);
-                        hexService.save(hex);
-                        turnService.saveTurn(turn);
+                        if (hex.getPuntos() == 1) {
+                            Ship ship = (shipService.selectShipsFromSupply(player.getId())).get(0);
+                            ship.setHex(hex);
+                            ship.setState(ShipState.ON_GAME);
+                            hex.setOccuped(true);
+                            turn.setIsOver(true);
+                            shipService.save(ship);
+                            hexService.save(hex);
+                            turnService.saveTurn(turn);
+                        } else {
+                            throw new AccessDeniedException("El sistema debe ser de nivel 1.");
+                        }
                     } else {
                         throw new AccessDeniedException("El sector debe estar vacio.");
                     }
@@ -471,7 +475,9 @@ public class GameService {
             limpiarExtras(game);
             if (game.getRounds().stream().count() == 10 ||
                     findGamePlayers(game.getName()).stream().anyMatch(
-                            p -> p.getShips().stream().allMatch(s -> s.getState() == ShipState.REMOVED))) {
+                            p -> p.getShips().stream().allMatch(s -> s.getState() == ShipState.REMOVED))
+                    || findGamePlayers(game.getName()).stream().anyMatch(
+                            p -> p.getShips().stream().noneMatch(s -> s.getState() == ShipState.ON_GAME))) {
                 finalPoint(game);
                 game.setState(GameState.OVER);
                 game.setWinner(
