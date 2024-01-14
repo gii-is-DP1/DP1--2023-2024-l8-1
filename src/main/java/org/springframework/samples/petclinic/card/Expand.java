@@ -51,7 +51,7 @@ public class Expand implements CardActions {
                     throw new NotOwnedHex("No tienes el control de este Hexagono");
                 }
             } else {
-                throw new NotOwnedHex("Solo puedes expandir en hexagonos en los que ya tengas naves");
+                throw new NotOwnedHex("Solo puedes expandir en sistemas");
             }
         } else {
             throw new YouCannotPlay("No tienes suficientes naves sobre el tablero para jugar");
