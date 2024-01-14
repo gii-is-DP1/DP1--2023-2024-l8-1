@@ -21,7 +21,7 @@ public interface GameRoundBuilder {
 
     void reset();
 
-    void setRoundPhases(Boolean inicial, int playerInicial, Player triPrimePlayer, List<Player> players);
+    void setRoundPhases(Boolean inicial, int playerInicial, List<Player> players);
 }
 
 class RoundBuilder implements GameRoundBuilder {
@@ -46,7 +46,7 @@ class RoundBuilder implements GameRoundBuilder {
         this.round = new Round();
     }
 
-    public void setRoundPhases(Boolean inicial, int playerInicial, Player triPrimePlayer, List<Player> players) {
+    public void setRoundPhases(Boolean inicial, int playerInicial, List<Player> players) {
         List<Phase> phases = new ArrayList<>();
         if (inicial) {
             int primerJugador = random.nextInt(3);
@@ -60,7 +60,7 @@ class RoundBuilder implements GameRoundBuilder {
             for (int i = 0; i < 3; i++) {
                 phases.add(setPhase(playerInicial, i, players));
             }
-            Phase phase = setPointPhase(playerInicial, triPrimePlayer, true, players);
+            Phase phase = setPointPhase(playerInicial, true, players);
             phases.add(phaseService.savePhase(phase));
             Phase phase2 = setPhaseInicial(playerInicial, true, players);
             phase2.setIsOrder(true);
@@ -135,14 +135,13 @@ class RoundBuilder implements GameRoundBuilder {
         return phaseService.savePhase(phase);
     }
 
-    private Phase setPointPhase(int primerJugador, Player triPrimePlayer, Boolean clockwise, List<Player> players) {
+    private Phase setPointPhase(int primerJugador, Boolean clockwise, List<Player> players) {
         Phase phase = new Phase();
         List<Turn> turns = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             turns.add(setTurn(players.get(primerJugador + i > 2 ? primerJugador + i - 3 : primerJugador + i)));
         }
-        if (triPrimePlayer != null)
-            turns.add(setTurn(triPrimePlayer));
+
         phase.setTurns(turns);
         phase.setIsPoint(true);
         return phaseService.savePhase(phase);
@@ -183,22 +182,20 @@ class Director {
     private RoundBuilder builder;
     private List<Player> players;
     private int playerInicial;
-    private Player triPrimePlayer;
 
-    public Director(RoundBuilder builder, List<Player> players, int playerInicial, Player triPrimePlayer) {
+    public Director(RoundBuilder builder, List<Player> players, int playerInicial) {
         this.builder = builder;
         this.players = players;
         this.playerInicial = playerInicial;
-        this.triPrimePlayer = triPrimePlayer;
     }
 
     public void InitialRound() {
         builder.reset();
-        builder.setRoundPhases(true, playerInicial, triPrimePlayer, players);
+        builder.setRoundPhases(true, playerInicial, players);
     }
 
     public void NormalRound() {
         builder.reset();
-        builder.setRoundPhases(false, playerInicial, triPrimePlayer, players);
+        builder.setRoundPhases(false, playerInicial, players);
     }
 }

@@ -28,8 +28,8 @@ INSERT INTO appusers(id,username,password,authority) VALUES (42,'ejemplo13','$2a
 INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (1,2,0,false,24,'Play','Yer');
 INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (2,0,5,false,25,'Play','Yer');
 INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (3,0,0,false,26,'Play','Yer');
-INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (4,2,12,false,27,'Manuel','Serrano');
-INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (5,1,5,false,28,'Raúl','Lozano');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (4,0,12,false,27,'Manuel','Serrano');
+INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (5,2,5,false,28,'Raúl','Lozano');
 INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (6,0,0,false,29,'Urbano','Blanes');
 INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (7,0,0,false,30,'ejemplo','1');
 INSERT INTO players(id,rol,score,start_player,user_id,first_name,last_name) VALUES (8,0,0,false,31,'ejemplo','2');
@@ -50,10 +50,11 @@ INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (1, 1, '
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (2, 2, 'prueba2', true, '2023-11-11 21:16', 'LOBBY');
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (3, 3, 'prueba3', true, '2023-11-11 21:16', 'OVER');
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (4, 1, 'prueba4', false, '2023-11-11 21:16', 'LOBBY');
-INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (5, 5, 'prueba5', false, '2023-11-11 21:16', 'LOBBY');
+INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (5, 5, 'prueba5', false, '2023-11-11 21:16', 'IN_PROGRESS');
 
 INSERT INTO games_players(game_id, players_id) VALUES (1,2), (1,3);
 INSERT INTO games_players(game_id, players_id) VALUES (3,4), (3,5);
+INSERT INTO games_players(game_id, players_id) VALUES (5,4), (5,6);
 
 /*Invitaciones de amistad*/
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (1, null, false, 4, 5, 'FRIENDSHIP');
@@ -65,4 +66,4 @@ INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_targe
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (5, 5, false, 5, 4, 'GAME');
 INSERT INTO invitations(id, game_id, is_accepted, player_source_id, player_target_id, discriminator) VALUES (6, 5, false, 5, 6, 'GAME');
 
-INSERT INTO players_friends(friend_id, player_id) VALUES (1,2), (2,1), (1,3), (3,1), (1,6), (6,1);
+INSERT INTO players_friends(friend_id, player_id) VALUES (1,2), (2,1), (1,3), (3,1), (1,6), (6,1), (1,5), (5,1), (1,4), (4,1);

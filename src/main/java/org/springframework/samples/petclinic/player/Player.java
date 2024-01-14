@@ -54,7 +54,7 @@ public class Player extends Person {
     List<Player> friends;
     
     @OneToMany(mappedBy = "player")
-    @Size(min = 3, max = 3)
+    @Size(min = 0, max = 3)
     @JsonIgnore
     @OnDelete(action = OnDeleteAction.CASCADE)
     private List<Card> cards;
