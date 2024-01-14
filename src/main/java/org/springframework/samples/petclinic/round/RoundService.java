@@ -34,6 +34,11 @@ public class RoundService {
     }
 
     @Transactional(readOnly = true)
+    public List<Round> findAll(){
+        return roundRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public Round findById(int id) {
         Optional<Round> result = roundRepository.findById(id);
         return result.isPresent() ? result.get() : null;
