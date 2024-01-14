@@ -117,7 +117,7 @@ public class GameControllerTests {
         game1.setName("partidaTest");
         game1.setPublica(true);
         game1.setState(GameState.LOBBY);
-        game1.setStartTime(LocalDateTime.now());
+        // game1.setStartTime(LocalDateTime.now());
         game1.setHost(player1);
 
         List<Player> playerGames = new ArrayList<>();
@@ -140,13 +140,13 @@ public class GameControllerTests {
         game2.setName("partidaTest_2");
         game2.setPublica(true);
         game2.setState(GameState.LOBBY);
-        game2.setStartTime(LocalDateTime.now());
+        // game2.setStartTime(LocalDateTime.now());
 
         game3.setId(3);
         game3.setName("partidaTest_3");
         game3.setPublica(true);
         game3.setState(GameState.LOBBY);
-        game3.setStartTime(LocalDateTime.now());
+       //  game3.setStartTime(LocalDateTime.now());
 
         when(gameService.getGames()).thenReturn(List.of(game1, game2, game3));
 
@@ -168,13 +168,13 @@ public class GameControllerTests {
         game2.setName("partidaTest_2");
         game2.setPublica(true);
         game2.setState(GameState.LOBBY);
-        game2.setStartTime(LocalDateTime.now());
+        // game2.setStartTime(LocalDateTime.now());
 
         game3.setId(3);
         game3.setName("partidaTest_3");
         game3.setPublica(true);
         game3.setState(GameState.LOBBY);
-        game3.setStartTime(LocalDateTime.now());
+        // game3.setStartTime(LocalDateTime.now());
 
         when(gameService.getPublicas()).thenReturn(List.of(game1, game2, game3));
 
@@ -236,7 +236,7 @@ public class GameControllerTests {
         g.setName("Crazy smash bros session");
         g.setPublica(false);
         g.setState(GameState.LOBBY);
-        g.setStartTime(LocalDateTime.now());
+        // g.setStartTime(LocalDateTime.now());
         return g;
     }
 

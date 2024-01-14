@@ -141,11 +141,11 @@ INSERT INTO players(id,num_ships,rol,score,start_player,user_id,first_name,last_
 INSERT INTO players(id,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (5,15,1,0,false,28,'Raúl','Lozano');
 INSERT INTO players(id,num_ships,rol,score,start_player,user_id,first_name,last_name) VALUES (6,15,0,0,false,29,'Urbano','Blanes');
 
-INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (1, 1, 'prueba', true, '2023-11-11 21:16', 'LOBBY');
-INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (2, 2, 'prueba2', true, '2023-11-11 21:16', 'LOBBY');
-INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (3, 3, 'prueba3', true, '2023-11-11 21:16', 'OVER');
-INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (4, 1, 'prueba4', false, '2023-11-11 21:16', 'LOBBY');
-INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (5, 5, 'prueba5', false, '2023-11-11 21:16', 'LOBBY');
+INSERT INTO games(id, host_id, name, publica, state) VALUES (1, 1, 'prueba', true, 'LOBBY');
+INSERT INTO games(id, host_id, name, publica,  state) VALUES (2, 2, 'prueba2', true, 'LOBBY');
+INSERT INTO games(id, host_id, name, publica, state) VALUES (3, 3, 'prueba3', true, 'OVER');
+INSERT INTO games(id, host_id, name, publica, state) VALUES (4, 1, 'prueba4', false,'LOBBY');
+INSERT INTO games(id, host_id, name, publica,  state) VALUES (5, 5, 'prueba5', false, 'LOBBY');
 
 INSERT INTO games_players(game_id, players_id) VALUES (1,2), (1,3);
 

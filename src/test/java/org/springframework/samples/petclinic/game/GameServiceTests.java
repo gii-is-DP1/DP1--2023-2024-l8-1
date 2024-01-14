@@ -25,10 +25,12 @@ import org.springframework.samples.petclinic.util.EntityUtils;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.TransactionSystemException;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureTestDatabase
+@Transactional
 public class GameServiceTests {
 
     GameService gameService;
@@ -70,8 +72,8 @@ public class GameServiceTests {
         assertEquals(3, game.getHost().getId());
         assertTrue(game.getPublica());
         assertEquals(GameState.OVER, game.getState());
-        LocalDateTime expectedStartTime = LocalDateTime.parse("2023-11-11T21:16");
-        assertEquals(expectedStartTime, game.getStartTime());
+        // LocalDateTime expectedStartTime = LocalDateTime.parse("2023-11-11T21:16");
+        // assertEquals(expectedStartTime, game.getStartTime());
     }
 
     @Test
@@ -141,7 +143,7 @@ public class GameServiceTests {
         newGame.setName("partidaTest");
         newGame.setPublica(true);
         newGame.setState(GameState.LOBBY);
-        newGame.setStartTime(LocalDateTime.now());
+        // newGame.setStartTime(LocalDateTime.now());
 
         return newGame;
 
@@ -163,7 +165,7 @@ public class GameServiceTests {
 
         newGame.setPublica(true);
         newGame.setState(GameState.LOBBY);
-        newGame.setStartTime(LocalDateTime.now());
+       // newGame.setStartTime(LocalDateTime.now());
 
         return newGame;
 
@@ -186,7 +188,7 @@ public class GameServiceTests {
         newGame.setName("");
         newGame.setPublica(true);
         newGame.setState(GameState.LOBBY);
-        newGame.setStartTime(LocalDateTime.now());
+        // newGame.setStartTime(LocalDateTime.now());
 
         return newGame;
 

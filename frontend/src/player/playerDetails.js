@@ -22,6 +22,12 @@ export default function PlayerDetails() {
         jwt
     );
 
+    const [playerGames, setPlayerGames] = useFetchState(
+        [],
+        `/api/v1/game/currentPlayerGames`,
+        jwt
+    )
+
     const friendsList =
         friends.map((a) => {
             return (
@@ -47,12 +53,24 @@ export default function PlayerDetails() {
             );
         });
 
+    const playerGamesList =
+        playerGames.map((g) => {
+            return (
+                <tr key={g.id}>
+                    <td className="text-center">{g.name}</td>
+                    <td className="text-center">{g.host.user.username}</td>
+                    <td className="text-center">{g.state}</td>
+                    <td className="text-center">{g.winner && g.winner.user.username}</td>
+                </tr>
+            );
+        });
+
     const modal = getErrorModal(setVisible, visible, message);
 
     return (
         <div>
             <div className="admin-page-container">
-                <h1 className="text-center">Tu Perfil</h1>
+                <h1 className="text-center" style={{ marginTop: "20px"}}>Tu Perfil</h1>
                 <div>
                     <Table aria-label="achievements" className="mt-4">
                         <thead>
@@ -64,7 +82,7 @@ export default function PlayerDetails() {
                     </Table>
 
                 </div>
-                <h1 className="text-center">Tus Amigos</h1>
+                <h1 className="text-center" style={{ marginTop: "20px"}}>Tus Amigos</h1>
                 <div>
                     <Table aria-label="achievements" className="mt-4">
                         <thead>
@@ -82,6 +100,21 @@ export default function PlayerDetails() {
                             to={'/invitations/new'} className="btn sm"
                             style={{ textDecoration: "none" }}>Add a friend</Link>
                     </Button>
+                </div>
+                <h1 className="text-center" style={{ marginTop: "20px"}}>Tus Partidas</h1>
+                <div>
+                    <Table aria-label="achievements" className="mt-4">
+                        <thead>
+                            <tr>
+                                <th className="text-center">Partida</th>
+                                <th className="text-center">Host</th>
+                                <th className="text-center">Estado</th>
+                                <th className="text-center">Ganador</th>
+                            </tr>
+                        </thead>
+                        <tbody>{playerGamesList}</tbody>
+                    </Table>
+
                 </div>
             </div>
         </div>

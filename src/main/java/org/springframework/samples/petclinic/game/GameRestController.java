@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.card.ActionsService;
-import org.springframework.samples.petclinic.card.CardService;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
@@ -17,13 +16,11 @@ import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.ship.Ship;
-import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -87,6 +84,12 @@ public class GameRestController {
             throw new ResourceNotFoundException("Game with name " + name + "not found!");
         List<Player> gamePlayers = gameService.findGamePlayers(name);
         return new ResponseEntity<List<Player>>(gamePlayers, HttpStatus.OK);
+    }
+
+    @GetMapping("/currentPlayerGames")
+    public ResponseEntity<List<Game>> findAllPlayerGames() {
+        List<Game> currentPlayerGames = gameService.findCurrentPlayerUserGames();
+        return new ResponseEntity<List<Game>>(currentPlayerGames, HttpStatus.OK);
     }
 
     @PostMapping

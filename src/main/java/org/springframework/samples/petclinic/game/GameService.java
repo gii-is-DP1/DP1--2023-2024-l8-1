@@ -96,6 +96,14 @@ public class GameService {
         return players;
     }
 
+    @Transactional(readOnly = true)
+    public List<Game> findCurrentPlayerUserGames() {
+        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        List<Game> gamesInDB = repo.findAll();
+        List<Game> playerGames = gamesInDB.stream().filter(g -> g.getHost().equals(me) || g.getPlayers().contains(me)).toList();
+        return playerGames;
+    }
+
     @Transactional
     public Game createGame(@Valid Game newGame) {
         Player host = userService.findPlayerByUser(userService.findCurrentUser().getId());
