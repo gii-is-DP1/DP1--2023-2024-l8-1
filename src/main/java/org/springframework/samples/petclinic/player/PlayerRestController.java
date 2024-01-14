@@ -57,6 +57,15 @@ public class PlayerRestController {
         return findById(id);
     }
 
+    @PutMapping("/startSpectating/{username}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Void> startSpectating(@PathVariable("username") String username){
+        User user = us.findUser(username);
+        Player player = ps.findPlayerByUser(user.getId());
+        ps.startSpectating(player);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/{username}/remainingShips")
     public Integer getPlayerRemainingShips(@PathVariable("username") String username) {
         User user = us.findUser(username);

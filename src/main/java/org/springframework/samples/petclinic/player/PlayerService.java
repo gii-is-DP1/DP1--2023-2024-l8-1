@@ -58,6 +58,12 @@ public class PlayerService {
     }
 
     @Transactional
+    public void startSpectating(Player player){
+        player.setRol(PlayerRol.SPECTATOR);
+        savePlayer(player);
+    }
+
+    @Transactional
     public Player savePlayer(Player p) {
         pr.save(p);
         return p;

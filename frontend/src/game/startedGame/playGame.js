@@ -57,29 +57,29 @@ function TriPrime({ host, players, position, hex, ships, handleClick, style }) {
     return (
         <div className="sector-container" style={sectorStyles}>
             <div className="row-up">
-                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
-                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 0)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 0)} />}
             </div>
             <div>
 
-                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 0)} />}
 
-                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} hexPosition={7 * position + 0} ships={ships} onHexClick={() => handleClick(position, 7 * position + 0)} />}
 
-                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 0)} />}
             </div>
             <div className="row-down">
 
-                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 0)} />}
 
-                {hex && <Hex host={host} players={players} value={hex[0]} onHexClick={() => handleClick(position, 7 * position + 6)} />}
+                {hex && <Hex host={host} players={players} value={hex[0]} ships={ships} onHexClick={() => handleClick(position, 7 * position + 0)} />}
             </div>
         </div>
     );
 }
 
 
-function Hex({ host, players, value, hexPosition, position, ships, onHexClick }) {
+function Hex({ host, players, value, hexPosition, ships, onHexClick }) {
 
     let image;
 
@@ -140,12 +140,22 @@ function Hex({ host, players, value, hexPosition, position, ships, onHexClick })
 }
 
 
-function PlayersInfo({ player, playerShips }) {
+function PlayersInfo({ player, playerShips, host, players }) {
     const loggedUser = tokenService.getUser()
+    let numeroColor = 0;
+    if (player === host) {
+        numeroColor = 1;
+    } else if (player === players[0]) {
+        numeroColor = 2;
+    } else if (player === players[1]) {
+        numeroColor = 3;
+    }
     return (
         <div className="players-info">
-            <p style={{color: player.user.username === loggedUser.username ? 'red' : 'black'}}>{player.user.username}</p>
+            <p className={`player-${numeroColor}`}>{player.user.username}{ player.user.username === loggedUser.username ? ' <- You' : '' }</p>
             <p>Naves restantes: {playerShips}</p>
+            <p>Puntuación: {player.score}</p>
+            <p></p>
         </div>
     );
 }
@@ -161,7 +171,7 @@ export default function PlayGame() {
         jwt
     );
 
-    if (gameInfo.state === "OVER"){
+    if (gameInfo.state === "OVER") {
         navigate('../game/over/' + name);
     }
 
@@ -239,11 +249,6 @@ export default function PlayGame() {
         primerJugador = players[0].user.username;
         segundoJugador = players[1].user.username;
         hostUsername = host.user.username;
-
-        // Ahora puedes usar primerJugador y segundoJugador como desees
-        console.log("Primer jugador:", primerJugador);
-        console.log("Segundo jugador:", segundoJugador);
-        console.log("Host:", hostUsername)
     } else {
         console.error("La matriz 'players' no tiene al menos dos elementos.");
     }
@@ -285,7 +290,6 @@ export default function PlayGame() {
     }
 
     const handleHexClick = (sector, position) => {
-        console.log(currentPhase.isOrder)
         if (isInitial || currentPhase.isPoint) {
             handleClick(sector, position)
         } else if (!isInitial && !currentPhase.isPoint) {
@@ -360,22 +364,6 @@ export default function PlayGame() {
             }
         });
         console.log("Has usado Exterminate")
-    }
-
-    function onClickSetUpShips(hexId) {
-
-        fetch(`/api/v1/game/play/${name}/${hexId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${jwt}`
-            },
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-            })
     }
 
     const [expandOrder, setExpandOrder] = useState(null); // Estado para el valor seleccionado
@@ -496,9 +484,9 @@ export default function PlayGame() {
     return (
         <div className="game">
             <div className="players-info-container">
-                {host && host.user && <PlayersInfo player={host} playerShips={hostShips} />}
-                {players && <PlayersInfo player={players[0]} playerShips={player1Ships} />}
-                {players && <PlayersInfo player={players[1]} playerShips={player2Ships} />}
+                {host && host.user && <PlayersInfo player={host} playerShips={hostShips} host={host} players={players}/>}
+                {players && <PlayersInfo player={players[0]} playerShips={player1Ships} host={host} players={players}/>}
+                {players && <PlayersInfo player={players[1]} playerShips={player2Ships} host={host} players={players}/>}
             </div>
             <div>
                 <p>Es turno de:</p>
@@ -549,6 +537,7 @@ export default function PlayGame() {
                         position={6}
                         hex={hexList[42]}
                         ships={shipList}
+                        handleClick={handleHexClick}
                         style={generateSectorStyles(3)}
                     />
                 </div>
@@ -581,7 +570,7 @@ export default function PlayGame() {
                         host={host}
                         players={players}
                         position={5}
-                        hexes={hexList.slice(35, 42)}
+                        hexes={hexList.slice(35, 41)}
                         ships={shipList}
                         handleClick={handleHexClick}
                         style={generateSectorStyles(6)}
@@ -624,7 +613,7 @@ export default function PlayGame() {
                     </select>}
                 </div>
                 <div>
-                    {!isInitial && !currentPhase.isOrder && <button onClick={() => handleSkip()}>Pasar</button>}
+                    {!isInitial && !currentPhase.isOrder && !currentPhase.isPoint && <button onClick={() => handleSkip()}>Pasar</button>}
                 </div>
                 <div>
                     {currentPhase.isOrder && <button onClick={() => handleSetOrder()}>Ordenar Cartas</button>}
