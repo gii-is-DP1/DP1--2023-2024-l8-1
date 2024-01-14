@@ -17,18 +17,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class Exterminate implements CardActions {
 
     private HexService hexService;
-
     private ShipService shipService;
+    private CardService cardService;
 
     @Autowired
-    public Exterminate(HexService hexService, ShipService shipService) {
+    public Exterminate(HexService hexService, ShipService shipService, CardService cardService) {
         this.hexService = hexService;
         this.shipService = shipService;
+        this.cardService = cardService;
     }
 
     @Override
     @Transactional
-    public void action(Player player, Hex origin, Hex target) {
+    public void action(Player player, Hex origin, Hex target, Card card) {
 
         if (shipService.numOfShipsInGameForPlayer(player.getId()) > 0) {
             validateOwnership(player, origin);
@@ -42,6 +43,8 @@ public class Exterminate implements CardActions {
             } else {
                 moveShipsToEmptyHex(myShips, target, origin);
             }
+            card.setUsesLeft(card.getUsesLeft() - 1);
+            cardService.saveCard(card);
         } else {
             throw new YouCannotPlay("No tienes suficientes naves en juego sobre el tablero");
         }
@@ -62,7 +65,7 @@ public class Exterminate implements CardActions {
 
     private void battleOutcome(List<Ship> myShips, List<Ship> enemyShips, Hex origin, Hex target) {
         if (myShips.size() > enemyShips.size()) {
-            winBattle(myShips, enemyShips, target);
+            winBattle(myShips, enemyShips, origin, target);
         } else if (myShips.size() == enemyShips.size()) {
             drawBattle(myShips, enemyShips, origin, target);
         } else {
@@ -70,11 +73,9 @@ public class Exterminate implements CardActions {
         }
     }
 
-    private void winBattle(List<Ship> myShips, List<Ship> enemyShips, Hex target) {
+    private void winBattle(List<Ship> myShips, List<Ship> enemyShips, Hex origin, Hex target) {
         removeShipsAndUpdateHex(myShips, enemyShips);
-        moveRemainingShips(myShips, target);
-        target.setOccuped(false);
-        hexService.updateHex(target, target.getId());
+        moveRemainingShips(myShips, origin, target);
     }
 
     private void drawBattle(List<Ship> myShips, List<Ship> enemyShips, Hex origin, Hex target) {
@@ -97,7 +98,9 @@ public class Exterminate implements CardActions {
                 Ship enemyShip = enemyShips.get(i);
                 Ship myShip = myShips.get(i);
                 enemyShip.setState(ShipState.REMOVED);
+                enemyShip.setHex(null);
                 myShip.setState(ShipState.REMOVED);
+                myShip.setHex(null);
                 shipService.updateShip(enemyShip, enemyShip.getId());
                 shipService.updateShip(myShip, myShip.getId());
             }
@@ -106,7 +109,9 @@ public class Exterminate implements CardActions {
                 Ship enemyShip = enemyShips.get(i);
                 Ship myShip = myShips.get(i);
                 enemyShip.setState(ShipState.REMOVED);
+                enemyShip.setHex(null);
                 myShip.setState(ShipState.REMOVED);
+                myShip.setHex(null);
                 shipService.updateShip(enemyShip, enemyShip.getId());
                 shipService.updateShip(myShip, myShip.getId());
             }
@@ -114,7 +119,7 @@ public class Exterminate implements CardActions {
         }
     }
 
-    private void moveRemainingShips(List<Ship> myShips, Hex target) {
+    private void moveRemainingShips(List<Ship> myShips, Hex origin, Hex target) {
         List<Ship> remaining = new ArrayList<>();
         for (Ship ship : myShips) {
             if (ship.getState() == ShipState.ON_GAME) {
@@ -125,6 +130,10 @@ public class Exterminate implements CardActions {
             ship.setHex(target);
             shipService.updateShip(ship, ship.getId());
         }
+        origin.setOccuped(false);
+        target.setOccuped(true);
+        hexService.updateHex(origin, origin.getId());
+        hexService.updateHex(target, target.getId());
     }
 
     private void moveShipsToEmptyHex(List<Ship> myShips, Hex target, Hex origin) {

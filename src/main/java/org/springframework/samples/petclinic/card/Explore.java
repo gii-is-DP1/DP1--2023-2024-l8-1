@@ -17,18 +17,20 @@ public class Explore implements CardActions {
     
     HexService hexService;
     ShipService shipService;
+    CardService cardService;
 
     @Autowired
-    public Explore(HexService hexService, ShipService shipService) {
+    public Explore(HexService hexService, ShipService shipService, CardService cardService) {
         this.hexService = hexService;
         this.shipService = shipService;
+        this.cardService = cardService;
     }
 
     @Override
     @Transactional
     // Desplazar tres flotas (o todas las que tenga si es menor de 3)
     // Cambiar que no sean todas y que tú puedas decidir cuantas mover
-    public void action(Player player, Hex origin, Hex target) throws NotOwnedHex {
+    public void action(Player player, Hex origin, Hex target, Card card) throws NotOwnedHex {
         if (shipService.numOfShipsInGameForPlayer(player.getId()) > 0) {
            if (player.equals(hexService.findPlayerInHex(origin.getId()))) {
                 if ((player.equals(hexService.findPlayerInHex(target.getId())) || target.getOccuped() == false)
@@ -45,6 +47,8 @@ public class Explore implements CardActions {
                     hexService.updateHex(origin, origin.getId());
                     target.setOccuped(true);
                     hexService.updateHex(target, target.getId());
+                    card.setUsesLeft(card.getUsesLeft() - 1);
+                    cardService.saveCard(card);
                 } else {
                    throw new NotOwnedHex("No puedes moverte a esa posición");
                 }

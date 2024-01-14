@@ -24,7 +24,7 @@ public class Round extends BaseEntity{
     private Boolean isFinal = false;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @Size(min = 3, max = 3)
+    @Size(min = 2, max = 5)
     private List<Phase> phases;
     
 }

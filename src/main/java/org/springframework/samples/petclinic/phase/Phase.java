@@ -27,7 +27,7 @@ public class Phase extends BaseEntity{
     private Boolean isOrder = false;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @Size(min = 3, max = 3)
+    @Size(min = 3, max = 4)
     private List<Turn> turns;
 
 }

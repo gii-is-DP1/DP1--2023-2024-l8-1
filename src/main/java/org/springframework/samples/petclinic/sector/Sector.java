@@ -33,6 +33,9 @@ public class Sector extends BaseEntity{
     @NotNull
     private Boolean isTriPrime = false;
 
+
+    private Boolean isScored = false;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @Size(max = 7)
     private List<Hex> hexs;    

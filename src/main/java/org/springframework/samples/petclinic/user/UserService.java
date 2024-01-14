@@ -15,37 +15,46 @@
  */
 package org.springframework.samples.petclinic.user;
 
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.validation.Valid;
 
+import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
+import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.player.Player;
+import org.springframework.samples.petclinic.player.PlayerRepository;
+import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class UserService {
 
 	private UserRepository userRepository;
 
-//	private OwnerService ownerService;
-//
+	// private OwnerService ownerService;
+	//
 	private VetService vetService;
+	private PlayerRepository playerRepository;
 
 	@Autowired
-	public UserService(UserRepository userRepository, VetService vetService) {
+	public UserService(UserRepository userRepository, VetService vetService, PlayerRepository playerRepository) {
 		this.userRepository = userRepository;
-//		this.ownerService = ownerService;
+		// this.ownerService = ownerService;
 		this.vetService = vetService;
+		this.playerRepository = playerRepository;
 	}
 
 	@Transactional
@@ -107,6 +116,13 @@ public class UserService {
 		return userRepository.findAll();
 	}
 
+	@Transactional(readOnly = true)
+	public Page<User> findAllAdmin(Pageable pageable) {
+		return userRepository.findAll(pageable);
+	}
+
+	
+
 	public Iterable<User> findAllByAuthority(String auth) {
 		return userRepository.findAllByAuthority(auth);
 	}
@@ -121,33 +137,38 @@ public class UserService {
 	}
 
 	@Transactional
-	public void deleteUser(Integer id) {
+	public void deleteUser(Integer id) throws IllegalArgumentException {
 		User toDelete = findUser(id);
-		deleteRelations(id, toDelete.getAuthority().getAuthority());
-//		this.userRepository.deleteOwnerRelation(id);
-//		this.userRepository.deleteVetRelation(id);
-		this.userRepository.delete(toDelete);
-	}
+		Player player = toDelete.getPlayer();
 
-	private void deleteRelations(Integer id, String auth) {
-		switch (auth) {
-		case "OWNER":
-//			Optional<Owner> owner = ownerService.optFindOwnerByUser(id);
-//			if (owner.isPresent())
-//				ownerService.deleteOwner(owner.get().getId());
-			this.userRepository.deleteOwnerRelation(id);
-			break;
-		case "VET":
-			Optional<Vet> vet = vetService.optFindVetByUser(id);
-			if (vet.isPresent()) {
-				vetService.deleteVet(vet.get().getId());
+		try {
+			if (player != null) {
+				deleteThingsPlayer(player);
 			}
-			break;
-		default:
-			// The only relations that have user are Owner and Vet
-			break;
+
+			userRepository.delete(toDelete);
+		} catch (Exception e) {
+			throw new IllegalArgumentException("No puedes borrar un jugador que esta en una partida");
 		}
 
 	}
 
+	@Transactional
+	private void deleteThingsPlayer(Player player) {
+		if (player.getFriends() != null) {
+			List<Player> friends = player.getFriends();
+			for (Player p : friends) {
+				List<Player> aux = p.getFriends();
+				aux.remove(player);
+				playerRepository.save(p);
+			}
+			player.getFriends().clear();
+			playerRepository.save(player);
+		}
+
+		if (player.getCards() != null) {
+			player.getCards().clear();
+			playerRepository.save(player);
+		}
+	}
 }
