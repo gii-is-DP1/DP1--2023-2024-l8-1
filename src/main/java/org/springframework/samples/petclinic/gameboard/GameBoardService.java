@@ -37,6 +37,11 @@ public class GameBoardService {
         this.hexService = hexService;
     }
 
+    @Transactional
+    public List<GameBoard> findAll(){
+        return gameBoardRepository.findAll();
+    }
+
     @Transactional(readOnly = true)
     public List<Hex> getGameBoardHexs(GameBoard gameBoard){
         List<Hex> aux = new ArrayList<>();
@@ -90,7 +95,7 @@ public class GameBoardService {
         aux.add(sectorService.genTriPrime());
 
         newBoard.setSectors(aux);
-        gameBoardRepository.save(newBoard);
+        save(newBoard);
 
         (gameService.findByName(game)).setGameBoard(newBoard);
         gameService.saveGame(gameService.findByName(game));
@@ -100,6 +105,11 @@ public class GameBoardService {
         }
         
         return newBoard;
+    }
+
+    @Transactional
+    public GameBoard save(GameBoard gameBoard){
+        return gameBoardRepository.save(gameBoard);
     }
     
 }
