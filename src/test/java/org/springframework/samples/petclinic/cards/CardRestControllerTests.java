@@ -1,4 +1,4 @@
-package org.springframework.samples.petclinic.card;
+package org.springframework.samples.petclinic.cards;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +19,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.samples.petclinic.card.Card;
+import org.springframework.samples.petclinic.card.CardRestController;
+import org.springframework.samples.petclinic.card.CardService;
+import org.springframework.samples.petclinic.card.CardType;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.game.GameState;
@@ -70,7 +74,7 @@ public class CardRestControllerTests {
     private Game partida1;
 
     @BeforeEach
-    void setUp() {
+    private void setUp() {
 
         Authorities playerAuth = new Authorities();
         playerAuth.setId(1);
