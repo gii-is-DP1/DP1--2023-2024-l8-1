@@ -65,8 +65,7 @@ public class Game extends BaseEntity {
     @NotNull
     GameState state = GameState.LOBBY;
 
-    @ManyToOne
-    //@OnDelete(action = OnDeleteAction.CASCADE)
+    @OneToOne
     @JoinColumn(name = "player_id")
     private Player winner;
 

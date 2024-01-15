@@ -167,17 +167,33 @@ class ExpandTest {
     void NoHexes(){
         //Saco jugador de la base de datos
         Player player1 = this.playerService.findPlayerById(1);
+        Player player2 = this.playerService.findPlayerById(2);
+        //Creo una nave
+        Ship ship3 = new Ship();
+        ship3.setPlayer(player1);
+        ship3.setState(ShipState.ON_GAME);
+        shipService.save(ship3);
         //Creo una nave
         Ship ship1 = new Ship();
-        ship1.setPlayer(player1);
+        ship1.setPlayer(player2);
         ship1.setState(ShipState.ON_GAME);
         shipService.save(ship1);
         //Creo un hexagono
         Hex target = new Hex();
         target.setPuntos(1);
-        target.setOccuped(false);
+        target.setOccuped(true);
         target.setPosition(0);
         hexService.save(target);
+
+        //Asignar hexagono a nave
+        ship1.setHex(target);
+        shipService.updateShip(ship1, ship1.getId());
+
+        //Asignar lista de naves a hexagonos
+        List<Ship> lsShips = new ArrayList<>();
+        lsShips.add(ship1);
+        target.setShips(lsShips);
+        hexService.updateHex(target, target.getId());
 
         //Creo otra nave
         Ship ship2 = new Ship();
