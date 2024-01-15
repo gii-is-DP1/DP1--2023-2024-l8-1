@@ -43,15 +43,12 @@ public class GameRestController {
     private final GameService gameService;
     private final UserService userService;
     private final HexService hexService;
-    private final ActionsService actionsService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService, HexService hexService,
-            ActionsService actionsService) {
+    public GameRestController(GameService gameService, UserService userService, HexService hexService) {
         this.gameService = gameService;
         this.userService = userService;
         this.hexService = hexService;
-        this.actionsService = actionsService;
     }
 
     @GetMapping

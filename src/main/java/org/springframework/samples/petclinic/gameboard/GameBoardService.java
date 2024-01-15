@@ -9,8 +9,6 @@ import org.springframework.samples.petclinic.exceptions.GameBoardGenerationExcep
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.hex.Hex;
-import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
-import org.springframework.samples.petclinic.exceptions.GameBoardGenerationException;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.sector.Sector;
 import org.springframework.samples.petclinic.sector.SectorService;
@@ -35,6 +33,11 @@ public class GameBoardService {
         this.sectorService=sectorService;
         this.gameService = gameService;
         this.hexService = hexService;
+    }
+
+    @Transactional
+    public List<GameBoard> findAll(){
+        return gameBoardRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -90,7 +93,7 @@ public class GameBoardService {
         aux.add(sectorService.genTriPrime());
 
         newBoard.setSectors(aux);
-        gameBoardRepository.save(newBoard);
+        save(newBoard);
 
         (gameService.findByName(game)).setGameBoard(newBoard);
         gameService.saveGame(gameService.findByName(game));
@@ -100,6 +103,11 @@ public class GameBoardService {
         }
         
         return newBoard;
+    }
+
+    @Transactional
+    public GameBoard save(GameBoard gameBoard){
+        return gameBoardRepository.save(gameBoard);
     }
     
 }

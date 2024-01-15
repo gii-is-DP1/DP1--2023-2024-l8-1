@@ -26,10 +26,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Game Boards", description = "The GameBoard managemet API")
 public class GameBoardRestController {
 
-    private GameBoardService gameBoardService;
-    private HexService hexService;
-    private GameService gameService;
-    private UserService userService;
+    private final GameBoardService gameBoardService;
+    private final HexService hexService;
+    private final GameService gameService;
+    private final UserService userService;
     
     @Autowired
     public GameBoardRestController(GameBoardService gameBoardService, HexService hexService,
@@ -53,6 +53,7 @@ public class GameBoardRestController {
         }
         
         GameBoard gb = gameBoardService.getGameBoardByGame(name);
-        return new ResponseEntity<List<Hex>>(gameBoardService.getGameBoardHexs(gb), HttpStatus.OK);        
+        return new ResponseEntity<List<Hex>>(gameBoardService.getGameBoardHexs(gb), HttpStatus.OK);  
+        
     }
 }

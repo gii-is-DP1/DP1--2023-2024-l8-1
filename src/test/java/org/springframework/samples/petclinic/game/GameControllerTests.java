@@ -25,7 +25,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import org.springframework.samples.petclinic.card.ActionsService;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
+import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.user.Authorities;
 import org.springframework.samples.petclinic.user.User;
@@ -44,21 +46,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
         GameRestController.class }, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class))
 public class GameControllerTests {
 
+    @SuppressWarnings("unused")
+    @Autowired
+    private GameRestController gameRestController;
+
     @MockBean
     // Crea un bean simulado de tipo GameService para simular su comportamiento en
     // las pruebas
-    GameService gameService;
+    private GameService gameService;
 
     @MockBean
-    UserService userService;
+    private UserService userService;
+
+    @MockBean
+    private HexService hexService;
 
     @Autowired
     // Inyecta el objeto MockMvc que se utiliza para realizar solicitudes HTTP
     // simuladas y realizar aserciones sobre las respuestas
-    MockMvc mvc;
+    private MockMvc mvc;
 
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     static final Integer TEST_GAME_ID = 1;
     static final String BASE_URL = "/api/v1/game";

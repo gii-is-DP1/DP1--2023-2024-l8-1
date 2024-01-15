@@ -23,6 +23,11 @@ public class SectorService {
         this.hexService = hexService;
     }
 
+    @Transactional(readOnly = true)
+    public List<Sector> findAll(){
+        return sectorRepository.findAll();
+    }
+
     @Transactional
     public Sector genTriPrime() {
         Sector newSector = new Sector();
@@ -61,15 +66,6 @@ public class SectorService {
 
         newSector.setHexs(aux);
         return sectorRepository.save(newSector);
-    }
-
-    @Transactional
-    public List<Hex> randomHexs() {
-        List<Hex> aux = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            aux.add(hexService.genRandomHex());
-        }
-        return aux;
     }
 
     @Transactional
