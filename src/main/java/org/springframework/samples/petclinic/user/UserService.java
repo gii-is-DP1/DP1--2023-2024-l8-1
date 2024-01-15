@@ -39,12 +39,12 @@ import org.springframework.data.domain.Pageable;
 public class UserService {
 
 	private UserRepository userRepository;
-	private PlayerService playerService;
+	private PlayerRepository playerRepository;
 
 	@Autowired
-	public UserService(UserRepository userRepository, PlayerService playerService) {
+	public UserService(UserRepository userRepository, PlayerRepository playerRepository) {
 		this.userRepository = userRepository;
-		this.playerService = playerService;
+		this.playerRepository = playerRepository;
 	}
 
 	@Transactional
@@ -150,15 +150,15 @@ public class UserService {
 			for (Player p : friends) {
 				List<Player> aux = p.getFriends();
 				aux.remove(player);
-				playerService.savePlayer(p);
+				playerRepository.save(p);
 			}
 			player.getFriends().clear();
-			playerService.savePlayer(player);
+			playerRepository.save(player);
 		}
 
 		if (player.getCards() != null) {
 			player.getCards().clear();
-			playerService.savePlayer(player);
+			playerRepository.save(player);
 		}
 	}
 }
