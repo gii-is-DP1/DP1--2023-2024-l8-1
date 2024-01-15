@@ -17,8 +17,6 @@ import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.game.GameState;
 import org.springframework.samples.petclinic.gameboard.GameBoard;
 import org.springframework.samples.petclinic.gameboard.GameBoardService;
-import org.springframework.samples.petclinic.hex.Hex;
-import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.sector.Sector;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,14 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureTestDatabase
-public class GameBoardServiceTest {
+public class GameBoardServiceTests {
     
     private GameBoardService gameBoardService;
     private GameService gameService;
     private PlayerService playerService;
 
     @Autowired
-    public GameBoardServiceTest(GameBoardService gameBoardService, GameService gameService, PlayerService playerService){
+    public GameBoardServiceTests(GameBoardService gameBoardService, GameService gameService, PlayerService playerService){
         this.gameBoardService = gameBoardService;
         this.gameService = gameService;
         this.playerService = playerService;
