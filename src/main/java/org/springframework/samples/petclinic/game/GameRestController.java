@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.card.ActionsService;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
+import org.springframework.samples.petclinic.exceptions.NotOwnedHex;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
+import org.springframework.samples.petclinic.exceptions.YouCannotPlay;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.phase.Phase;
@@ -150,7 +152,7 @@ public class GameRestController {
 
     @PutMapping("/setHex/{name}/{sector}/{hexPosition}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> setHex(@PathVariable("name") String name,
+    public ResponseEntity<String> setHex(@PathVariable("name") String name,
             @PathVariable("sector") int sector, @PathVariable("hexPosition") int hexPosition) {
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
         Game game = gameService.findByName(name);
@@ -158,7 +160,11 @@ public class GameRestController {
             throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
         } else {
             if (!game.getRounds().get(0).getIsOver()) {
-                gameService.initialRound(name, sector, hexPosition, aux);
+                try {
+                    gameService.initialRound(name, sector, hexPosition, aux);
+                } catch (AccessDeniedException e) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getCause().getMessage());
+                }
             } else {
                 if (game.getRounds().stream().filter(r -> !r.getIsOver()).findFirst().get().getPhases().stream()
                         .filter(p -> !p.getIsOver()).findFirst().get().getIsPoint()) {
@@ -171,13 +177,18 @@ public class GameRestController {
 
     @PutMapping("/skipTurn/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> skipTurn(@PathVariable("name") String name) {
+    public ResponseEntity<String> skipTurn(@PathVariable("name") String name) {
         Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
         Game game = gameService.findByName(name);
         if (aux.getRol() == PlayerRol.SPECTATOR) {
-            throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Estás viendo la partida en modo espectador, no puedes jugar.");
         } else {
-            gameService.skipTurn(game, aux);
+            try {
+                gameService.skipTurn(game, aux);
+            } catch (AccessDeniedException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getCause().getMessage());
+            }
         }
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -208,17 +219,20 @@ public class GameRestController {
 
     @PutMapping("/setOrder/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> setOrder(@PathVariable("name") String name) {
-        Game game = gameService.findByName(name);
-        Player player = userService.findPlayerByUser(userService.findCurrentUser().getId());
+    public ResponseEntity<String> setOrder(@PathVariable("name") String name) {
+        try {
+            Game game = gameService.findByName(name);
+            Player player = userService.findPlayerByUser(userService.findCurrentUser().getId());
         if (player.getRol() == PlayerRol.SPECTATOR) {
             throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
         } else {
-            gameService.orderCards(game, player);
+                gameService.orderCards(game, player);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
-
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping("/getAction/{name}")
@@ -270,44 +284,69 @@ public class GameRestController {
 
     @PutMapping("/play/{name}/expand/{hexPosition}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> useCardExpand(@PathVariable("name") String name,
+    public ResponseEntity<String> useCardExpand(@PathVariable("name") String name,
             @PathVariable("hexPosition") int hexPosition) {
-        Game game = gameService.findByName(name);
-        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        try {
+            Game game = gameService.findByName(name);
+            Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
         if (aux.getRol() == PlayerRol.SPECTATOR) {
             throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
         } else {
-            gameService.useExpandCard(game, hexPosition, aux);
+                gameService.useExpandCard(game, hexPosition, aux);
+        }
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (NotOwnedHex e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (YouCannotPlay e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
+
     }
 
     @PutMapping("/play/{name}/explore/{hexPositionOrigin}/{hexPositionTarget}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> useCardExplore(@PathVariable("name") String name,
+    public ResponseEntity<String> useCardExplore(@PathVariable("name") String name,
             @PathVariable("hexPositionOrigin") int hexPositionOrigin,
             @PathVariable("hexPositionTarget") int hexPositionTarget) {
-        Game game = gameService.findByName(name);
-        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        try {
+            Game game = gameService.findByName(name);
+            Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
         if (aux.getRol() == PlayerRol.SPECTATOR) {
             throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
         } else {
-            gameService.useExploreCard(game, hexPositionOrigin, hexPositionTarget, aux);
+                gameService.useExploreCard(game, hexPositionOrigin, hexPositionTarget, aux);
+        }
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (NotOwnedHex e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (YouCannotPlay e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping("/play/{name}/exterminate/{hexPositionOrigin}/{hexPositionTarget}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> useCardExterminate(@PathVariable("name") String name,
+    public ResponseEntity<String> useCardExterminate(@PathVariable("name") String name,
             @PathVariable("hexPositionOrigin") int hexPositionOrigin,
             @PathVariable("hexPositionTarget") int hexPositionTarget) {
-        Game game = gameService.findByName(name);
-        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        try {
+            Game game = gameService.findByName(name);
+            Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
         if (aux.getRol() == PlayerRol.SPECTATOR) {
             throw new AccessDeniedException("Estás viendo la partida en modo espectador, no puedes jugar.");
         } else {
-            gameService.useExterminateCard(game, hexPositionOrigin, hexPositionTarget, aux);
+                gameService.useExterminateCard(game, hexPositionOrigin, hexPositionTarget, aux);
+        }
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (NotOwnedHex e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (YouCannotPlay e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

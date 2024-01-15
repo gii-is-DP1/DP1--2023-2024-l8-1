@@ -15,6 +15,8 @@ import org.springframework.samples.petclinic.card.Explore;
 import org.springframework.samples.petclinic.card.Exterminate;
 import org.springframework.samples.petclinic.card.Expand;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
+import org.springframework.samples.petclinic.exceptions.NotOwnedHex;
+import org.springframework.samples.petclinic.exceptions.YouCannotPlay;
 import org.springframework.samples.petclinic.gameboard.GameBoard;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
@@ -363,10 +365,16 @@ public class GameService {
         Card card = getCurrentAction(game);
         if (!phase.getIsOrder()) {
             if (turn.getPlayer() == player) {
-                List<Hex> hexs = getGameBoardHexs(game.getGameBoard());
-                Hex target = hexs.get(position);
-                Expand expand = new Expand(shipService, hexService, cardService);
-                expand.action(player, null, target, card);
+                try {
+                    List<Hex> hexs = getGameBoardHexs(game.getGameBoard());
+                    Hex target = hexs.get(position);
+                    Expand expand = new Expand(shipService, hexService, cardService);
+                    expand.action(player, null, target, card);
+                } catch (NotOwnedHex e) {
+                    throw e;
+                } catch (YouCannotPlay e) {
+                    throw e;
+                }
             } else {
                 throw new AccessDeniedException("No es tu turno.");
             }
@@ -389,11 +397,17 @@ public class GameService {
         Card card = getCurrentAction(game);
         if (!phase.getIsOrder()) {
             if (turn.getPlayer() == player) {
-                List<Hex> hexs = getGameBoardHexs(game.getGameBoard());
-                Hex origin = hexs.get(positionOrigin);
-                Hex target = hexs.get(positionTarget);
-                Explore explore = new Explore(hexService, shipService, cardService);
-                explore.action(player, origin, target, card);
+                try {
+                    List<Hex> hexs = getGameBoardHexs(game.getGameBoard());
+                    Hex origin = hexs.get(positionOrigin);
+                    Hex target = hexs.get(positionTarget);
+                    Explore explore = new Explore(hexService, shipService, cardService);
+                    explore.action(player, origin, target, card);
+                } catch (NotOwnedHex e) {
+                    throw e;
+                } catch (YouCannotPlay e) {
+                    throw e;
+                }
             } else {
                 throw new AccessDeniedException("No es tu turno.");
             }
@@ -415,11 +429,17 @@ public class GameService {
         Card card = getCurrentAction(game);
         if (!phase.getIsOrder()) {
             if (turn.getPlayer() == player) {
-                List<Hex> hexs = getGameBoardHexs(game.getGameBoard());
-                Hex origin = hexs.get(positionOrigin);
-                Hex target = hexs.get(positionTarget);
-                Exterminate exterminate = new Exterminate(hexService, shipService, cardService);
-                exterminate.action(player, origin, target, card);
+                try {
+                    List<Hex> hexs = getGameBoardHexs(game.getGameBoard());
+                    Hex origin = hexs.get(positionOrigin);
+                    Hex target = hexs.get(positionTarget);
+                    Exterminate exterminate = new Exterminate(hexService, shipService, cardService);
+                    exterminate.action(player, origin, target, card);
+                } catch (YouCannotPlay e) {
+                    throw e;
+                } catch (NotOwnedHex e){
+                    throw e;
+                }
             } else {
                 throw new AccessDeniedException("No es tu turno.");
             }

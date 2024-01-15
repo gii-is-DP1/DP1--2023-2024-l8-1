@@ -108,28 +108,24 @@ function Hex({ host, players, value, hexPosition, ships, onHexClick }) {
     const renderShips = () => {
         // Filtra las naves para este hexágono
         const shipsInHex = ships.filter((ship) => ship.hex !== null && ship.hex.position === hexPosition);
-        return (
-            <div className="ships-container">
-                {shipsInHex.map((ship) => {
-                    let numeroColor = 0;
-                    let owner = ship.player.user.username;
-                    if (owner === host.user.username) {
-                        numeroColor = 1;
-                    } else if (owner === players[0].user.username) {
-                        numeroColor = 2;
-                    } else if (owner === players[1].user.username) {
-                        numeroColor = 3;
-                    }
-
-                    return (
-                        <div
-                            key={ship.id}
-                            className={`ship player-${numeroColor}`}
-                        />
-                    );
-                })}
-            </div>
-        );
+        if (shipsInHex.length !== 0) {
+            let numeroColor = 0;
+            let owner = shipsInHex[0].player.user.username;
+            if (owner === host.user.username) {
+                numeroColor = 1;
+            } else if (owner === players[0].user.username) {
+                numeroColor = 2;
+            } else if (owner === players[1].user.username) {
+                numeroColor = 3;
+            }
+            return (
+                <div className="ships-container">
+                    <div className={`ship player-${numeroColor}`}>
+                        <div className="ship-count">{shipsInHex.length}</div>
+                    </div>
+                </div>
+            );
+        }
     };
 
     return (
@@ -152,7 +148,7 @@ function PlayersInfo({ player, playerShips, host, players }) {
     }
     return (
         <div className="players-info">
-            <p className={`player-${numeroColor}`}>{player.user.username}{ player.user.username === loggedUser.username ? ' <- You' : '' }</p>
+            <p style={{ color: player.user.username === loggedUser.username ? 'red' : 'black' }}>{player.user.username}</p>
             <p>Naves restantes: {playerShips}</p>
             <p>Puntuación: {player.score}</p>
             <p></p>
@@ -286,7 +282,14 @@ export default function PlayGame() {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-        });
+        }).then((response) => {
+            if (!response.ok) {
+                return response.json().then((errorData) => {
+                    let errorMessage = errorData.message;
+                    alert(errorMessage);
+                });
+            }
+        })
     }
 
     const handleHexClick = (sector, position) => {
@@ -330,9 +333,19 @@ export default function PlayGame() {
             },
         }).then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                const contentType = response.headers.get("Content-Type");
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json().then((errorData) => {
+                        let errorMessage = errorData.message;
+                        alert(errorMessage);
+                    });
+                } else {
+                    return response.text().then((errorMessage) => {
+                        alert(errorMessage);
+                    });
+                }
             }
-        });
+        })
         console.log("Has usado Expandir")
     };
 
@@ -345,9 +358,19 @@ export default function PlayGame() {
             },
         }).then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                const contentType = response.headers.get("Content-Type");
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json().then((errorData) => {
+                        let errorMessage = errorData.message;
+                        alert(errorMessage);
+                    });
+                } else {
+                    return response.text().then((errorMessage) => {
+                        alert(errorMessage);
+                    });
+                }
             }
-        });
+        })
         console.log("Has usado Explorar")
     }
 
@@ -360,9 +383,19 @@ export default function PlayGame() {
             },
         }).then((response) => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
+                const contentType = response.headers.get("Content-Type");
+                if (contentType && contentType.includes("application/json")) {
+                    return response.json().then((errorData) => {
+                        let errorMessage = errorData.message;
+                        alert(errorMessage);
+                    });
+                } else {
+                    return response.text().then((errorMessage) => {
+                        alert(errorMessage);
+                    });
+                }
             }
-        });
+        })
         console.log("Has usado Exterminate")
     }
 
@@ -413,7 +446,10 @@ export default function PlayGame() {
                 },
             }).then((response) => {
                 if (!response.ok) {
-                    throw new Error("Network response was not ok")
+                    return response.json().then((errorData) => {
+                        let errorMessage = errorData.message;
+                        alert(errorMessage);
+                    });
                 }
             })
         }
@@ -467,7 +503,14 @@ export default function PlayGame() {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-        });
+        }).then((response) => {
+            if (!response.ok) {
+                return response.json().then((errorData) => {
+                    let errorMessage = errorData.message;
+                    alert(errorMessage);
+                });
+            }
+        })
     }
 
     const handleSetOrder = () => {
@@ -478,15 +521,22 @@ export default function PlayGame() {
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
-        });
+        }).then((response) => {
+            if (!response.ok) {
+                return response.json().then((errorData) => {
+                    let errorMessage = errorData.message;
+                    alert(errorMessage);
+                });
+            }
+        })
     }
 
     return (
         <div className="game">
             <div className="players-info-container">
-                {host && host.user && <PlayersInfo player={host} playerShips={hostShips} host={host} players={players}/>}
-                {players && <PlayersInfo player={players[0]} playerShips={player1Ships} host={host} players={players}/>}
-                {players && <PlayersInfo player={players[1]} playerShips={player2Ships} host={host} players={players}/>}
+                {host && host.user && <PlayersInfo player={host} playerShips={hostShips} host={host} players={players} />}
+                {players && <PlayersInfo player={players[0]} playerShips={player1Ships} host={host} players={players} />}
+                {players && <PlayersInfo player={players[1]} playerShips={player2Ships} host={host} players={players} />}
             </div>
             <div>
                 <p>Es turno de:</p>

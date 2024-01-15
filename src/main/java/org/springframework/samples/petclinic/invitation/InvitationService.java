@@ -3,6 +3,8 @@ package org.springframework.samples.petclinic.invitation;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -56,8 +58,8 @@ public class InvitationService {
     public Invitation saveInvitation(Invitation invitation) {
         List<String> sourceFriends = invitation.getPlayerSource().getFriends().stream().map(x -> x.getUser().getUsername()).toList();
         if(sourceFriends.contains(invitation.getPlayerTarget().getUser().getUsername()) 
-                && invitation.getDiscriminator().equals(InvitationType.FRIENDSHIP)) {
-            throw new BadRequestException("No puedes enviar una invitacion a un jugador que ya es amigo tuyo");}
+                && invitation.getDiscriminator().equals(InvitationType.FRIENDSHIP))
+            throw new BadRequestException("No puedes enviar una invitacion a un jugador que ya es amigo tuyo");
         ir.save(invitation);
         return invitation;
     }
