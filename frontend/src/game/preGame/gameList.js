@@ -37,7 +37,6 @@ export default function GameList() {
     );
 
     const handleSpectate = (name) => {
-        console.log(loggedUser)
         fetch(`/api/v1/players/startSpectating/${loggedUser.username}`, {
             method: "PUT",
             headers: {
@@ -67,9 +66,16 @@ export default function GameList() {
     const gameList =
         games.map((a) => {
             let lobby = 0;
+            const userList =
+                a.players.map((a) => {
+                    const card = a.user
+                    return (card)
+                })
             if (a.players.length === 2 && a.state !== "LOBBY" && a.state !== "OVER") {
                 lobby = 1
             } else if (a.players.length === 2 && a.state === "LOBBY") {
+                lobby = 2
+            } else if ((userList.includes(loggedUser)) || a.host.user.username === loggedUser.username) {
                 lobby = 2
             }
 
@@ -131,7 +137,7 @@ export default function GameList() {
                             Lobby
                         </Button>
                     </td>
-                    {loggedUser === a.host.user && <td className="text-center">
+                    {loggedUser.username === a.host.user.username && <td className="text-center">
                         <Button outline color="danger"
                             onClick={() =>
                                 deleteFromList(

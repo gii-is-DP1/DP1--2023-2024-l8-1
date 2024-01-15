@@ -108,7 +108,7 @@ export default function GameLobby() {
                         <tbody>{playersList}</tbody>
                     </Table>
 
-                    {gameInfo.host && loggedUser.username === gameInfo.host.user.username && <Button outline color="success"
+                    {gameInfo.host && gameInfo.state && loggedUser.username === gameInfo.host.user.username && gameInfo.state === "LOBBY" && <Button outline color="success"
                         onClick={() => startGame(name)}>start
                     </Button>}
                     <Button outline color="warning" onClick={() => navigate('../invitations/new/')}>

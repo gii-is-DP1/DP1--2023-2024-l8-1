@@ -61,6 +61,9 @@ public class CardService {
 
     @Transactional
     public void genCardsForOnePlayer(Integer playerId) {
+        for (Card card : getPlayerCards(playerId)){
+            cardRepository.delete(card);
+        }
         genExpandCard(playerId);
         genExploreCard(playerId);
         genExterminateCard(playerId);

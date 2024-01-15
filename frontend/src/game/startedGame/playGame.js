@@ -661,7 +661,7 @@ export default function PlayGame() {
                     </select>}
                 </div>
                 <div>
-                    {!isInitial && !currentPhase.isOrder && !currentPhase.isPoint && <button onClick={() => handleSkip()}>Pasar</button>}
+                    {!isInitial && !currentPhase.isOrder &&  <button onClick={() => handleSkip()}>Pasar</button>}
                 </div>
                 <div>
                     {currentPhase.isOrder && <button onClick={() => handleSetOrder()}>Ordenar Cartas</button>}
