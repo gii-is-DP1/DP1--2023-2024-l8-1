@@ -100,8 +100,9 @@ public class PlayerRestController {
     @PutMapping("/add/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Player> addFriend(@PathVariable("id") int id){
-        ps.addFriend(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        Player me = us.findPlayerByUser(us.findCurrentUser().getId());
+        ps.addFriend(me, id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT); 
     }
 
     @DeleteMapping("/delete/{id}")

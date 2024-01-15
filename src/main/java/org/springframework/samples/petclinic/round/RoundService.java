@@ -1,6 +1,5 @@
 package org.springframework.samples.petclinic.round;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +30,11 @@ public class RoundService {
         this.phaseService = phaseService;
         this.sectorService = sectorService;
         this.turnService = turnService;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Round> findAll(){
+        return roundRepository.findAll();
     }
 
     @Transactional(readOnly = true)

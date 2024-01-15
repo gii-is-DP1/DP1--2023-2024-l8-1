@@ -25,8 +25,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @SecurityRequirement(name = "bearerAuth")
 public class CardRestController {
 
-    private final UserService userService;
-    private final CardService cardService;
+    private UserService userService;
+    private CardService cardService;
     private GameService gameService;
 
     @Autowired
@@ -37,10 +37,11 @@ public class CardRestController {
     }
 
     @GetMapping
-    public List<Card> findPlayerCards() {
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<List<Card>> findPlayerCards() {
         Player loggedPlayer = userService.findPlayerByUser(userService.findCurrentUser().getId());
         List<Card> playerCards = cardService.getPlayerCards(loggedPlayer.getId());
-        return playerCards;
+        return new ResponseEntity<List<Card>>(playerCards, HttpStatus.OK);
     }
 
     @PutMapping("/{name}/{type}/{order}")

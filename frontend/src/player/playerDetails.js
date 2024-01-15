@@ -51,8 +51,6 @@ export default function PlayerDetails() {
             );
         });
 
-    const modal = getErrorModal(setVisible, visible, message);
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setLoggedPlayer({
@@ -91,7 +89,7 @@ export default function PlayerDetails() {
     return (
         <div>
             <div className="admin-page-container">
-                <h1 className="text-center">Tu Perfil</h1>
+                <h1 className="text-center" style={{marginTop: "20px"}}>Tu Perfil</h1>
                 {loggedPlayer && Object.keys(loggedPlayer).length > 0 && (
                     <form>
                         <div>
@@ -104,7 +102,7 @@ export default function PlayerDetails() {
                             />
                         </div>
                         <div>
-                            <label>Last Name:</label>
+                            <label style={{ marginTop: "10px"}}>Last Name:</label>
                             <Input
                                 type="text"
                                 name="lastName"
@@ -112,32 +110,32 @@ export default function PlayerDetails() {
                                 onChange={handleInputChange}
                             />
                         </div>
-                        <Button style={{display: 'block', margin: 'auto'}} outline color="success" type="submit" onClick={handleSubmit}>
-                        Guardar cambios
-                    </Button>
+                        <Button style={{ display: 'block', margin: 'auto' , marginTop: "10px", marginBottom: "20px"}} outline color="success" type="submit" onClick={handleSubmit}>
+                            Guardar cambios
+                        </Button>
                     </form>
                 )}
 
-            <h1 className="text-center">Tus Amigos</h1>
-            <div>
-                <Table aria-label="achievements" className="mt-4">
-                    <thead>
-                        <tr>
-                            <th className="text-center">Nombre</th>
-                            <th className="text-center">Estado</th>
-                            <th className="text-center">Estadísticas</th>
-                            <th className="text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>{friendsList}</tbody>
-                </Table>
-                <Button outline color="success" style={{display: 'block', margin: 'auto'}} >
-                    <Link
-                        to={'/invitations/new'} className="btn sm"
-                        style={{ textDecoration: "none" }}>Add a friend</Link>
-                </Button>
+                <h1 className="text-center" style={{marginBottom: "-10px"}}>Tus Amigos</h1>
+                <div>
+                    <Table aria-label="achievements" className="mt-4">
+                        <thead>
+                            <tr>
+                                <th className="text-center">Nombre</th>
+                                <th className="text-center">Estado</th>
+                                <th className="text-center">Estadísticas</th>
+                                <th className="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>{friendsList}</tbody>
+                    </Table>
+                    <Button outline color="success" style={{ display: 'block', margin: 'auto', marginBottom: "30px"}} >
+                        <Link
+                            to={'/invitations/new'} className="btn sm"
+                            style={{ textDecoration: "none" }}>Add a friend</Link>
+                    </Button>
+                </div>
             </div>
         </div>
-        </div >
     );
 }

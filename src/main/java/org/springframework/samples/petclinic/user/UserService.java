@@ -16,20 +16,16 @@
 package org.springframework.samples.petclinic.user;
 
 import java.util.List;
-import java.util.Optional;
 
 import jakarta.validation.Valid;
 
-import org.springdoc.api.ErrorMessage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
-import org.springframework.samples.petclinic.game.GameRepository;
 import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
-import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetService;
 import org.springframework.security.core.Authentication;
