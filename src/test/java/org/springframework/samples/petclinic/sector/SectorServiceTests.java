@@ -13,12 +13,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureTestDatabase
-public class SectorServiceTest {
+public class SectorServiceTests {
 
     private SectorService sectorService;
 
     @Autowired
-    public SectorServiceTest(SectorService sectorService){
+    public SectorServiceTests(SectorService sectorService){
         this.sectorService = sectorService;
     }
 

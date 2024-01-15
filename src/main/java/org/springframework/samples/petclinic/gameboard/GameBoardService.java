@@ -9,8 +9,6 @@ import org.springframework.samples.petclinic.exceptions.GameBoardGenerationExcep
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.hex.Hex;
-import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
-import org.springframework.samples.petclinic.exceptions.GameBoardGenerationException;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.sector.Sector;
 import org.springframework.samples.petclinic.sector.SectorService;

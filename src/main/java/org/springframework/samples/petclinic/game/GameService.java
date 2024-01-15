@@ -1,6 +1,7 @@
 package org.springframework.samples.petclinic.game;
 
 import java.util.Optional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Set;
@@ -10,13 +11,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.card.Card;
 import org.springframework.samples.petclinic.card.CardService;
-import org.springframework.samples.petclinic.card.CardType;
 import org.springframework.samples.petclinic.card.Explore;
 import org.springframework.samples.petclinic.card.Exterminate;
 import org.springframework.samples.petclinic.card.Expand;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.gameboard.GameBoard;
-import org.springframework.samples.petclinic.gameboard.GameBoardService;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.phase.Phase;
@@ -480,6 +479,7 @@ public class GameService {
                             p -> p.getShips().stream().noneMatch(s -> s.getState() == ShipState.ON_GAME))) {
                 finalPoint(game);
                 game.setState(GameState.OVER);
+                game.setEndTime(LocalDateTime.now());
                 game.setWinner(
                         findGamePlayers(game.getName()).stream().max(Comparator.comparing(Player::getScore)).get());
                 saveGame(game);

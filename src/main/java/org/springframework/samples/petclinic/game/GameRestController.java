@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.samples.petclinic.card.ActionsService;
-import org.springframework.samples.petclinic.card.CardService;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
@@ -19,13 +18,11 @@ import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.ship.Ship;
-import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,15 +43,12 @@ public class GameRestController {
     private final GameService gameService;
     private final UserService userService;
     private final HexService hexService;
-    private final ActionsService actionsService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService, HexService hexService,
-            ActionsService actionsService) {
+    public GameRestController(GameService gameService, UserService userService, HexService hexService) {
         this.gameService = gameService;
         this.userService = userService;
         this.hexService = hexService;
-        this.actionsService = actionsService;
     }
 
     @GetMapping
