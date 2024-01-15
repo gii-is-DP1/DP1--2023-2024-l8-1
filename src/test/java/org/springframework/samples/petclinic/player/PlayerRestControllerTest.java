@@ -44,7 +44,6 @@ import org.springframework.samples.petclinic.user.UserService;
 /**
  * Test class for the {@link PlayerRestController}
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest(value = {
         PlayerRestController.class }, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class))
 public class PlayerRestControllerTest {
