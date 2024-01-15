@@ -11,7 +11,7 @@ export const SearchGame= ({ setResults, onSelectGame}) => {
     const jwt = tokenService.getLocalAccessToken();
 
     const fetchData = (value) => {
-        fetch("/api/v1/game", {
+        fetch("/api/v1/game/playerGames", {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${jwt}`,

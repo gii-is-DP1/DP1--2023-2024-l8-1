@@ -29,15 +29,12 @@ public class Invitation extends BaseEntity{
     InvitationType discriminator;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     Player playerTarget;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     Player playerSource;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     Game game;
 
 }
