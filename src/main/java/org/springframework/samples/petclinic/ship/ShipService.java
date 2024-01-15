@@ -36,6 +36,10 @@ public class ShipService {
     @Transactional
     public void genShipsForOnePlayer(Integer playerId) {
         Player player = playerService.findPlayerById(playerId);
+        List<Ship> ls = shipRepository.playerShips(playerId);
+        for (Ship ship : ls){
+            shipRepository.delete(ship);
+        }
 
         for (int i = 0; i < 15; i++) {
             Ship newShip = new Ship();

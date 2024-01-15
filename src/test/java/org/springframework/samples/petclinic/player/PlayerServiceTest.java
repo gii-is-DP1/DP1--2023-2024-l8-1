@@ -36,7 +36,6 @@ import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.samples.petclinic.util.EntityUtils;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.transaction.TransactionSystemException;
 
 import jakarta.transaction.Transactional;
 

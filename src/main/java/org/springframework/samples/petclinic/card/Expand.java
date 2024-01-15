@@ -36,7 +36,7 @@ public class Expand implements CardActions {
             List<Ship> shipsInSupply = shipService.selectShipsFromSupply(player.getId());
             Ship shipToSet = shipsInSupply.get(0);
             if (target.getPuntos() != 0) {
-                if (player.equals(hexService.findPlayerInHex(target.getId()))) {
+                if (player.equals(hexService.findPlayerInHex(target.getId())) || !target.getOccuped()) {
                     shipToSet.setState(ShipState.ON_GAME);
                     shipToSet.setHex(target);
                     shipService.updateShip(shipToSet, shipToSet.getId());

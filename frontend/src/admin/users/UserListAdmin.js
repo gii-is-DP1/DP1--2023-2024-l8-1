@@ -39,7 +39,8 @@ export default function UserListAdmin() {
   }, [page, pageSize]);
 
 
-  const userList = data.content.map((user) => {
+  const userList = data.content.filter((user) => user.authority.authority !== 'ADMIN')
+  .map((user) => {
     return (
       <tr key={user.id}>
         <td>{user.username}</td>

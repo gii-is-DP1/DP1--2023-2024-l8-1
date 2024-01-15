@@ -96,15 +96,23 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<Game> getPlayerGames(Player player) {
+    public List<Game> getCurrentPlayerGames(Player player) {
         List<Game> ls = new ArrayList<>();
         for (Game game : getGames()) {
-            if (findGamePlayers(game.getName()).contains(player)) {
+            if (findGamePlayers(game.getName()).contains(player) && game.getState()!=GameState.OVER) {
                 ls.add(game);
             }
         }
         return ls;
 
+    }
+
+    @Transactional(readOnly = true)
+    public List<Game> findPlayerUserGames() {
+        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        List<Game> gamesInDB = repo.findAll();
+        List<Game> playerGames = gamesInDB.stream().filter(g -> g.getHost().equals(me) || g.getPlayers().contains(me)).toList();
+        return playerGames;
     }
 
     @Transactional(readOnly = true)

@@ -9,7 +9,6 @@ import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.hex.Hex;
-import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,15 +26,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class GameBoardRestController {
 
     private final GameBoardService gameBoardService;
-    private final HexService hexService;
     private final GameService gameService;
     private final UserService userService;
     
     @Autowired
-    public GameBoardRestController(GameBoardService gameBoardService, HexService hexService,
+    public GameBoardRestController(GameBoardService gameBoardService,
                 GameService gameService, UserService userService){
         this.gameBoardService = gameBoardService;
-        this.hexService = hexService;
         this.gameService = gameService;
         this.userService = userService;
     }

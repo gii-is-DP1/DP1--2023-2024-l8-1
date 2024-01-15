@@ -26,8 +26,8 @@ import org.springframework.samples.petclinic.exceptions.ResourceNotFoundExceptio
 import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRepository;
+import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.vet.Vet;
-import org.springframework.samples.petclinic.vet.VetService;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -39,18 +39,12 @@ import org.springframework.data.domain.Pageable;
 public class UserService {
 
 	private UserRepository userRepository;
-
-	// private OwnerService ownerService;
-	//
-	private VetService vetService;
-	private PlayerRepository playerRepository;
+	private PlayerService playerService;
 
 	@Autowired
-	public UserService(UserRepository userRepository, VetService vetService, PlayerRepository playerRepository) {
+	public UserService(UserRepository userRepository, PlayerService playerService) {
 		this.userRepository = userRepository;
-		// this.ownerService = ownerService;
-		this.vetService = vetService;
-		this.playerRepository = playerRepository;
+		this.playerService = playerService;
 	}
 
 	@Transactional
@@ -156,15 +150,15 @@ public class UserService {
 			for (Player p : friends) {
 				List<Player> aux = p.getFriends();
 				aux.remove(player);
-				playerRepository.save(p);
+				playerService.savePlayer(p);
 			}
 			player.getFriends().clear();
-			playerRepository.save(player);
+			playerService.savePlayer(player);
 		}
 
 		if (player.getCards() != null) {
 			player.getCards().clear();
-			playerRepository.save(player);
+			playerService.savePlayer(player);
 		}
 	}
 }

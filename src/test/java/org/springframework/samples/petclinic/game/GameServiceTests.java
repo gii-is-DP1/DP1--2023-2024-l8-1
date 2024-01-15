@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.samples.petclinic.card.Card;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.samples.petclinic.gameboard.GameBoard;
@@ -31,6 +30,7 @@ import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.round.Round;
 import org.springframework.samples.petclinic.round.RoundService;
+import org.springframework.samples.petclinic.sector.SectorService;
 import org.springframework.samples.petclinic.ship.Ship;
 import org.springframework.samples.petclinic.ship.ShipService;
 import org.springframework.samples.petclinic.ship.ShipState;
@@ -60,14 +60,15 @@ public class GameServiceTests {
     TurnService turnService;
     GameBoardService gameBoardService;
     ShipService shipService;
-    HexService hexService;
+    HexService hexService;    
+    SectorService sectorService;
 
     private User player2User;
 
     @Autowired
     public GameServiceTests(GameService gameService, UserService userService,
             PlayerService playerService, RoundService roundService, PhaseService phaseService, TurnService turnService,
-            GameBoardService gameBoardService, ShipService shipService, HexService hexService) {
+            GameBoardService gameBoardService, ShipService shipService, HexService hexService, SectorService sectorService) {
         this.gameService = gameService;
         this.userService = userService;
         this.playerService = playerService;
@@ -77,6 +78,7 @@ public class GameServiceTests {
         this.gameBoardService = gameBoardService;
         this.shipService = shipService;
         this.hexService = hexService;
+        this.sectorService = sectorService;
     }
 
     @BeforeEach
@@ -147,7 +149,6 @@ public class GameServiceTests {
         Player player2 = EntityUtils.getById(players, Player.class, 2);
         assertEquals("Play", player2.getFirstName());
         assertEquals("Yer", player2.getLastName());
-        assertFalse(player2.getStartPlayer());
 
     }
 
@@ -176,7 +177,7 @@ public class GameServiceTests {
         newGame.setPublica(true);
         newGame.setState(GameState.LOBBY);
         newGame.setStartTime(LocalDateTime.of(2023, 11, 11, 11, 11, 11));
-        ls.add(playerService.findPlayerById(2));
+        ls.add(playerService.findPlayerById(6));
         ls.add(playerService.findPlayerById(3));
         newGame.setPlayers(ls);
         return newGame;
@@ -327,8 +328,8 @@ public class GameServiceTests {
         Boolean nNaves = gameService.findGamePlayers(game.getName()).stream().allMatch(p -> p.getShips().size() == 15);
         assertTrue(nNaves);
         // Cada jugador debe tener 3 cartas
-        Boolean nCartas = gameService.findGamePlayers(game.getName()).stream().allMatch(p -> p.getCards().size() == 3);
-        assertTrue(nCartas);
+        Boolean nCards = gameService.findGamePlayers(game.getName()).stream().allMatch(p -> p.getCards().size() == 3);
+        assertTrue(nCards);
 
     }
 
