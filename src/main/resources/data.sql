@@ -55,7 +55,7 @@ INSERT INTO games(id, host_id, name, publica,  state) VALUES (5, 5, 'prueba5', f
 
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (1, 1, 'prueba', true, '2023-11-11 21:16', 'LOBBY');
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (2, 2, 'prueba2', true, '2023-11-11 21:16', 'LOBBY');
-INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (3, 3, 'prueba3', true, '2023-11-11 21:16', 'OVER');
+INSERT INTO games(id, host_id, name, publica, start_time, state, player_id) VALUES (3, 3, 'prueba3', true, '2023-11-11 21:16', 'OVER', 2);
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (4, 1, 'prueba4', false, '2023-11-11 21:16', 'LOBBY');
 INSERT INTO games(id, host_id, name, publica, start_time, state) VALUES (5, 5, 'prueba5', false, '2023-11-11 21:16', 'IN_PROGRESS');
 
