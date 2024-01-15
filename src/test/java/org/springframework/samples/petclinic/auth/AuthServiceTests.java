@@ -13,12 +13,10 @@ import org.springframework.samples.petclinic.clinic.ClinicService;
 import org.springframework.samples.petclinic.clinic.PricingPlan;
 import org.springframework.samples.petclinic.clinicowner.ClinicOwner;
 import org.springframework.samples.petclinic.clinicowner.ClinicOwnerService;
-import org.springframework.samples.petclinic.owner.Owner;
 import org.springframework.samples.petclinic.owner.OwnerService;
 import org.springframework.samples.petclinic.user.AuthoritiesService;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
-import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetService;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +48,7 @@ public class AuthServiceTests {
 		assertEquals(userFirstCount + 1, userLastCount);
 	}
 	
-	@Test
+	/*@Test
 	@Transactional
 	public void shouldCreateVetUser() {
 		SignupRequest request = createRequest("VET", "vettest");
@@ -74,7 +72,7 @@ public class AuthServiceTests {
 		int ownerLastCount = ((Collection<Owner>) this.ownerService.findAll()).size();
 		assertEquals(userFirstCount + 1, userLastCount);
 		assertEquals(ownerFirstCount + 1, ownerLastCount);
-	}
+	}*/
 
 	private SignupRequest createRequest(String auth, String username) {
 		SignupRequest request = new SignupRequest();

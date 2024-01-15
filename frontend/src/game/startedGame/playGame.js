@@ -148,7 +148,7 @@ function PlayersInfo({ player, playerShips, host, players }) {
     }
     return (
         <div className="players-info">
-            <p style={{ color: player.user.username === loggedUser.username ? 'red' : 'black' }}>{player.user.username}</p>
+            <p className={`player-${numeroColor}`}>{player.user.username}{player.user.username === loggedUser.username ? ' <- You' : ''}</p>
             <p>Naves restantes: {playerShips}</p>
             <p>Puntuación: {player.score}</p>
             <p></p>
@@ -167,8 +167,10 @@ export default function PlayGame() {
         jwt
     );
 
-    if (gameInfo.state === "OVER") {
-        navigate('../game/over/' + name);
+    if (gameInfo.state != null) {
+        if (gameInfo.state === "OVER") {
+            navigate('../game/over/' + name);
+        }
     }
 
     const [hexes, setHexes] = useFetchState(
@@ -248,9 +250,6 @@ export default function PlayGame() {
     } else {
         console.error("La matriz 'players' no tiene al menos dos elementos.");
     }
-    // const primerJugadorUsername = primerJugador.user.username;
-    // const segundoJugadorUsername = segundoJugador.user.username;
-    // const hostUsername = host.user.username;
 
     const [hostShips, setHostShips] = useIntervalFetchState(
         [],
@@ -268,7 +267,6 @@ export default function PlayGame() {
         jwt
     )
 
-    const [winner, setWinner] = useState(null);
     const [selectedFunction, setSelectedFunction] = useState(null);
     const [selectedOriginHex, setSelectedOriginHex] = useState(null);
     const [selectedTargetHex, setSelectedTargetHex] = useState(null);

@@ -2,7 +2,6 @@ package org.springframework.samples.petclinic.sector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.hex.Hex;
@@ -15,7 +14,6 @@ public class SectorService {
 
     private SectorRepository sectorRepository;
     private HexService hexService;
-    private Random random = new Random();
 
     @Autowired
     public SectorService(SectorRepository sectorRepository, HexService hexService) {

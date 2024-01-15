@@ -26,6 +26,24 @@ export default function PlayerDetails() {
         jwt
     );
 
+    const [playerGames, setPlayerGames] = useFetchState(
+        [],
+        `/api/v1/game/playerGames`,
+        jwt
+    )
+
+    const playerGamesList =
+        playerGames.map((g) => {
+            return (
+                <tr key={g.id}>
+                    <td className="text-center">{g.name}</td>
+                    <td className="text-center">{g.host.user.username}</td>
+                    <td className="text-center">{g.state}</td>
+                    <td className="text-center">{g.winner && g.winner.user.username}</td>
+                </tr>
+            );
+        });
+
     const friendsList =
         friends.map((a) => {
             return (
@@ -134,6 +152,21 @@ export default function PlayerDetails() {
                             to={'/invitations/new'} className="btn sm"
                             style={{ textDecoration: "none" }}>Add a friend</Link>
                     </Button>
+                </div>
+                <h1 className="text-center" style={{ marginTop: "20px"}}>Tus Partidas</h1>
+                <div>
+                    <Table aria-label="achievements" className="mt-4">
+                        <thead>
+                            <tr>
+                                <th className="text-center">Partida</th>
+                                <th className="text-center">Host</th>
+                                <th className="text-center">Estado</th>
+                                <th className="text-center">Ganador</th>
+                            </tr>
+                        </thead>
+                        <tbody>{playerGamesList}</tbody>
+                    </Table>
+
                 </div>
             </div>
         </div>

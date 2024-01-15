@@ -2,10 +2,6 @@ package org.springframework.samples.petclinic.game;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -26,10 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.card.Card;
 import org.springframework.samples.petclinic.card.CardType;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
@@ -41,7 +34,6 @@ import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.round.Round;
 import org.springframework.samples.petclinic.ship.Ship;
 import org.springframework.samples.petclinic.ship.ShipState;
-import org.springframework.samples.petclinic.turn.Turn;
 import org.springframework.samples.petclinic.user.Authorities;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
@@ -51,8 +43,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.micrometer.core.ipc.http.HttpSender.Response;
 
 /**
  * Test class for the {@link GameRestController}
@@ -557,8 +547,7 @@ public class GameRestControllerTests {
      * System.out.println("Response Content: " + responseContent);
      * 
      * mvc.perform(get(BASE_URL + "/getCurrentTurn/{name}", game1.getName()))
-     * .andExpect(jsonPath("$.[0].player.user.username").value(turn.getPlayer().
-     * getUser().getUsername()));
+     * .andExpect(jsonPath("$").value(List.of(turn.getPlayer().getUser().getUsername())));
      * }
      */
 

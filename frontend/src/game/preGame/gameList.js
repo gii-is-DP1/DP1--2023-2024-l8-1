@@ -32,7 +32,7 @@ export default function GameList() {
 
     const [playerGames, setPlayerGames] = useFetchState(
         [],
-        `/api/v1/game/playerGames`,
+        `/api/v1/game/playerCurrentGames`,
         jwt
     );
 

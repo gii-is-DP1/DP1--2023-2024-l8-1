@@ -8,14 +8,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.samples.petclinic.card.ActionsService;
 import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.NotOwnedHex;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.samples.petclinic.exceptions.YouCannotPlay;
-import org.springframework.samples.petclinic.hex.Hex;
-import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.phase.Phase;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.player.PlayerRol;
@@ -44,13 +41,11 @@ public class GameRestController {
 
     private final GameService gameService;
     private final UserService userService;
-    private final HexService hexService;
 
     @Autowired
-    public GameRestController(GameService gameService, UserService userService, HexService hexService) {
+    public GameRestController(GameService gameService, UserService userService) {
         this.gameService = gameService;
         this.userService = userService;
-        this.hexService = hexService;
     }
 
     @GetMapping
@@ -69,10 +64,15 @@ public class GameRestController {
         return new ResponseEntity<>((List<Game>) gameService.getFriendGames(aux), HttpStatus.OK);
     }
 
+    @GetMapping("/playerCurrentGames")
+    public ResponseEntity<List<Game>> playerCurrentGames() {
+        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
+        return new ResponseEntity<>((List<Game>) gameService.getCurrentPlayerGames(aux), HttpStatus.OK);
+    }
+
     @GetMapping("/playerGames")
     public ResponseEntity<List<Game>> playerGames() {
-        Player aux = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        return new ResponseEntity<>((List<Game>) gameService.getPlayerGames(aux), HttpStatus.OK);
+        return new ResponseEntity<>((List<Game>) gameService.findPlayerUserGames(), HttpStatus.OK);
     }
 
     @GetMapping("/play/{name}")
