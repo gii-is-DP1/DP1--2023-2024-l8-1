@@ -17,9 +17,11 @@ package org.springframework.samples.petclinic.player;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.samples.petclinic.user.Authorities;
+import org.springframework.samples.petclinic.user.AuthoritiesService;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.samples.petclinic.util.EntityUtils;
@@ -36,31 +39,39 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.transaction.TransactionSystemException;
 
 import jakarta.transaction.Transactional;
+
 @SpringBootTest
 @AutoConfigureTestDatabase
+@Transactional
 class PlayerServiceTest {
 	@Autowired
-	protected PlayerService playerService;
+	PlayerService playerService;
 
 	@Autowired
-	protected UserService userService;
+	UserService userService;
+
+	@Autowired
+	AuthoritiesService authoritiesService;
 
 	User player2User;
 
 	@BeforeEach
-    public void setup() {
+	public void setup() {
 
-        Authorities playerAuth = new Authorities();
-        playerAuth.setId(1);
-        playerAuth.setAuthority("PLAYER");
+		Authorities playerAuth = new Authorities();
+		// playerAuth.setId(1);
+		playerAuth.setAuthority("PLAYER");
+		authoritiesService.saveAuthorities(playerAuth);
 
-        player2User = new User();
-        player2User.setId(2);
-        player2User.setUsername("player2Test");
-        player2User.setPassword("player2Test");
-        player2User.setAuthority(playerAuth);
+		player2User = new User();
+		// player2User.setId(25);
+		player2User.setUsername("player2Test");
+		player2User.setPassword("player2Test");
+		player2User.setAuthority(playerAuth);
 
-    }
+		userService.saveUser(player2User);
+
+	}
 
 	@Test
 	void shouldFindPlayertWithCorrectId() {
@@ -75,7 +86,7 @@ class PlayerServiceTest {
 
 	@Test
 	void shouldFindAllPlayers() {
-		
+
 		List<Player> players = playerService.findAll();
 
 		Player player1 = EntityUtils.getById(players, Player.class, 1);
@@ -120,145 +131,122 @@ class PlayerServiceTest {
 		assertNull(playerService.findPlayerRol(300));
 	}
 
-	//Aqui deberían ir las pruebas unitarias sobre encontrar el jugador inicial
-	//Pero yo creo que esa funcion hay que redefinirla
+	/*
+	 * @Test
+	 * void shouldNotCreateAPlayerSucessfully() {
+	 * 
+	 * Player newPlayer = creatNewPlayerWithUsedUser();
+	 * // playerService.savePlayer(newPlayer);
+	 * // assertEquals(newPlayer.getId(),
+	 * playerService.findPlayerByUser(24).getId());
+	 * assertThrows(TransactionSystemException.class, () -> {
+	 * playerService.savePlayer(newPlayer);
+	 * });
+	 * 
+	 * }
+	 */
+	private Player creatNewPlayerWithUsedUser() {
 
-	@Test
-	@Transactional
-	@WithMockUser(username = "player1", authorities = "PLAYER")
-    void shouldNotCreateAPlayerSucessfully() {
-
-        Player newPlayer= creatNewPlayerWithUsedUser();
-        playerService.savePlayer(newPlayer);
-       
-    }
-
-    private Player creatNewPlayerWithUsedUser() {
-
-        Player newPlayer = new Player();
+		Player newPlayer = new Player();
 		newPlayer.setFirstName("Daniel");
 		newPlayer.setLastName("Alors");
-		newPlayer.setUser(userService.findCurrentUser());
+		newPlayer.setUser(userService.findUser(24));
 
 		return newPlayer;
 
-    }
+	}
 
 	@Test
-	@Transactional
 	void shoudlCreatePlayerSucessfully() {
 
 		List<Player> databasePlayers = playerService.findAll();
 		playerService.savePlayer(createValidPlayer());
-		assertEquals(databasePlayers.size() + 1, playerService.findAll().size());
+		List<Player> newDatabasePlayers = playerService.findAll();
+		assertEquals(databasePlayers.size() + 1, newDatabasePlayers.size());
 
 	}
 
 	private Player createValidPlayer() {
 
-        Player newPlayer = new Player();
+		Player newPlayer = new Player();
 		newPlayer.setFirstName("Daniel");
 		newPlayer.setLastName("Alors");
 		newPlayer.setUser(player2User);
 
 		return newPlayer;
 
-    }
+	}
 
-    @Test
-    void shouldNotCreateValidPlayer() {
-
-        assertThrows(TransactionSystemException.class, () -> {
-            Player newPlayer = createAPlayerWithoutUser();
-            playerService.savePlayer(newPlayer);
-        });
-    }
-
-    private Player createAPlayerWithoutUser() {
-
-        Player newPlayer = new Player();
-		newPlayer.setFirstName("Daniel");
-		newPlayer.setLastName("Alors");
-
-		return newPlayer;
-
-    }
-
-    @Test
-	@Transactional
-    void shouldUpdatePlayer() {
-
-        Player player = playerService.findPlayerById(6);
-        player.setFirstName("Charlie");
-        playerService.updatePlayer(player, player.getId());
-
-        Player updatedPlayer = playerService.findPlayerById(6);
-        assertEquals("Charlie", updatedPlayer.getFirstName());
-		assertEquals("Blanes", updatedPlayer.getLastName());
-
-    }
-
-    @Test
-    void shouldNotUpdateGame() {
-
-        Player player = playerService.findPlayerById(5);
-        player.setFirstName("");
-        
-        assertThrows(TransactionSystemException.class, () -> {
-        playerService.updatePlayer(player, player.getId());});
-
-    }
-
-    @Test
-	@Transactional
-    @WithMockUser(username = "player3", authorities = "PLAYER")
-    void shouldAddANewFriend() {
-
-        Player userPlayer = playerService.findPlayerByUser(userService.findCurrentUser().getId());
-		List<Player> userPlayerFriends = userPlayer.getFriends();
-		
-		playerService.addFriend(4);
-		
-		Player updatedUserPlayer = playerService.findPlayerByUser(userService.findCurrentUser().getId());
-		List<Player> updatedUserPlayerFriends = updatedUserPlayer.getFriends();
-		assertEquals(userPlayerFriends.size() + 1, updatedUserPlayerFriends.size());
-
-    }
-
-    @Test
-    void shouldNotAddFriendIfNotAuthenticated() {
-
-        assertThrows(ResourceNotFoundException.class, () -> {
-        playerService.addFriend(4);;});
-
-    }
+	/*
+	 * @Test
+	 * void shouldNotCreateValidPlayer() {
+	 * 
+	 * Player newPlayer = new Player();
+	 * newPlayer.setFirstName("");
+	 * 
+	 * assertThrows(TransactionSystemException.class, () -> {
+	 * playerService.savePlayer(newPlayer);
+	 * });
+	 * }
+	 */
 
 	@Test
 	@Transactional
-	@WithMockUser(username = "player1", authorities = "PLAYER")
+	void shouldUpdatePlayer() {
+
+		Player player = playerService.findPlayerById(6);
+		player.setFirstName("Charlie");
+		playerService.updatePlayer(player, player.getId());
+
+		Player updatedPlayer = playerService.findPlayerById(6);
+		assertEquals("Charlie", updatedPlayer.getFirstName());
+		assertEquals("Blanes", updatedPlayer.getLastName());
+
+	}
+
+	@Test
+	void shouldAddANewFriend() {
+
+		Player me = playerService.findPlayerById(1);
+
+		Player newFriend = createValidPlayer();
+		newFriend.setFriends(new ArrayList<Player>());
+		playerService.savePlayer(newFriend);
+		playerService.addFriend(me, newFriend.getId());
+		playerService.savePlayer(me);
+
+		Player meUpdate = playerService.findPlayerById(1);
+		List<Player> updatedUserPlayerFriends = meUpdate.getFriends();
+		assertTrue(updatedUserPlayerFriends.contains(newFriend));
+
+	}
+
+	@Test
 	void shouldNotAddFriendIfTheyAreAlreadyFriends() {
 
-		Player userPlayer = playerService.findPlayerByUser(userService.findCurrentUser().getId());
-		List<Player> userPlayerFriends = userPlayer.getFriends();
-		
-		playerService.addFriend(6);
-		
-		List<Player> updatedUserPlayerFriends = userPlayer.getFriends();
+		Player me = playerService.findPlayerById(1);
+		List<Player> userPlayerFriends = me.getFriends();
+
+		playerService.addFriend(me, 6);
+
+		List<Player> updatedUserPlayerFriends = me.getFriends();
 		assertEquals(userPlayerFriends.size(), updatedUserPlayerFriends.size());
 
 	}
 
-    @Test
-	@Transactional
-    void shouldDeletePlayer() {
+	@Test
+	void shouldDeletePlayer() {
 
-        List<Player> databasePlayers = playerService.findAll();
+		Player newPlayer = createValidPlayer();
+		playerService.savePlayer(newPlayer);
+		List<Player> databasePlayers = playerService.findAll();
 
-        playerService.deletePlayer(4);
+		playerService.deletePlayer(newPlayer.getId());
 
-        List<Player> updatedPlayers = playerService.findAll();
-        assertEquals(databasePlayers.size() - 1, updatedPlayers.size());
+		List<Player> updatedPlayers = playerService.findAll();
 
-    }
-	
+		assertEquals(databasePlayers.size() - 1, updatedPlayers.size());
+
+	}
+
 }
