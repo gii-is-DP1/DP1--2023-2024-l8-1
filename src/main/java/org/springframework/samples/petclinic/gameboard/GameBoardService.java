@@ -5,6 +5,7 @@ import java.util.List;
 
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.samples.petclinic.exceptions.GameBoardGenerationException;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.hex.Hex;
@@ -34,6 +35,11 @@ public class GameBoardService {
         this.hexService = hexService;
     }
 
+    @Transactional
+    public List<GameBoard> findAll(){
+        return gameBoardRepository.findAll();
+    }
+
     @Transactional(readOnly = true)
     public List<Hex> getGameBoardHexs(GameBoard gameBoard){
         List<Hex> aux = new ArrayList<>();
@@ -61,7 +67,7 @@ public class GameBoardService {
     public GameBoard genRandomGameBoard(String game){
         GameBoard newBoard = new GameBoard();
         List<Sector> aux = new ArrayList<>();
-
+  
         try {
             for(int i = 0; i < 6; i++){
             Sector sector = sectorService.genRandom();
@@ -87,7 +93,7 @@ public class GameBoardService {
         aux.add(sectorService.genTriPrime());
 
         newBoard.setSectors(aux);
-        gameBoardRepository.save(newBoard);
+        save(newBoard);
 
         (gameService.findByName(game)).setGameBoard(newBoard);
         gameService.saveGame(gameService.findByName(game));
@@ -97,6 +103,11 @@ public class GameBoardService {
         }
         
         return newBoard;
+    }
+
+    @Transactional
+    public GameBoard save(GameBoard gameBoard){
+        return gameBoardRepository.save(gameBoard);
     }
     
 }

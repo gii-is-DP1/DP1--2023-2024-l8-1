@@ -2,7 +2,6 @@ package org.springframework.samples.petclinic.sector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.hex.Hex;
@@ -15,12 +14,16 @@ public class SectorService {
 
     private SectorRepository sectorRepository;
     private HexService hexService;
-    private Random random = new Random();
 
     @Autowired
     public SectorService(SectorRepository sectorRepository, HexService hexService) {
         this.sectorRepository = sectorRepository;
         this.hexService = hexService;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Sector> findAll(){
+        return sectorRepository.findAll();
     }
 
     @Transactional
@@ -64,12 +67,8 @@ public class SectorService {
     }
 
     @Transactional
-    public List<Hex> randomHexs() {
-        List<Hex> aux = new ArrayList<>();
-        for (int i = 0; i < 7; i++) {
-            aux.add(hexService.genRandomHex());
-        }
-        return aux;
+    public Sector save(Sector sector){
+        return sectorRepository.save(sector);
     }
 
 }

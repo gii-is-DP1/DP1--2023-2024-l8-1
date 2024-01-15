@@ -1,20 +1,25 @@
 package org.springframework.samples.petclinic.invitations;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
@@ -23,19 +28,16 @@ import org.springframework.samples.petclinic.invitation.InvitationRestController
 import org.springframework.samples.petclinic.invitation.InvitationService;
 import org.springframework.samples.petclinic.invitation.InvitationType;
 import org.springframework.samples.petclinic.player.Player;
-import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.player.PlayerService;
 import org.springframework.samples.petclinic.user.Authorities;
 import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 /**
  * Test class for {@link InvitationRestController}
@@ -45,16 +47,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @WebMvcTest(controllers = InvitationRestController.class, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfigurer.class))
 public class InvitationControllerTests {
 
-    private static final int TEST_USER_ID = 1;
-    private static final int TEST_PLAYER1_ID = 1;
-    private static final int TEST_PLAYER2_ID = 1;
-    private static final int TEST_INVITATION_ID = 1;
     private static final String BASE_URL = "/api/v1/invitations";
-    private static final String INVITATIONS_SENT_URL = "/api/v1/invitations/sent";
-    private static final String INVITATIONS_RECEIVED_URL = "/api/v1/invitations/received";
-    private static final String ACCEPT_INVITATION_URL = "/api/v1/invitations/accept/" + TEST_INVITATION_ID;
-    private static final Integer TEST_PLAYER_1_USER_ID = 1;
-    private static final Integer TEST_PLAYER_2_USER_ID = 2;
 
     @SuppressWarnings("unused")
     @Autowired
@@ -73,197 +66,178 @@ public class InvitationControllerTests {
     ObjectMapper objectMapper;
 
     @Autowired
-    MockMvc mockMvc; // Objeto proporcionado por Spring para realizar solicitudes HTTP simuladas y
-                             // realizar aserciones sobre las respuestas
+    MockMvc mockMvc; 
 
-    private User logged;
-    private Player player1;
-    private Player player2;
-    private User player1User;
-    private User player2User;
-    private Invitation invitation;
+    private User user1;
+    private User user2;
+    private User user3;
+    private Player source;
+    private Player target1;
+    private Player target2;
+    private List<Invitation> invitaciones;
+    private List<Invitation> invitationsForSource;
+    private Invitation invitationToDelete;
 
     @BeforeEach
     void setUp() {
-
-        // Configuramos los objetos necesarios para las pruebas
 
         Authorities playerAuth = new Authorities();
         playerAuth.setId(1);
         playerAuth.setAuthority("PLAYER");
 
-        player2User = new User();
-        player2User.setId(TEST_PLAYER_2_USER_ID);
-        player2User.setUsername("player2Test");
-        player2User.setPassword("player2Test");
-        player2User.setAuthority(playerAuth);
+        user1 = new User();
+        user1.setId(1);
+        user1.setUsername("user1");
+        user1.setPassword("password");
+        user1.setAuthority(playerAuth);
 
-        player2 = new Player();
-        player2.setId(TEST_PLAYER2_ID);
-        player2.setFirstName("Jugador Dos");
-        player2.setLastName("Jugador Dos");
-        player2.setNumCards(3);
-        player2.setNumShips(15);
-        player2.setScore(0);
-        player2.setRol(PlayerRol.GUEST);
-        player2.setStartPlayer(false);
-        player2.setFriends(null);
-        player2.setUser(player2User);
+        source = new Player();
+        source.setId(1);
+        source.setFirstName("name1");
+        source.setLastName("last1");
+        source.setUser(user1);
 
-        // Comportamiento esperado del userService
-        when(this.userService.findCurrentUser()).thenReturn(getUserFromDetails(
-                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()));
+        user2 = new User();
+        user2.setId(2);
+        user2.setUsername("user2");
+        user2.setPassword("password");
+        user2.setAuthority(playerAuth);
+
+        target1 = new Player();
+        target1.setId(2);
+        target1.setFirstName("name2");
+        target1.setLastName("last1");
+        target1.setUser(user2);
+
+        user3 = new User();
+        user3.setId(3);
+        user3.setUsername("user3");
+        user3.setPassword("password");
+        user3.setAuthority(playerAuth);
+
+        target2 = new Player();
+        target2.setId(3);
+        target2.setFirstName("name3");
+        target2.setLastName("last1");
+        target2.setUser(user3);
+
+        Invitation invitation1 = new Invitation();
+        invitation1.setId(5);
+        invitation1.setDiscriminator(InvitationType.FRIENDSHIP);
+        invitation1.setPlayerSource(source);
+        invitation1.setPlayerTarget(target1);
+
+        Invitation invitation2 = new Invitation();
+        invitation2.setId(6);
+        invitation2.setDiscriminator(InvitationType.FRIENDSHIP);
+        invitation2.setPlayerSource(source);
+        invitation2.setPlayerTarget(target1);
+
+        invitaciones = new ArrayList<>();
+        invitaciones.add(invitation1);
+        invitaciones.add(invitation2);
+
+        Invitation invitationForSource = new Invitation();
+        invitationForSource.setId(7);
+        invitationForSource.setDiscriminator(InvitationType.FRIENDSHIP);
+        invitationForSource.setPlayerSource(target1);
+        invitationForSource.setPlayerTarget(source);
+
+        invitationsForSource = new ArrayList<>();
+        invitationsForSource.add(invitationForSource);
+
+        invitationToDelete = new Invitation();
+        invitationToDelete.setId(1);
+        invitationToDelete.setDiscriminator(InvitationType.FRIENDSHIP);
+        invitationToDelete.setPlayerSource(target2);
+        invitationToDelete.setPlayerTarget(source);
+        invitationToDelete.setIsAccepted(true);
+
     }
 
-    // Con este método convertimos UserDetails un objeto User simulado
-    private User getUserFromDetails(UserDetails details) {
-        logged = new User();
-        logged.setUsername(details.getUsername());
-        logged.setPassword(details.getPassword());
-        Authorities aux = new Authorities();
-        for (GrantedAuthority auth : details.getAuthorities()) {
-            aux.setAuthority(auth.getAuthority());
-        }
-        logged.setAuthority(aux);
-        return logged;
-    }
-
-    // H3+E1: Solicitud de amistad a player2
     @Test
-    @WithMockUser(username = "player1", authorities = "PLAYER")
-    public void createInvitationShouldReturnCreatedStatus() throws Exception {
-
-        // Simula el jugador origen en la sesion
-        Player playerSource = new Player();
-        when(playerService.findPlayerByUser(logged.getId())).thenReturn(playerSource);
-
-        // Configura el comportamiento esperado del servicio de invitación
-        Invitation tesInvitation = new Invitation();
-        tesInvitation.setGame(null);
-        tesInvitation.setDiscriminator(InvitationType.FRIENDSHIP);
-        tesInvitation.setIsAccepted(false);
-        tesInvitation.setId(1);
-        tesInvitation.setPlayerSource(playerSource);
-        tesInvitation.setPlayerTarget(player2); // Ajusta según tus necesidades
-
-        reset(invitationService);
-        when(invitationService.saveInvitation(any(Invitation.class))).thenReturn(tesInvitation);
-
-        // Realiza una solicitud HTTP simulada al controlador para crear una invitación
-        mockMvc.perform(post(BASE_URL)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tesInvitation)))
-                .andExpect(status().isCreated());
-
-        // Comprobamos que se ha intentado grabar el juego en la bd:
-        verify(invitationService, times(1)).saveInvitation(any(Invitation.class));
+    @WithMockUser("user1")
+    void shouldReturnInvitationsSentByPlayerSource() throws Exception{
+        when(this.userService.findCurrentUser()).thenReturn(user1);
+        when(this.playerService.findPlayerByUser(user1.getId())).thenReturn(source);
+        when(this.invitationService.findAllInvitationForPlayerSource(source.getId())).thenReturn(invitaciones);
+        mockMvc.perform(get(BASE_URL + "/sent"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(2))
+                .andExpect(jsonPath("$.[0].playerSource.firstName").value(source.getFirstName()))
+                .andExpect(jsonPath("$.[1].playerSource.firstName").value(source.getFirstName()));
 
     }
-
-    // H3-E1: Solicitud de amistad a un usuario inexistente
 
     @Test
-    @WithMockUser(username = "player1", authorities = "PLAYER")
-    public void createInvitationShouldReturnBadRequestForNonExistentUser() throws Exception {
-
-        // Simula el jugador origen en la sesion
-        Player playerSource = new Player();
-        when(playerService.findPlayerByUser(logged.getId())).thenReturn(playerSource);
-
-        // Configura el comportamiento esperado del servicio de invitación
-        Invitation tesInvitation = new Invitation();
-        tesInvitation.setGame(null);
-        tesInvitation.setDiscriminator(InvitationType.FRIENDSHIP);
-        tesInvitation.setIsAccepted(false);
-        tesInvitation.setId(1);
-
-        // Simula un jugador destino que no existe
-        // when(playerService.findPlayerByUser(5)).thenReturn(null);
-        tesInvitation.setPlayerSource(playerSource);
-        tesInvitation.setPlayerTarget(null); // Así ya vale para crear un player que no existe?
-
-        reset(invitationService);
-        when(invitationService.saveInvitation(any(Invitation.class))).thenReturn(tesInvitation);
-
-        // Realiza una solicitud HTTP simulada al controlador para crear una invitación
-        mockMvc.perform(post(BASE_URL)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tesInvitation)))
-                .andExpect(status().isBadRequest());
-
-        // Comprobamos que se ha intentado grabar el juego en la bd:
-        verify(invitationService, never()).saveInvitation(any(Invitation.class));
-
+    @WithMockUser("user1")
+    void shouldReturnInvitationsReceivedByPlayerSource() throws Exception {
+        when(this.userService.findCurrentUser()).thenReturn(user1);
+        when(this.playerService.findPlayerByUser(user1.getId())).thenReturn(source);
+        when(this.invitationService.findAllInvitationForPlayerTarget(source.getId())).thenReturn(invitationsForSource);
+        mockMvc.perform(get(BASE_URL + "/received"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$.[0].playerTarget.firstName").value(source.getFirstName()));
     }
 
-    // H3-E2: Solicitud de amistad de un usuario ya solicitado
     @Test
-    @WithMockUser(username = "player1", authorities = "PLAYER")
-    public void createInvitationShouldReturnBadRequestForExistingFriend() throws Exception {
-        // Simula el jugador origen en la sesión
-        Player playerSource = new Player();
-        when(playerService.findPlayerByUser(logged.getId())).thenReturn(playerSource);
+    @WithMockUser("user1")
+    public void shouldCreateInvitation() throws Exception {
 
-        // Configura el comportamiento esperado del servicio de invitación
-        Invitation tesInvitation = new Invitation();
-        tesInvitation.setGame(null);
-        tesInvitation.setDiscriminator(InvitationType.FRIENDSHIP);
-        tesInvitation.setIsAccepted(false);
-        tesInvitation.setId(1);
+        Invitation newInvitation = new Invitation();
+        newInvitation.setDiscriminator(InvitationType.FRIENDSHIP);
+        newInvitation.setPlayerSource(target2);
+        newInvitation.setPlayerTarget(target1);
+        newInvitation.setIsAccepted(false);
 
-        // Simula un jugador destino que ya es amigo
-        when(playerService.findPlayerByUser(2)).thenReturn(player2);
-        playerSource.getFriends().add(player2);
-        tesInvitation.setPlayerSource(playerSource);
-        tesInvitation.setPlayerTarget(player2); // Ajusta según tus necesidades
-
-        reset(invitationService);
-        when(invitationService.saveInvitation(any(Invitation.class))).thenReturn(tesInvitation);
-
-        // Realiza una solicitud HTTP simulada al controlador para crear una invitación
-        mockMvc.perform(post(BASE_URL)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tesInvitation)))
-                .andExpect(status().isBadRequest());
-
-        // Comprobamos que no se ha intentado grabar la invitación en la BD
-        verify(invitationService, never()).saveInvitation(any(Invitation.class));
+        when(this.userService.findCurrentUser()).thenReturn(user1);
+        when(this.playerService.findPlayerByUser(user1.getId())).thenReturn(target2);
+        mockMvc.perform(post(BASE_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newInvitation))).andExpect(status().isCreated());
     }
 
-    // H3-E3: Solicitud de amistad de mi propio usuario
     @Test
-    @WithMockUser(username = "player1", authorities = "PLAYER")
-    public void createInvitationShouldReturnBadRequestForSelf() throws Exception {
-        // Simula el jugador origen en la sesión
-        Player playerSource = new Player();
-        when(playerService.findPlayerByUser(logged.getId())).thenReturn(playerSource);
+    @WithMockUser("user1")
+    void shouldNotCreateInvitation() throws Exception{
 
-        // Configura el comportamiento esperado del servicio de invitación
-        Invitation tesInvitation = new Invitation();
-        tesInvitation.setGame(null);
-        tesInvitation.setDiscriminator(InvitationType.FRIENDSHIP);
-        tesInvitation.setIsAccepted(false);
-        tesInvitation.setId(1);
+        Invitation newInvitation = new Invitation();
+        newInvitation.setDiscriminator(InvitationType.FRIENDSHIP);
+        // newInvitation.setPlayerSource(target2);
+        newInvitation.setPlayerTarget(target1);
 
-        // Simula un jugador destino que es el mismo que el jugador origen
-        tesInvitation.setPlayerSource(playerSource);
-        tesInvitation.setPlayerTarget(playerSource); // Ajusta según tus necesidades
+        when(this.userService.findCurrentUser()).thenReturn(user1);
+        when(this.playerService.findPlayerByUser(user1.getId())).thenReturn(target1);
+        mockMvc.perform(post(BASE_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newInvitation))).andExpect(status().isBadRequest());
 
-        reset(invitationService);
-        when(invitationService.saveInvitation(any(Invitation.class))).thenReturn(tesInvitation);
-
-        // Realiza una solicitud HTTP simulada al controlador para crear una invitación
-        mockMvc.perform(post(BASE_URL)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(tesInvitation)))
-                .andExpect(status().isBadRequest());
-
-        // Comprobamos que no se ha intentado grabar la invitación en la BD
-        verify(invitationService, never()).saveInvitation(any(Invitation.class));
     }
 
+    @Test
+    @WithMockUser("user1")
+    void shouldAcceptInvitation() throws Exception{
+
+        Invitation newInvitation = new Invitation();
+        newInvitation.setId(2);
+        newInvitation.setDiscriminator(InvitationType.FRIENDSHIP);
+        newInvitation.setPlayerSource(target2);
+        newInvitation.setPlayerTarget(target1);
+        newInvitation.setIsAccepted(true);
+
+        when(this.invitationService.acceptInvitation(newInvitation.getId())).thenReturn(newInvitation);
+        mockMvc.perform(put(BASE_URL + "/accept/{id}", newInvitation.getId()).with(csrf()).contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newInvitation))).andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    @WithMockUser("user1")
+    void shouldDeleteInvitation() throws Exception{
+
+        when(this.invitationService.findInvitationById(invitationToDelete.getId())).thenReturn(invitationToDelete);
+ 
+        doNothing().when(this.invitationService).deleteInvitation(invitationToDelete.getId());
+        mockMvc.perform(delete(BASE_URL + "/{id}", invitationToDelete.getId()).with(csrf()))
+                .andExpect(status().isOk());
+        
+    }
 }

@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataAccessException;
+import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 import org.springframework.samples.petclinic.invitation.Invitation;
 import org.springframework.samples.petclinic.invitation.InvitationService;
@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureTestDatabase
+@Transactional
 public class InvitationServiceTests {
 
     @Autowired
@@ -49,18 +50,18 @@ public class InvitationServiceTests {
 
     @Test
     public void shouldFindInvitationsForPlayerTarget() {
-        
+
         List<Invitation> invitations = invitationService.findAllInvitationForPlayerTarget(6);
 
         Invitation invitation = EntityUtils.getById(invitations, Invitation.class, 2);
-		assertEquals(InvitationType.FRIENDSHIP,invitation.getDiscriminator());
+        assertEquals(InvitationType.FRIENDSHIP, invitation.getDiscriminator());
         assertEquals(4, invitation.getPlayerSource().getId());
 
         Invitation invitation2 = EntityUtils.getById(invitations, Invitation.class, 6);
-		assertEquals(InvitationType.GAME,invitation2.getDiscriminator());
+        assertEquals(InvitationType.GAME, invitation2.getDiscriminator());
         assertEquals(5, invitation2.getPlayerSource().getId());
         assertEquals(5, invitation2.getGame().getId());
-        
+
     }
 
     @Test
@@ -77,12 +78,12 @@ public class InvitationServiceTests {
         List<Invitation> invitations = invitationService.findAllInvitationForPlayerSource(4);
 
         Invitation invitation = EntityUtils.getById(invitations, Invitation.class, 1);
-		assertEquals(InvitationType.FRIENDSHIP,invitation.getDiscriminator());
-        assertEquals(5,invitation.getPlayerTarget().getId());
+        assertEquals(InvitationType.FRIENDSHIP, invitation.getDiscriminator());
+        assertEquals(5, invitation.getPlayerTarget().getId());
 
         Invitation invitation2 = EntityUtils.getById(invitations, Invitation.class, 3);
-		assertEquals(InvitationType.FRIENDSHIP,invitation2.getDiscriminator());
-        assertEquals(1,invitation2.getPlayerTarget().getId());
+        assertEquals(InvitationType.FRIENDSHIP, invitation2.getDiscriminator());
+        assertEquals(1, invitation2.getPlayerTarget().getId());
 
     }
 
@@ -95,7 +96,6 @@ public class InvitationServiceTests {
     }
 
     @Test
-    @Transactional
     public void shoudlAcceptInvitation() {
 
         Invitation invitation = invitationService.findInvitationById(1);
@@ -114,16 +114,34 @@ public class InvitationServiceTests {
     }
 
     @Test
-    public void shouldSaveValidInvitation() {
+    public void shouldSaveInvitationSuccessfully() {
 
-        List<Invitation> invitations = invitationService.findAllInvitations();
+        List<Invitation> oldInvitations = invitationService.findAllInvitations();
         invitationService.saveInvitation(createValidInvitation());
-        List<Invitation> updatedInvitations = invitationService.findAllInvitations();
-        assertEquals(invitations.size() + 1, updatedInvitations.size());
-
+        List<Invitation> newInvitations = invitationService.findAllInvitations();
+        assertEquals(oldInvitations.size() + 1, newInvitations.size());
     }
 
     private Invitation createValidInvitation() {
+        Invitation invitation = new Invitation();
+
+        invitation.setIsAccepted(false);
+        invitation.setPlayerSource(playerService.findPlayerById(4));
+        invitation.setPlayerTarget(playerService.findPlayerById(5));
+        invitation.setGame(null);
+        invitation.setDiscriminator(InvitationType.FRIENDSHIP);
+
+        return invitation;
+    }
+
+    @Test
+    public void shouldNotSaveInvitationIfTheyAreAlreadyFriends() {
+
+        assertThrows(BadRequestException.class, () -> invitationService.saveInvitation(createInvitationForFriends()));
+
+    }
+
+    private Invitation createInvitationForFriends() {
 
         Invitation invitation = new Invitation();
 
@@ -134,15 +152,6 @@ public class InvitationServiceTests {
         invitation.setDiscriminator(InvitationType.FRIENDSHIP);
 
         return invitation;
-
-    }
-
-    @Test
-    @Transactional
-    public void shouldNotSaveWrongInvitation() {
-
-        Invitation invitation = new Invitation();
-        assertThrows(DataAccessException.class, () -> invitationService.saveInvitation(invitation));
 
     }
 

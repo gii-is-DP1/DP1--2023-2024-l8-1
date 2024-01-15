@@ -48,11 +48,18 @@ export default function Register() {
               alert("Error during login: " + error.message);
             });
         } else {
-          throw new Error(response.statusText); // Manejar errores
+          const contentType = response.headers.get("Content-Type");
+          if (contentType && contentType.includes("application/json")) {
+            return response.json().then((errorData) => {
+              let errorMessage = errorData.message;
+              alert(errorMessage);
+            });
+          } else {
+            return response.text().then((errorMessage) => {
+              alert(errorMessage);
+            });
+          }
         }
-      })
-      .catch((error) => {
-        alert("Error during registration: " + error.message);
       });
   }
 

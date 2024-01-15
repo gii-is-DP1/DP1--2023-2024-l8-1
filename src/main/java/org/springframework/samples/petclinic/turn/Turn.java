@@ -1,8 +1,10 @@
 package org.springframework.samples.petclinic.turn;
 
 import org.springframework.samples.petclinic.model.BaseEntity;
+import org.springframework.samples.petclinic.player.Player;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -15,6 +17,10 @@ import lombok.Setter;
 public class Turn extends BaseEntity{
     
     @NotNull
-    Boolean isOver;
+    Boolean isOver = false;
+
+    @ManyToOne(optional=true)
+    // @OnDelete(action = OnDeleteAction.CASCADE)
+    private Player player;
 
 }

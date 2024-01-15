@@ -11,10 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
 
-
 @Service
 public class ShipService {
-    
+
     ShipRepository shipRepository;
     PlayerService playerService;
 
@@ -24,32 +23,35 @@ public class ShipService {
         this.playerService = playerService;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Ship findShipById(int id) throws DataAccessException {
-		return shipRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ship", "ID", id));
+        return shipRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Ship", "ID", id));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Ship> findAllShips(){
+        return shipRepository.findAll();
     }
 
     @Transactional
     public void genShipsForOnePlayer(Integer playerId) {
-        try {
-            Player player = playerService.findPlayerById(playerId);
+        Player player = playerService.findPlayerById(playerId);
+        List<Ship> ls = shipRepository.playerShips(playerId);
+        for (Ship ship : ls){
+            shipRepository.delete(ship);
+        }
 
-            for (int i = 0; i < 15; i++) {
-                Ship newShip = new Ship();
-                newShip.setPlayer(player);
-                newShip.setState(ShipState.IN_SUPPLY);
-                shipRepository.save(newShip);
-            }
-        } catch (Exception e) {
-            // Manejar excepciones específicas según tus necesidades.
-            // Por ejemplo, puedes loguear el error.
-            throw e;
+        for (int i = 0; i < 15; i++) {
+            Ship newShip = new Ship();
+            newShip.setPlayer(player);
+            newShip.setState(ShipState.IN_SUPPLY);
+            shipRepository.save(newShip);
         }
     }
 
     @Transactional
-    public List<Ship> selectShipsFromSupply(Integer id){
-        List<Ship> ls=shipRepository.findTopXShipsInSupplyState(id);
+    public List<Ship> selectShipsFromSupply(Integer id) {
+        List<Ship> ls = shipRepository.findTopXShipsInSupplyState(id);
         return ls;
     }
 
@@ -59,10 +61,15 @@ public class ShipService {
     }
 
     @Transactional
-    public Ship updateShip(Ship ship, int id) throws DataAccessException{
+    public Ship updateShip(Ship ship, int id) throws DataAccessException {
         Ship toUpdate = findShipById(id);
-        BeanUtils.copyProperties(ship,toUpdate,"id");
+        BeanUtils.copyProperties(ship, toUpdate, "id");
         shipRepository.save(toUpdate);
         return toUpdate;
+    }
+
+    @Transactional(readOnly = true)
+    public Integer numOfShipsInGameForPlayer(Integer playerId) {
+        return shipRepository.numShipsInGameForPlayer(playerId);
     }
 }

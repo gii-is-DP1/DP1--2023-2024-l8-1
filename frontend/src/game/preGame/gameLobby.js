@@ -4,6 +4,7 @@ import {
 
 import getIdFromUrl from "../../util/getIdFromUrl";
 import tokenService from "../../services/token.service";
+import useIntervalFetchState from "../../util/useIntervalFetchState";
 import useFetchState from "../../util/useFetchState";
 import deleteFromList from "../../util/deleteFromList";
 import { Link } from "react-router-dom";
@@ -14,16 +15,30 @@ import { useNavigate } from 'react-router-dom';
 const jwt = tokenService.getLocalAccessToken();
 export default function GameLobby() {
     const name = getIdFromUrl(3);
+    const loggedUser = tokenService.getUser()
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [alerts, setAlerts] = useState([]);
+    const navigate = useNavigate();
     const [players, setPlayers] = useFetchState(
         [],
         `/api/v1/game/lobby/${name}`,
         jwt
     );
 
-    const navigate = useNavigate();
+    const [gameInfo, setGameInfo] = useIntervalFetchState(
+        [],
+        `/api/v1/game/play/${name}`,
+        jwt
+    );
+
+    if (gameInfo.state != null) {
+        if (gameInfo.state !== "LOBBY" && gameInfo.state !== "OVER") {
+            navigate('../game/play/' + name);
+        }
+    }
+
+
 
     function startGame(name) {
         fetch(
@@ -36,6 +51,7 @@ export default function GameLobby() {
             },
         });
 
+
         fetch(
             "/api/v1/gameBoard/" + name, {
             method: "GET",
@@ -45,7 +61,7 @@ export default function GameLobby() {
                 "Content-Type": "application/json",
             },
         });
-      
+
         navigate('../game/play/' + name);
 
     }
@@ -79,7 +95,7 @@ export default function GameLobby() {
     return (
         <div>
             <div className="admin-page-container">
-                <h1 className="text-center">Game's Players</h1>
+                <h1 className="text-center" style={{ marginTop: "20px" }}>Game's Players</h1>
                 <div>
                     <Table aria-label="achievements" className="mt-4">
                         <thead>
@@ -92,14 +108,11 @@ export default function GameLobby() {
                         <tbody>{playersList}</tbody>
                     </Table>
 
-                    <Button outline color="success"
-                            onClick={() => startGame(name)}>start
-                            </Button>
-                    <Button outline color="success">
-                        <Link
-                            to={'/invitations/new/'} className="btn sm"
-                            style={{ textDecoration: "none" }}>Invite a friend</Link>
-
+                    {gameInfo.host && gameInfo.state && loggedUser.username === gameInfo.host.user.username && gameInfo.state === "LOBBY" && <Button outline color="success"
+                        onClick={() => startGame(name)}>start
+                    </Button>}
+                    <Button outline color="warning" onClick={() => navigate('../invitations/new/')}>
+                        Invite a friend
                     </Button>
                 </div>
             </div>

@@ -1,7 +1,5 @@
 package org.springframework.samples.petclinic.invitation;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.player.Player;
@@ -29,15 +27,12 @@ public class Invitation extends BaseEntity{
     InvitationType discriminator;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     Player playerTarget;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     Player playerSource;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     Game game;
 
 }

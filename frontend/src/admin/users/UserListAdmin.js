@@ -1,27 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button, ButtonGroup, Table } from "reactstrap";
 import tokenService from "../../services/token.service";
 import "../../static/css/admin/adminPage.css";
-import deleteFromList from "../../util/deleteFromList";
-import getErrorModal from "../../util/getErrorModal";
-import useFetchState from "../../util/useFetchState";
+import deleteFromPagedList from "../../util/deleteFromPagedList";
+import getErrorModalPlayersDelete from "../../util/getErrorModalPlayersDelete";
 
 const jwt = tokenService.getLocalAccessToken();
 
 export default function UserListAdmin() {
   const [message, setMessage] = useState(null);
   const [visible, setVisible] = useState(false);
-  const [users, setUsers] = useFetchState(
-    [],
-    `/api/v1/users`,
-    jwt,
-    setMessage,
-    setVisible
-  );
+
+  const [page, setPage] = useState(0);
+  const [count, setCount] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [data, setData] = useState({ content: [], size: 10, first: true, last: false });
+
   const [alerts, setAlerts] = useState([]);
 
-  const userList = users.map((user) => {
+  useEffect(() => {
+    fetch(`/api/v1/users/admin?page=${page}&size=${pageSize}`, {
+      headers: {
+        "Authorization": `Bearer ${jwt}`,
+      },
+    })
+      .then(response => response.json())
+      .then(json => {
+        if (json.message) {
+          setMessage(json.message);
+          setVisible(true);
+        }
+        else {
+          setData(json);
+          setCount(json.totalElements)
+        }
+      }).catch((error) => { window.alert(error); });
+  }, [page, pageSize]);
+
+
+  const userList = data.content.filter((user) => user.authority.authority !== 'ADMIN')
+  .map((user) => {
     return (
       <tr key={user.id}>
         <td>{user.username}</td>
@@ -42,10 +61,10 @@ export default function UserListAdmin() {
               color="danger"
               aria-label={"delete-" + user.id}
               onClick={() =>
-                deleteFromList(
+                deleteFromPagedList(
                   `/api/v1/users/${user.id}`,
                   user.id,
-                  [users, setUsers],
+                  [data, setData],
                   [alerts, setAlerts],
                   setMessage,
                   setVisible
@@ -59,7 +78,19 @@ export default function UserListAdmin() {
       </tr>
     );
   });
-  const modal = getErrorModal(setVisible, visible, message);
+  const modal = getErrorModalPlayersDelete(setVisible, visible, message);
+
+  const pageSizes = [5, 10, 20, 100];
+
+  function handlePageChange(newPage) {
+    setPage(newPage);
+  }
+
+
+  function handlePageSizeChange(newPageSize) {
+    setPage(0); // Reiniciar a la primera página cuando cambie el tamaño de página
+    setPageSize(newPageSize);
+  }
 
   return (
     <div className="admin-page-container">
@@ -69,6 +100,29 @@ export default function UserListAdmin() {
       <Button color="success" tag={Link} to="/users/new">
         Add User
       </Button>
+      <div>
+        <span style={{ marginRight: "5px" }}>Tamaño de la página:</span>
+        <select style={{ marginTop: "10px" }} value={pageSize} onChange={(e) => handlePageSizeChange(e.target.value)}>
+          {pageSizes.map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
+        </select>
+        <span style={{ marginLeft: "10px", marginRight: "-8px" }}>Página:</span>
+        <select
+          style={{ marginLeft: "10px" }}
+          value={page}
+          onChange={(e) => handlePageChange(Number(e.target.value))}
+        >
+          {Array.from({ length: Math.ceil(count / pageSize) }, (_, index) => (
+            <option key={index} value={index}>
+              {index + 1}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div>
         <Table aria-label="users" className="mt-4">
           <thead>

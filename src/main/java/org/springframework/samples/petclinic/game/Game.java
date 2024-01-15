@@ -27,6 +27,8 @@ import org.springframework.samples.petclinic.model.BaseEntity;
 import org.springframework.samples.petclinic.player.Player;
 import org.springframework.samples.petclinic.round.Round;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,7 +51,7 @@ public class Game extends BaseEntity {
 
     @NotNull
     private Boolean publica;
-
+ 
     @Column(name="start_time")
     @DateTimeFormat(pattern = "yyyy/MM/dd HH/mm")
     @NotNull
@@ -64,12 +66,12 @@ public class Game extends BaseEntity {
     GameState state = GameState.LOBBY;
 
     @OneToOne
-    //@OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "player_id")
     private Player winner;
 
     @OneToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private GameBoard gameBoard;
 
     @OneToMany

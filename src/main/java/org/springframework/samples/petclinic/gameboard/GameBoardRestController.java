@@ -9,10 +9,7 @@ import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 import org.springframework.samples.petclinic.game.Game;
 import org.springframework.samples.petclinic.game.GameService;
 import org.springframework.samples.petclinic.hex.Hex;
-import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.player.Player;
-import org.springframework.samples.petclinic.player.PlayerRol;
-import org.springframework.samples.petclinic.sector.SectorService;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,16 +25,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Game Boards", description = "The GameBoard managemet API")
 public class GameBoardRestController {
 
-    private GameBoardService gameBoardService;
-    private HexService hexService;
-    private GameService gameService;
-    private UserService userService;
+    private final GameBoardService gameBoardService;
+    private final GameService gameService;
+    private final UserService userService;
     
     @Autowired
-    public GameBoardRestController(GameBoardService gameBoardService, HexService hexService,
+    public GameBoardRestController(GameBoardService gameBoardService,
                 GameService gameService, UserService userService){
         this.gameBoardService = gameBoardService;
-        this.hexService = hexService;
         this.gameService = gameService;
         this.userService = userService;
     }
@@ -50,11 +45,12 @@ public class GameBoardRestController {
             if (aux != game.getHost()){
                 throw new AccessDeniedException("Esta partida no está empezada");
             }else{   
-                GameBoard gb = gameBoardService.genRandomGameBoard(name);
+                gameBoardService.genRandomGameBoard(name);
             }
         }
         
         GameBoard gb = gameBoardService.getGameBoardByGame(name);
-        return new ResponseEntity<List<Hex>>(gameBoardService.getGameBoardHexs(gb), HttpStatus.OK);        
+        return new ResponseEntity<List<Hex>>(gameBoardService.getGameBoardHexs(gb), HttpStatus.OK);  
+        
     }
 }

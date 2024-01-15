@@ -17,7 +17,7 @@ public interface HexRepository extends CrudRepository<Hex, Integer> {
             "WHERE h.position = :position AND g.name = :name")
     public Hex findHexByPositionInGame(Integer position, String name);
 
-    @Query("SELECT p FROM Ship s JOIN s.player p WHERE s.hex = :id") //??
+    @Query("SELECT p FROM Ship s JOIN s.player p WHERE s.hex.id = :id")
     Optional<Player> findPlayerInHex(Integer id);
 
     @Query("SELECT s FROM Ship s JOIN s.hex h WHERE h.id = :id")

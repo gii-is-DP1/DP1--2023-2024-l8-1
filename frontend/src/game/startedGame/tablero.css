@@ -8,18 +8,132 @@ body {
   background: #34415d;
   border: 1px solid #999;
   float: left;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: bold;
   line-height: 34px;
-  margin-right: -1px;
-  margin-top: -1px;
+  margin-right: -3px;
+  margin-top: -3px;
   padding: 0;
   text-align: center;
-  width: 50px;
-  height: 60px;
+  width: 60px;
+  height: 70px;
   position: relative;
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
+
+.ships-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ship {
+  position: relative; /* Añadir posición relativa para alinear el número dentro del ship */
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 2px;
+  display: inline-block;
+  clip-path: polygon(80% 50%, 25% 75%, 0 50%, 25% 25%);
+  background-color: white;
+}
+
+.ship-count {
+  position: absolute; /* Añadir posición absoluta para posicionar el número dentro del ship */
+  top: 50%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+  color: white; /* Ajustar el color del número según tus preferencias */
+  font-size: 12px; /* Ajustar el tamaño del número según tus preferencias */
+  font-weight: bold; /* Otras propiedades de estilo según tus preferencias */
+}
+
+.ship.player-0 {
+  background-color: white;
+}
+
+.ship.player-1 {
+  background-color: rgb(177, 0, 0);
+}
+
+.ship.player-2 {
+  background-color: rgb(1, 1, 180);
+}
+
+.ship.player-3 {
+  background-color: rgb(29, 103, 29);
+}
+
+.player-0 {
+  color: white;
+}
+
+.player-1 {
+  color: red;
+}
+
+.player-2 {
+  color: blue;
+}
+
+.player-3 {
+  color: rgb(31, 232, 31);
+}
+
+.players-info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  position: absolute;  /* Cambiado a absolute para usar left */
+  left: 50px;  /* Ajusta según sea necesario */
+  top: 10px;   /* Ajusta según sea necesario */
+}
+
+.players-info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+/*
+.players-info {
+  position: relative;
+  top: 90px;
+  left: -430px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}*/
+
+.host-info {
+  position: relative;
+  top: 40px;
+  right: -400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.players-info div {
+  margin-bottom: 5px;
+}
+
+.host-info div {
+  margin-bottom: 5px;
+}
+
+.players-info p {
+  margin: 0;
+}
+
+.host-info p {
+  margin: 0;
+}
+
+
 
 .sector-container {
   display: flex;
@@ -48,7 +162,8 @@ body {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  margin-top: 100px;
+  margin-top: 150px;
+  position: relative;
 }
 
 .center-container {
@@ -58,7 +173,7 @@ body {
 
 .left-sector,
 .right-sector {
-  margin: 0 10px;
+  margin: 0px;
 }
 
 .tri-prime-container {
@@ -74,6 +189,7 @@ body {
   max-width: 200px;
   overflow: hidden;
 }
+
 
 .buttonStyles {
   display: flex;
@@ -94,6 +210,16 @@ body {
   margin-top: 20px;
 }
 
+.cardContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 10px;
+  max-width: 200px;
+  overflow: hidden;
+}
+
 .left-card {
   order: 1;
 }
@@ -104,4 +230,8 @@ body {
 
 .right-card {
   order: 3;
+}
+
+.red-text {
+  color: red;
 }
