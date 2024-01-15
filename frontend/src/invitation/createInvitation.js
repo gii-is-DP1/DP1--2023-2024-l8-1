@@ -8,7 +8,9 @@ import useFetchState from "../util/useFetchState";
 import { SearchPlayer } from "../search/player/SearchPlayer";
 import { PlayerResultsList } from "../search/player/PlayerResultsList";
 import { SearchGame } from "../search/game/SearchGame";
-import { GameResultsList } from "../search/game/GameResultsList"
+import { GameResultsList } from "../search/game/GameResultsList";
+import jwt_decode from "jwt-decode";
+
 
 const jwt = tokenService.getLocalAccessToken();
 
@@ -35,6 +37,10 @@ export default function Createinvitation() {
     );
 
     const [playerResults, setplayerResults] = useState([]);
+    const currentPlayerUsername = jwt ? jwt_decode(jwt).sub : null;
+    const filteredPlayerResults = playerResults.filter(player => player.user.username !== currentPlayerUsername);
+
+
     const [gameResults, setGameResults] = useState([]);
     const [game, setGame] = useState(""); // Nuevo estado para el nombre del juego
 
@@ -55,20 +61,15 @@ export default function Createinvitation() {
                 body: JSON.stringify(invitation),
             }
         )
-            .then((response) => response.text())
-            .then((data) => {
-                if (data === "")
+            .then((response) => {
+                if (!response.ok) {
+                    return response.text().then((errorMessage) => {
+                        alert(errorMessage);
+                    });
+                } else {
                     window.location.href = "/invitations";
-                else {
-                    let json = JSON.parse(data);
-                    if (json.message) {
-                        setMessage(JSON.parse(data).message);
-                        setVisible(true);
-                    } else
-                        window.location.href = "/invitations";
                 }
             })
-            .catch((message) => alert(message));
     }
 
 
@@ -78,13 +79,10 @@ export default function Createinvitation() {
         const value = target.value;
         const name = target.name;
         if (name === 'playerTarget') {
-            // If the change is in the 'player' field, set the player ID in the invitation
             setInvitation({ ...invitation, playerTarget: value });
         }
         if (name === "discriminator") {
             setInvitation({ ...invitation, [name]: value });
-
-            // Limpiar el nombre del juego si se cambia a "FRIENDSHIP"
             if (value === "FRIENDSHIP") {
                 setGame("");
             }
@@ -93,7 +91,6 @@ export default function Createinvitation() {
         }
 
         else {
-            // For other fields, update as usual
             setInvitation({ ...invitation, [name]: value });
         }
     }
@@ -101,13 +98,11 @@ export default function Createinvitation() {
     const handleSelectPlayer = (selectedPlayer) => {
         setplayerResults([]);
         setInvitation({ ...invitation, playerTarget: selectedPlayer });
-        // You can also close the search playerResults or perform any other actions if needed
     };
 
     const handleSelectGame = (selectedGame) => {
         setGameResults([]);
         setInvitation({ ...invitation, game: selectedGame });
-        // You can also close the search playerResults or perform any other actions if needed
     };
 
     return (
@@ -120,13 +115,11 @@ export default function Createinvitation() {
                 <Form onSubmit={handleSubmit}>
                     <div className="search-bar-container">
                         <SearchPlayer setResults={setplayerResults} onSelectPlayer={handleSelectPlayer} />
-                        {/* Renderizar el nombre del jugador seleccionado en lugar del cuadro de búsqueda */}
                         {playerResults.length === 0 && invitation.playerTarget && (
                             <div>{invitation.playerTarget.user.username}</div>
                         )}
-                        {playerResults.length > 0 && (
-                            // Pasar la función handleSelectPlayer a SearchplayerResultsList
-                            <PlayerResultsList results={playerResults} onSelectPlayer={handleSelectPlayer} />
+                        {filteredPlayerResults.length > 0 && (
+                            <PlayerResultsList results={filteredPlayerResults} onSelectPlayer={handleSelectPlayer} />
                         )}
                     </div>
                     <div className="custom-form-input">

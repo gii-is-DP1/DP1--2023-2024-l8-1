@@ -56,16 +56,16 @@ public class InvitationRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Invitation> createInvitation(@RequestBody @Valid Invitation i){
+    public ResponseEntity<String> createInvitation(@RequestBody @Valid Invitation i){
         Invitation newInvitation = new Invitation();
         BeanUtils.copyProperties(i,newInvitation,"id");
-
         newInvitation.setPlayerSource(ps.findPlayerByUser(us.findCurrentUser().getId()));
-        
-        if(newInvitation.getPlayerSource().equals(newInvitation.getPlayerTarget()))
-            throw new BadRequestException("No se puede enviar una invitación a uno mismo");
-        Invitation savedInvitation=is.saveInvitation(newInvitation);
-        return new ResponseEntity<>(savedInvitation,HttpStatus.CREATED);
+        try {
+            is.saveInvitation(newInvitation);
+        } catch (BadRequestException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 

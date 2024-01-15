@@ -17,27 +17,18 @@ export default function InvitationList() {
     const [message, setMessage] = useState(null);
     const [visible, setVisible] = useState(false);
     const [alerts, setAlerts] = useState([]);
-    const [forceUpdate, setForceUpdate] = useState(false);
 
     const [invitationsReceived, setInvitationsReceived] = useFetchState(
         [],
         `/api/v1/invitations/received`,
         jwt,
-        forceUpdate
     );
 
     const [invitationsSent, setInvitationsSent] = useFetchState(
         [],
         `/api/v1/invitations/sent`,
         jwt,
-        forceUpdate
     );
-
-
-    useEffect(() => {
-        // Limpia el estado forceUpdate después de la actualización
-        setForceUpdate(false);
-    }, [invitationsReceived, invitationsSent]);
 
 
     const navigate = useNavigate();
@@ -98,9 +89,8 @@ export default function InvitationList() {
                 },
                 body: JSON.stringify(a)
             })
-            .then(() => setForceUpdate(prevState => !prevState))
-            .then(() => alert("Invitación aceptada correctamente"))
-            .catch(error => alert(error))
+                .then(() => alert("Invitación aceptada correctamente"))
+                .catch(error => alert(error))
         }
     }
 
@@ -142,21 +132,6 @@ export default function InvitationList() {
                     <td className="text-center">{a.discriminator}</td>
                     <td className="text-center">{a.playerTarget.user.username}</td>
                     <td className="text-center">{a.isAccepted === false ? "Pendiente" : "Aceptada"}</td>
-
-                    <td className="text-center">
-                        <Button outline color="danger"
-                            onClick={() =>
-                                deleteFromList(
-                                    `/api/v1/invitations/${a.id}`,
-                                    a.id,
-                                    [invitationSent, setInvitationsSent],
-                                    [alerts, setAlerts],
-                                    setMessage,
-                                    setVisible
-                                )}>
-                            Delete
-                        </Button>
-                    </td>
                 </tr>
             );
         });
@@ -191,7 +166,6 @@ export default function InvitationList() {
                                 <th className="text-center">Invitation Type</th>
                                 <th className="text-center">Player</th>
                                 <th className="text-center">Accepted</th>
-                                <th className="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>{invitationSent}</tbody>

@@ -29,8 +29,9 @@ body {
 }
 
 .ship {
-  width: 20px;
-  height: 20px;
+  position: relative; /* Añadir posición relativa para alinear el número dentro del ship */
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   margin-right: 2px;
   display: inline-block;
@@ -38,20 +39,30 @@ body {
   background-color: white;
 }
 
+.ship-count {
+  position: absolute; /* Añadir posición absoluta para posicionar el número dentro del ship */
+  top: 50%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+  color: white; /* Ajustar el color del número según tus preferencias */
+  font-size: 12px; /* Ajustar el tamaño del número según tus preferencias */
+  font-weight: bold; /* Otras propiedades de estilo según tus preferencias */
+}
+
 .ship.player-0 {
   background-color: white;
 }
 
 .ship.player-1 {
-  background-color: red;
+  background-color: rgb(177, 0, 0);
 }
 
 .ship.player-2 {
-  background-color: blue;
+  background-color: rgb(1, 1, 180);
 }
 
 .ship.player-3 {
-  background-color: rgb(31, 232, 31);
+  background-color: rgb(29, 103, 29);
 }
 
 .player-0 {
