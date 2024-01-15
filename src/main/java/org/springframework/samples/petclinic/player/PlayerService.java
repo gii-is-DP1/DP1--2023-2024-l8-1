@@ -5,10 +5,14 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.samples.petclinic.exceptions.ResourceNotFoundException;
+import org.springframework.samples.petclinic.user.User;
 import org.springframework.samples.petclinic.user.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.validation.Valid;
 
 @Service
 public class PlayerService {
@@ -48,11 +52,6 @@ public class PlayerService {
     }
 
     @Transactional(readOnly = true)
-    public Boolean findStartPlayer(int playerId) {
-        return pr.findStartPlayer(playerId);
-    }
-
-    @Transactional(readOnly = true)
     public Integer findScore(int playerId) {
         return pr.findScore(playerId);
     }
@@ -63,22 +62,22 @@ public class PlayerService {
         savePlayer(player);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = DataIntegrityViolationException.class)
     public Player savePlayer(Player p) {
         pr.save(p);
         return p;
     }
 
     @Transactional
-    public void addFriend(int id) {
+    public void addFriend(Player me, int id) {
 
-        Player me = us.findPlayerByUser(us.findCurrentUser().getId());
         Player source = findPlayerById(id);
 
         if (!me.getFriends().contains(source) && !source.getFriends().contains(me)) {
             List<Player> myFriends = me.getFriends();
             myFriends.add(source);
             me.setFriends(myFriends);
+            savePlayer(me);
 
             List<Player> sourceFriends = source.getFriends();
             sourceFriends.add(me);
@@ -110,8 +109,6 @@ public class PlayerService {
     public Player updatePlayer(Player p, int id) {
         Player toUpdate = findPlayerById(id);
         BeanUtils.copyProperties(p, toUpdate, "id", "user", "friends");
-        // ignora friends porque si no al actualizar datos del player se fuma la lista
-        // de friends
         return savePlayer(toUpdate);
     }
 

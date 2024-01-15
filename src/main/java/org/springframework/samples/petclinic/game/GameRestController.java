@@ -101,12 +101,6 @@ public class GameRestController {
         return new ResponseEntity<List<Player>>(gamePlayers, HttpStatus.OK);
     }
 
-    @GetMapping("/currentPlayerGames")
-    public ResponseEntity<List<Game>> findAllPlayerGames() {
-        List<Game> currentPlayerGames = gameService.findCurrentPlayerUserGames();
-        return new ResponseEntity<List<Game>>(currentPlayerGames, HttpStatus.OK);
-    }
-
     @GetMapping("/getWinner/{name}")
     public ResponseEntity<List<Player>> findSortedGamePlayers(@PathVariable("name") String name) {
         List<Player> ls = findGamePlayers(name).getBody();
@@ -268,15 +262,6 @@ public class GameRestController {
         findGame(id);
         gameService.deleteGameById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @PutMapping("/play/{name}/{hexId}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Void> setUpShipInGameBoard(@PathVariable("name") String name,
-            @PathVariable("hexId") int hexId) {
-        Hex hex = hexService.findHexById(hexId);
-        gameService.setUpShips(name, hex);
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/play/{name}/ships")

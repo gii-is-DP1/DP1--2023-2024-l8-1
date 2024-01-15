@@ -10,13 +10,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.samples.petclinic.card.Card;
 import org.springframework.samples.petclinic.card.CardService;
-import org.springframework.samples.petclinic.card.CardType;
 import org.springframework.samples.petclinic.card.Explore;
 import org.springframework.samples.petclinic.card.Exterminate;
 import org.springframework.samples.petclinic.card.Expand;
 import org.springframework.samples.petclinic.exceptions.BadRequestException;
 import org.springframework.samples.petclinic.gameboard.GameBoard;
-import org.springframework.samples.petclinic.gameboard.GameBoardService;
 import org.springframework.samples.petclinic.hex.Hex;
 import org.springframework.samples.petclinic.hex.HexService;
 import org.springframework.samples.petclinic.phase.Phase;
@@ -34,7 +32,7 @@ import org.springframework.samples.petclinic.turn.TurnService;
 import org.springframework.samples.petclinic.ship.ShipState;
 import org.springframework.samples.petclinic.player.PlayerRol;
 import org.springframework.samples.petclinic.user.UserService;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.samples.petclinic.exceptions.AccessDeniedException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -127,14 +125,6 @@ public class GameService {
             players.add(player);
         }
         return players;
-    }
-
-    @Transactional(readOnly = true)
-    public List<Game> findCurrentPlayerUserGames() {
-        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        List<Game> gamesInDB = repo.findAll();
-        List<Game> playerGames = gamesInDB.stream().filter(g -> g.getHost().equals(me) || g.getPlayers().contains(me)).toList();
-        return playerGames;
     }
 
     @Transactional
@@ -518,18 +508,20 @@ public class GameService {
         GameBoard tablero = game.getGameBoard();
         for (Sector sector : tablero.getSectors()) {
             for (Hex hex : sector.getHexs()) {
-                if (hex.getShips().size() > hex.getPuntos() + 1) {
-                    int i = 0;
-                    while (hex.getShips().size() > hex.getPuntos() + 1) {
-                        List<Ship> ships = hex.getShips();
-                        Ship ship = ships.get(i);
-                        ship.setState(ShipState.IN_SUPPLY);
-                        ship.setHex(null);
-                        shipService.save(ship);
-                        ships.remove(i);
-                        hex.setShips(ships);
-                        hexService.save(hex);
-                        i++;
+                if (hex.getOccuped()) {
+                    if (hex.getShips().size() > hex.getPuntos() + 1) {
+                        int i = 0;
+                        while (hex.getShips().size() > hex.getPuntos() + 1) {
+                            List<Ship> ships = hex.getShips();
+                            Ship ship = ships.get(i);
+                            ship.setState(ShipState.IN_SUPPLY);
+                            ship.setHex(null);
+                            shipService.save(ship);
+                            ships.remove(i);
+                            hex.setShips(ships);
+                            hexService.save(hex);
+                            i++;
+                        }
                     }
                 }
             }
@@ -565,15 +557,4 @@ public class GameService {
         repo.delete(toDelete);
     }
 
-    @Transactional
-    public void setUpShips(String name, Hex hex) {
-        Player me = userService.findPlayerByUser(userService.findCurrentUser().getId());
-        List<Ship> playerShips = shipService.selectShipsFromSupply(me.getId());
-        Ship shipInHex = playerShips.get(0);
-        shipInHex.setHex(hex);
-        shipInHex.setState(ShipState.ON_GAME);
-        shipService.updateShip(shipInHex, shipInHex.getId());
-        hex.setOccuped(true);
-        hexService.updateHex(hex, hex.getId());
-    }
 }

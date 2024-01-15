@@ -51,7 +51,7 @@ public class Game extends BaseEntity {
 
     @NotNull
     private Boolean publica;
-/* 
+ 
     @Column(name="start_time")
     @DateTimeFormat(pattern = "yyyy/MM/dd HH/mm")
     @NotNull
@@ -59,7 +59,7 @@ public class Game extends BaseEntity {
 
     @Column(name="end_time")
     @DateTimeFormat(pattern = "yyyy/MM/dd HH/mm")
-    private LocalDateTime endTime;*/
+    private LocalDateTime endTime;
 
     @Enumerated(EnumType.STRING)
     @NotNull

@@ -20,9 +20,6 @@ public interface PlayerRepository extends CrudRepository<Player, Integer> {
     @Query("SELECT p.rol FROM Player p WHERE p.id=:playerId")
     public PlayerRol findPlayerRol(@Param("playerId") int playerId);
 
-    @Query("SELECT p.startPlayer FROM Player p WHERE p.id=:playerId") //Este no debería buscar el jugador que tenga el atributo startPlayer a verdadero dentro de una partida?
-    public Boolean findStartPlayer(@Param("playerId") int playerId);
-    
     @Query("SELECT p.score FROM Player p WHERE p.id=:playerId")
     public Integer findScore(@Param("playerId") int playerId);
 

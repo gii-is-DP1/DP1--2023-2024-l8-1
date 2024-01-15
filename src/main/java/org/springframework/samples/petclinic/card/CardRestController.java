@@ -25,8 +25,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @SecurityRequirement(name = "bearerAuth")
 public class CardRestController {
 
-    private final UserService userService;
-    private final CardService cardService;
+    private UserService userService;
+    private CardService cardService;
     private GameService gameService;
 
     @Autowired

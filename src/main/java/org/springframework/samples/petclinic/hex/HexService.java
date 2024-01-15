@@ -99,8 +99,7 @@ public class HexService {
         List<Integer> neighbours = Adyacencias.adyacentesPorPosicion.get(hex1.getPosition());
         Boolean areAdjacents = false;
         int i = 0;
-        while (areAdjacents == false || i < neighbours.size()) {
-            // para cada elemento de neighbours que la posicion del hex2 este en en las posiciones del que cojo
+        while (i < neighbours.size() && !areAdjacents) {
             areAdjacents = Adyacencias.adyacentesPorPosicion.get(neighbours.get(i)).contains(hex2.getPosition());
             i++;
         }
